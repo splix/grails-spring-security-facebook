@@ -1,0 +1,17 @@
+${packageDeclaration}
+
+${userImport}
+
+class ${className} {
+
+	long uid
+    String secret
+    String session
+    String email
+
+	static belongsTo = [user: ${userClassName}]
+
+	static constraints = {
+		uid unique: true
+	}
+}
