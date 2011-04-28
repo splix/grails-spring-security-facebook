@@ -5,3 +5,5 @@
 *.iws
 *.zip
 target
+*.log
+/target
