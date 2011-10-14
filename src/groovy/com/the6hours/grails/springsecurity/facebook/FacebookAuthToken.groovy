@@ -1,4 +1,4 @@
-package org.codehaus.groovy.grails.plugins.springsecurity.facebook
+package com.the6hours.grails.springsecurity.facebook
 
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.Authentication
@@ -9,6 +9,7 @@ public class FacebookAuthToken extends AbstractAuthenticationToken implements Au
 	long uid
 	String secret
 	String session
+    String accessToken
 	
 	Collection<GrantedAuthority> authorities
 	

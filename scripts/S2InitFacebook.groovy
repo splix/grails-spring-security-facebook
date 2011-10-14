@@ -1,7 +1,3 @@
-import grails.util.GrailsNameUtils
-
-//includeTargets << new File("$springSecurityFacebookPluginDir/scripts/_OpenIdCommon.groovy")
-
 target(s2InitFacebook: 'Initializes artifacts for the Spring Security Facebook plugin') {
 	depends(checkVersion, configureProxy, packageApp, classpath)
 

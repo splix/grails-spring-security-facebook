@@ -12,15 +12,17 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-import org.codehaus.groovy.grails.plugins.springsecurity.SecurityFilterPosition
+import com.the6hours.grails.springsecurity.facebook.FacebookAuthProvider
+import com.the6hours.grails.springsecurity.facebook.FacebookAuthDirectFilter
+import com.the6hours.grails.springsecurity.facebook.FacebookAuthCookieFilter
+import com.the6hours.grails.springsecurity.facebook.FacebookAuthUtils
 import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
-import org.codehaus.groovy.grails.plugins.springsecurity.facebook.FacebookAuthProvider
-import org.codehaus.groovy.grails.plugins.springsecurity.facebook.FacebookAuthFilter
+import org.codehaus.groovy.grails.plugins.springsecurity.SecurityFilterPosition
 
 class SpringSecurityFacebookGrailsPlugin {
 
-   String version = '0.1'
-   String grailsVersion = '1.3.3 > *'
+   String version = '0.2'
+   String grailsVersion = '1.3.7 > *'
    Map dependsOn = ['springSecurityCore': '1.0 > *']
 
    String author = 'Igor Artamonov'
@@ -32,36 +34,47 @@ class SpringSecurityFacebookGrailsPlugin {
 
    def doWithSpring = {
 
-       def SpringSecurityUtils = classLoader.loadClass(
-	       'org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils')
-
-	   def conf = SpringSecurityUtils.securityConfig
-	   if (!conf) {
-		   return
-	   }
+       def conf = SpringSecurityUtils.securityConfig
+       if (!conf) {
+           return
+       }
 
 	   println 'Configuring Spring Security Facebook ...'
 	   SpringSecurityUtils.loadSecondaryConfig 'DefaultFacebookSecurityConfig'
 	   // have to get again after overlaying DefaultOpenIdSecurityConfig
 	   conf = SpringSecurityUtils.securityConfig
 
-	   SpringSecurityUtils.registerProvider conf.beans.provider
-	   SpringSecurityUtils.registerFilter conf.beans.filter, SecurityFilterPosition.OPENID_FILTER
+       if (!conf.facebook.bean.dao) {
+           println 'WARNING: There is no dao configired for Facebook Auth'
+       }
 
+       facebookAuthUtils(FacebookAuthUtils) {
+           apiKey = conf.facebook.apiKey
+           secret = conf.facebook.secret
+       }
 
+       SpringSecurityUtils.registerProvider 'facebookAuthProvider'
 	   facebookAuthProvider(FacebookAuthProvider) {
-		   userDetailsService = ref('userDetailsService')
+           facebookAuthDao = ref(conf.facebook.bean.dao)
 	   }
 
-	   facebookAuthFilter(FacebookAuthFilter) {
+       SpringSecurityUtils.registerFilter 'facebookAuthDirectFilter', SecurityFilterPosition.OPENID_FILTER.order + 1
+	   facebookAuthDirectFilter(FacebookAuthDirectFilter, '/j_spring_facebook_security_check') {
 		   rememberMeServices = ref('rememberMeServices')
 		   authenticationManager = ref('authenticationManager')
 		   authenticationSuccessHandler = ref('authenticationSuccessHandler')
 		   authenticationFailureHandler = ref('authenticationFailureHandler')
 		   authenticationDetailsSource = ref('authenticationDetailsSource')
 		   sessionAuthenticationStrategy = ref('sessionAuthenticationStrategy')
-		   filterProcessesUrl = '/j_spring_facebook_security_check' // not configurable
+           facebookAuthUtils = ref('facebookAuthUtils')
 	   }
+
+       SpringSecurityUtils.registerFilter 'facebookAuthCookieFilter', SecurityFilterPosition.OPENID_FILTER.order + 2
+       facebookAuthCookieFilter(FacebookAuthCookieFilter) {
+           authenticationManager = ref('authenticationManager')
+           applicationId = conf.facebook.appId
+           facebookAuthUtils = ref('facebookAuthUtils')
+       }
 
    }
 

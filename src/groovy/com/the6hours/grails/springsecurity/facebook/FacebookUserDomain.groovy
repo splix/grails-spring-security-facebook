@@ -1,6 +1,6 @@
-package org.codehaus.groovy.grails.plugins.springsecurity.facebook
+package com.the6hours.grails.springsecurity.facebook
 
-public interface FacebookUser {
+public interface FacebookUserDomain {
 	
 	String getSession();
 	void setSession(String session);

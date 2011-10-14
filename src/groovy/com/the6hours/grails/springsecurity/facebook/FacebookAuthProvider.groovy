@@ -1,29 +1,32 @@
-package org.codehaus.groovy.grails.plugins.springsecurity.facebook
+package com.the6hours.grails.springsecurity.facebook
 
-import org.codehaus.groovy.grails.plugins.springsecurity.GrailsUser
 import org.springframework.security.core.Authentication
 import org.springframework.security.authentication.AuthenticationProvider
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.GrantedAuthorityImpl
+import org.springframework.security.core.userdetails.User
+import org.apache.log4j.Logger
 
 public class FacebookAuthProvider implements AuthenticationProvider {
-	
+
+    private static def log = Logger.getLogger(this)
+
 	FacebookAuthDao facebookAuthDao
 	boolean createNew = true 
 
 	public Authentication authenticate(Authentication authentication) {
 		FacebookAuthToken token = authentication
 		
-		FacebookUser user = facebookAuthDao.get(token.uid)
+		FacebookUserDomain user = facebookAuthDao.findUser(token.uid)
 		
 		if (user == null) {
 			//log.debug "New person with $token.uid"
 			if (createNew) {
-				//log.info "Create new facebook user"
+				log.info "Create new facebook user with uid $token.uid"
 				user = facebookAuthDao.create(token)
 			} else {
-                //log.error "User $token.uid not exists - not authenticated"
+                log.error "User $token.uid not exists - not authenticated"
                 return null
             }
 		} else {
@@ -34,10 +37,14 @@ public class FacebookAuthProvider implements AuthenticationProvider {
 				facebookAuthDao.update(token)
 			}
 		}
-		UserDetails userDetails = createUserDetails(user, token.secret)
+        if (user != null) {
+            UserDetails userDetails = createUserDetails(user, token.secret)
 
-		token.details = userDetails
-		token.authorities = userDetails.getAuthorities()
+            token.details = userDetails
+            token.authorities = userDetails.getAuthorities()
+        } else {
+            token.authenticated = false
+        }
 		return token
 	}
 
@@ -45,13 +52,10 @@ public class FacebookAuthProvider implements AuthenticationProvider {
 		return FacebookAuthToken.isAssignableFrom(authentication);
 	}
 	
-   protected UserDetails createUserDetails(FacebookUser user, String secret) {
-	   List<GrantedAuthority> roles = user.roles.collect {
-		   new GrantedAuthorityImpl(it)
-	   }
-	   new GrailsUser(
-			   user.uid.toString(), secret, true,
-			   true, true, true, roles, user.id)
+   protected UserDetails createUserDetails(FacebookUserDomain user, String secret) {
+	   Collection<GrantedAuthority> roles = facebookAuthDao.getRoles(user)
+	   new User(user.uid.toString(), secret, true,
+			   true, true, true, roles)
    }
 
 }

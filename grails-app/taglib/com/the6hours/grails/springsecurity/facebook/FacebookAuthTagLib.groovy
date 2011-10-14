@@ -1,4 +1,4 @@
-package grails.plugins.springsecurity
+package com.the6hours.grails.springsecurity.facebook
 
 import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
 
@@ -11,7 +11,7 @@ import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
 
 class FacebookAuthTagLib {
 
-	static namespace = 'fbSec'
+	static namespace = 'facebookAuth'
 
 	/** Dependency injection for springSecurityService. */
 	def springSecurityService
