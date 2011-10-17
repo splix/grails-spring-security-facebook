@@ -56,6 +56,7 @@ class FacebookAuthCookieFilter extends GenericFilterBean implements ApplicationE
                     } finally {
                         SecurityContextHolder.context.authentication = null;
                     }
+                    return
                 }
             } else {
                 logger.debug("No cookie with name $cookieName")
