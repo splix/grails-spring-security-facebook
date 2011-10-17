@@ -41,6 +41,7 @@ public class FacebookAuthProvider implements AuthenticationProvider {
             UserDetails userDetails = createUserDetails(user, token.secret)
 
             token.details = userDetails
+            token.principal = facebookAuthDao.getPrincipal(user)
             token.authorities = userDetails.getAuthorities()
         } else {
             token.authenticated = false

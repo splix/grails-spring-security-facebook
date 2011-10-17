@@ -10,6 +10,7 @@ public class FacebookAuthToken extends AbstractAuthenticationToken implements Au
 	String secret
 	String session
     String accessToken
+    Object principal
 	
 	Collection<GrantedAuthority> authorities
 	
@@ -21,8 +22,4 @@ public class FacebookAuthToken extends AbstractAuthenticationToken implements Au
 		return uid;
 	}
 
-	public Object getPrincipal() {
-		return getDetails();
-	}
-	
 }
