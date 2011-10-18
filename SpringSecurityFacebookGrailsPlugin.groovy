@@ -21,7 +21,7 @@ import org.codehaus.groovy.grails.plugins.springsecurity.SecurityFilterPosition
 
 class SpringSecurityFacebookGrailsPlugin {
 
-   String version = '0.2'
+   String version = '0.2.2'
    String grailsVersion = '1.3.7 > *'
    Map dependsOn = ['springSecurityCore': '1.0 > *']
 
