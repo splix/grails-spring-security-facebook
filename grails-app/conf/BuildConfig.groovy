@@ -7,7 +7,7 @@ String springSecurityVer = "3.0.4.RELEASE"
 grails.project.dependency.resolution = {
 
 	inherits('global') {
-		excludes 'commons-codec' // Grails ships with 1.3, need 1.4
+		//excludes 'commons-codec' // Grails ships with 1.3, need 1.4
 	}
 
 	log 'warn'
@@ -45,8 +45,8 @@ grails.project.dependency.resolution = {
                      'org.springframework.core',
                      'org.springframework.web'
         }
-//        compile('commons-codec:commons-codec:1.4') {
-//        }
+/*        compile('commons-codec:commons-codec:1.4') {
+        }*/
         runtime('commons-codec:commons-lang:2.4') {
         }
 
