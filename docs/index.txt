@@ -1,0 +1,65 @@
+Grails plugin for Facebook Authentication, as extension to Grails Spring Security Core plugin
+
+h1. Information
+
+Sources: [https://github.com/splix/grails-spring-security-facebook]
+
+h2. Requirements:
+ * grails 1.3.7
+ * spring-security-core plugin 1.1+
+
+h2. How to install:
+{code}
+grails install-plugin spring-security-core
+grails s2-quickstart
+grails install-plugin spring-security-facebook
+{code}
+
+h1. Configuration
+
+Configure facebook details:
+{code}
+grails.plugins.springsecurity.facebook.bean.dao='<your FacebookAuthDao>'
+grails.plugins.springsecurity.facebook.secret = '<Facebook secret for your app>'
+grails.plugins.springsecurity.facebook.appId = '<Facebooks's app ID>'
+{code}
+
+and use standard Facebook button, like:
+{code}
+<script type="text/javascript" src="http://connect.facebook.net/en_US/all.js"></script>
+<div id="fb-root"></div>
+<script type="text/javascript">
+     FB.init({
+        appId:'${facebookId}', cookie:true,
+        status:true, xfbml:true
+     });
+</script>
+{code}
+
+h1. Beans
+
+h2. FacebookAuthDao
+
+You have to implement @com.the6hours.grails.springsecurity.facebook.FacebookAuthDao@ interface, that will
+be used to map facebook user to your domains. And register it as a spring bean.
+
+For example at @conf/spring/resources.groovy@ :
+{code}
+beans = {
+
+    myFacebookAuthDao(mypackage.MyFacebookAuthDao) {
+
+    }
+
+}
+{code}
+
+and setup it at @Config.groovy@ as:
+
+{code}
+grails.plugins.springsecurity.facebook.bean.dao='myFacebookAuthDao'
+{code}
+
+{note}
+It's temporal issue, i'm going to implement an default, flexible and configurable dao
+{note}
