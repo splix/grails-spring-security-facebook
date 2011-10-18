@@ -8,7 +8,7 @@ public interface FacebookAuthDao {
 
     FacebookUserDomain create(FacebookAuthToken token)
 
-    void update(FacebookAuthToken token)
+    void update(FacebookUserDomain user)
 
     Object getPrincipal(FacebookUserDomain user)
 

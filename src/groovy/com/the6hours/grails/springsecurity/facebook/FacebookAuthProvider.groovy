@@ -34,7 +34,7 @@ public class FacebookAuthProvider implements AuthenticationProvider {
 				//User's secret and session can be changed any time
 				user.session = token.session
 				user.secret = token.secret
-				facebookAuthDao.update(token)
+				facebookAuthDao.update(user)
 			}
 		}
         if (user != null) {
