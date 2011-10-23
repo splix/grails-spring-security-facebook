@@ -21,7 +21,7 @@ import org.codehaus.groovy.grails.plugins.springsecurity.SecurityFilterPosition
 
 class SpringSecurityFacebookGrailsPlugin {
 
-   String version = '0.2.2'
+   String version = '0.2.3'
    String grailsVersion = '1.3.7 > *'
    Map dependsOn = ['springSecurityCore': '1.0 > *']
 
@@ -58,7 +58,7 @@ class SpringSecurityFacebookGrailsPlugin {
            facebookAuthDao = ref(conf.facebook.bean.dao)
 	   }
 
-       SpringSecurityUtils.registerFilter 'facebookAuthDirectFilter', SecurityFilterPosition.OPENID_FILTER.order + 1
+       SpringSecurityUtils.registerFilter 'facebookAuthDirectFilter', SecurityFilterPosition.OPENID_FILTER.order + 11
 	   facebookAuthDirectFilter(FacebookAuthDirectFilter, '/j_spring_facebook_security_check') {
 		   rememberMeServices = ref('rememberMeServices')
 		   authenticationManager = ref('authenticationManager')
@@ -69,7 +69,7 @@ class SpringSecurityFacebookGrailsPlugin {
            facebookAuthUtils = ref('facebookAuthUtils')
 	   }
 
-       SpringSecurityUtils.registerFilter 'facebookAuthCookieFilter', SecurityFilterPosition.OPENID_FILTER.order + 2
+       SpringSecurityUtils.registerFilter 'facebookAuthCookieFilter', SecurityFilterPosition.OPENID_FILTER.order + 12
        facebookAuthCookieFilter(FacebookAuthCookieFilter) {
            authenticationManager = ref('authenticationManager')
            applicationId = conf.facebook.appId
