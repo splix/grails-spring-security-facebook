@@ -36,6 +36,8 @@ and use standard Facebook button, like:
 </script>
 {code}
 
+You don't need to add anything else, just make sure that FB button is configured with cookie:true.
+
 h1. Beans
 
 h2. FacebookAuthDao
@@ -61,5 +63,10 @@ grails.plugins.springsecurity.facebook.bean.dao='myFacebookAuthDao'
 {code}
 
 {note}
-It's temporal issue, i'm going to implement an default, flexible and configurable dao
+All this code (DAO example and bean) are added automatically at `grails s2-init-facebook`, you how to fix Dao to
+follow your domains structure
+{note}
+
+{note}
+It's temporal thing, i'm going to implement an default, flexible and configurable dao in next release
 {note}
