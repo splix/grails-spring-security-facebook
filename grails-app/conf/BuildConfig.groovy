@@ -45,10 +45,6 @@ grails.project.dependency.resolution = {
                      'org.springframework.core',
                      'org.springframework.web'
         }
-/*        compile('commons-codec:commons-codec:1.4') {
-        }*/
-        runtime('commons-codec:commons-lang:2.4') {
-        }
 
 	}
 }
