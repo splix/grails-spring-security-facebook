@@ -85,7 +85,7 @@ private void configure() {
 
 private void copyData() {
 	generateFile "$templateDir/FacebookAuthDaoImpl.groovy.template",
-	             "$appDir/src/groovy/${templateAttributes.daoClassName}.groovy"
+	             "$basedir/src/groovy/${templateAttributes.daoClassName}.groovy"
     ant.echo message: ""
     ant.echo message: "I'v added `$appDir/src/groovy/${templateAttributes.daoClassName}.groovy` file"
     ant.echo message: "You need to implement all methods there, to start using Facebook Auth"
