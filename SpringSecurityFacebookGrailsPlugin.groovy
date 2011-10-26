@@ -36,6 +36,8 @@ class SpringSecurityFacebookGrailsPlugin {
 
        def conf = SpringSecurityUtils.securityConfig
        if (!conf) {
+           println 'ERROR: There is no Spring Security configuration'
+           println 'ERROR: Stop configuring Spring Security Facebook'
            return
        }
 
@@ -45,7 +47,9 @@ class SpringSecurityFacebookGrailsPlugin {
 	   conf = SpringSecurityUtils.securityConfig
 
        if (!conf.facebook.bean.dao) {
-           println 'WARNING: There is no dao configired for Facebook Auth'
+           println 'ERROR: There is no dao configired for Facebook Auth'
+           println 'ERROR: Stop configuring Spring Security Facebook'
+           return
        }
 
        facebookAuthUtils(FacebookAuthUtils) {
