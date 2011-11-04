@@ -22,4 +22,8 @@ public class FacebookAuthToken extends AbstractAuthenticationToken implements Au
 		return uid;
 	}
 
+    String toString() {
+        return "Principal: $principal, uid: $uid, roles: ${authorities.collect { it.authority}}"
+    }
+
 }

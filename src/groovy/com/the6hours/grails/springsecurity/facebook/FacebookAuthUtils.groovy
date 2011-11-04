@@ -3,6 +3,8 @@ package com.the6hours.grails.springsecurity.facebook
 import org.apache.commons.codec.digest.DigestUtils
 import org.apache.commons.lang.StringUtils
 import org.apache.log4j.Logger
+import javax.servlet.http.Cookie
+import javax.servlet.http.HttpServletRequest
 
 /**
  * TODO
@@ -16,6 +18,7 @@ class FacebookAuthUtils {
 
     String apiKey
     String secret
+    String applicationId
 
     /**
     * List of parameters that are signed by facebook
@@ -56,5 +59,14 @@ class FacebookAuthUtils {
         )
         token.authenticated = true
         return token
+    }
+
+    public Cookie getAuthCookie(HttpServletRequest request) {
+        String cookieName = "fbs_" + applicationId
+
+        return request.cookies.find { Cookie it ->
+            FacebookAuthUtils.log.debug("Cookier $it.name, expected $cookieName")
+            return it.name == cookieName
+        }
     }
 }

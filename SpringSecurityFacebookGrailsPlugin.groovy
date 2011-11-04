@@ -18,6 +18,7 @@ import com.the6hours.grails.springsecurity.facebook.FacebookAuthCookieFilter
 import com.the6hours.grails.springsecurity.facebook.FacebookAuthUtils
 import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
 import org.codehaus.groovy.grails.plugins.springsecurity.SecurityFilterPosition
+import com.the6hours.grails.springsecurity.facebook.FacebookAuthCookieLogoutHandler
 
 class SpringSecurityFacebookGrailsPlugin {
 
@@ -55,6 +56,7 @@ class SpringSecurityFacebookGrailsPlugin {
        facebookAuthUtils(FacebookAuthUtils) {
            apiKey = conf.facebook.apiKey
            secret = conf.facebook.secret
+           applicationId = conf.facebook.appId
        }
 
        SpringSecurityUtils.registerProvider 'facebookAuthProvider'
@@ -76,10 +78,13 @@ class SpringSecurityFacebookGrailsPlugin {
        SpringSecurityUtils.registerFilter 'facebookAuthCookieFilter', SecurityFilterPosition.OPENID_FILTER.order + 12
        facebookAuthCookieFilter(FacebookAuthCookieFilter) {
            authenticationManager = ref('authenticationManager')
-           applicationId = conf.facebook.appId
+           facebookAuthUtils = ref('facebookAuthUtils')
+           logoutUrl = conf.logout.filterProcessesUrl
+       }
+       facebookAuthCookieLogout(FacebookAuthCookieLogoutHandler) {
            facebookAuthUtils = ref('facebookAuthUtils')
        }
-
+       SpringSecurityUtils.registerLogoutHandler('facebookAuthCookieLogout')
    }
 
    def doWithApplicationContext = { ctx ->

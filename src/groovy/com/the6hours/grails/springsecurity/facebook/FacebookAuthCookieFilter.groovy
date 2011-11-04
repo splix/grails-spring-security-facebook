@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.Cookie
 import org.springframework.security.core.Authentication
 import org.springframework.security.authentication.AuthenticationManager
+import javax.servlet.http.HttpServletResponse
 
 /**
  * TODO
@@ -20,20 +21,18 @@ import org.springframework.security.authentication.AuthenticationManager
 class FacebookAuthCookieFilter extends GenericFilterBean implements ApplicationEventPublisherAware {
 
     ApplicationEventPublisher applicationEventPublisher
-    String applicationId
     FacebookAuthUtils facebookAuthUtils
     AuthenticationManager authenticationManager
+    String logoutUrl = '/j_spring_security_logout'
 
-    void doFilter(ServletRequest servletRequest, ServletResponse response, javax.servlet.FilterChain chain) {
+    void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, javax.servlet.FilterChain chain) {
         HttpServletRequest request = servletRequest
-        if (SecurityContextHolder.context.authentication == null) {
+        HttpServletResponse response = servletResponse
+        Cookie cookie = facebookAuthUtils.getAuthCookie(request)
+        String url = request.requestURI.substring(request.contextPath.length())
+        logger.debug("Processing url: $url")
+        if (url != logoutUrl && SecurityContextHolder.context.authentication == null) {
             logger.debug("Applying facebook auth filter")
-            String cookieName = "fbs_" + applicationId
-
-            Cookie cookie = request.cookies.find { Cookie it ->
-                logger.debug("Validate cookie $it.name")
-                return it.name == cookieName
-            }
 
             if (cookie != null) {
                 Map params = [:]
@@ -59,11 +58,13 @@ class FacebookAuthCookieFilter extends GenericFilterBean implements ApplicationE
                     return
                 }
             } else {
-                logger.debug("No cookie with name $cookieName")
+                logger.debug("No auth cookie")
             }
         } else {
             logger.debug("SecurityContextHolder not populated with FacebookAuthToken token, as it already contained: $SecurityContextHolder.context.authentication");
         }
         chain.doFilter(request, response);
     }
+
+
 }
