@@ -22,7 +22,7 @@ import com.the6hours.grails.springsecurity.facebook.FacebookAuthCookieLogoutHand
 
 class SpringSecurityFacebookGrailsPlugin {
 
-   String version = '0.3'
+   String version = '0.4'
    String grailsVersion = '1.3.7 > *'
    Map dependsOn = ['springSecurityCore': '1.0 > *']
 
