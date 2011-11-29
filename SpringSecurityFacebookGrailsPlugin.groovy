@@ -64,7 +64,8 @@ class SpringSecurityFacebookGrailsPlugin {
            facebookAuthDao = ref(conf.facebook.bean.dao)
 	   }
 
-       SpringSecurityUtils.registerFilter 'facebookAuthDirectFilter', SecurityFilterPosition.OPENID_FILTER.order + 11
+       int position = conf.facebook.filter.position
+       SpringSecurityUtils.registerFilter 'facebookAuthDirectFilter', position
 	   facebookAuthDirectFilter(FacebookAuthDirectFilter, '/j_spring_facebook_security_check') {
 		   rememberMeServices = ref('rememberMeServices')
 		   authenticationManager = ref('authenticationManager')
@@ -75,7 +76,7 @@ class SpringSecurityFacebookGrailsPlugin {
            facebookAuthUtils = ref('facebookAuthUtils')
 	   }
 
-       SpringSecurityUtils.registerFilter 'facebookAuthCookieFilter', SecurityFilterPosition.OPENID_FILTER.order + 12
+       SpringSecurityUtils.registerFilter 'facebookAuthCookieFilter', position + 1
        facebookAuthCookieFilter(FacebookAuthCookieFilter) {
            authenticationManager = ref('authenticationManager')
            facebookAuthUtils = ref('facebookAuthUtils')
