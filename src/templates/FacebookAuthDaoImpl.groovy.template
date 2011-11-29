@@ -23,6 +23,7 @@ class ${daoClassName} implements FacebookAuthDao<${domainClassName}>  {
      * @return existing user, or null if there is no user for specified uid
      */
     ${domainClassName} findUser(long uid) {
+        //must be fine for most cases
         return ${domainClassName}.findByUid(uid)
     }
 
@@ -33,7 +34,17 @@ class ${daoClassName} implements FacebookAuthDao<${domainClassName}>  {
      * @return just created user
      */
     ${domainClassName} create(FacebookAuthToken token) {
-
+        ${domainClassName} user = new ${domainClassName}(
+            session: token.session,
+            secret: token.secret,
+            uid: token.uid
+        )
+        //TODO set relations with your own domains (user,roles)
+        //TODO fill with extra data from Facebook API
+        ${domainClassName}.withTransaction {
+            user.save()
+        }
+        return user
     }
 
     /**
@@ -42,7 +53,10 @@ class ${daoClassName} implements FacebookAuthDao<${domainClassName}>  {
      * @param user updates used details
      */
     void update(${domainClassName} user) {
-
+        //TODO change regarding your domains structure
+        ${domainClassName}.withTransaction {
+            user.save()
+        }
     }
 
     /**
@@ -56,6 +70,7 @@ class ${daoClassName} implements FacebookAuthDao<${domainClassName}>  {
      * @return user to put into Security Context
      */
     Object getPrincipal(${domainClassName} user) {
+        //TODO change regarding your domains structure
         return user;
     }
 
@@ -66,7 +81,12 @@ class ${daoClassName} implements FacebookAuthDao<${domainClassName}>  {
      * @return roles for user
      */
     Collection<GrantedAuthority> getRoles(${domainClassName} user) {
-
+        //TODO change regarding your domains structure
+        Collection<GrantedAuthority> roles = []
+        ${domainClassName}.withTransaction {
+            roles = user.roles
+        }
+        return roles
     }
 
 }
