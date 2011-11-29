@@ -29,7 +29,9 @@ and use standard Facebook button, like:
 <script type="text/javascript" src="http://connect.facebook.net/en_US/all.js"></script>
 <div id="fb-root"></div>
 <script type="text/javascript">
+
      FB.init({
+        // facebookId should refer to the value of "grails.plugins.springsecurity.facebook.appId" in Config.groovy
         appId:'${facebookId}', cookie:true,
         status:true, xfbml:true
      });
