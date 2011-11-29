@@ -13,6 +13,7 @@ h2. How to install:
 grails install-plugin spring-security-core
 grails s2-quickstart
 grails install-plugin spring-security-facebook
+grails s2-init-facebook
 {code}
 
 h1. Configuration
@@ -24,18 +25,9 @@ grails.plugins.springsecurity.facebook.secret = '<Facebook secret for your app>'
 grails.plugins.springsecurity.facebook.appId = '<Facebooks's app ID>'
 {code}
 
-and use standard Facebook button, like:
+and put Facebook Connect button:
 {code}
-<script type="text/javascript" src="http://connect.facebook.net/en_US/all.js"></script>
-<div id="fb-root"></div>
-<script type="text/javascript">
-
-     FB.init({
-        // facebookId should refer to the value of "grails.plugins.springsecurity.facebook.appId" in Config.groovy
-        appId:'${facebookId}', cookie:true,
-        status:true, xfbml:true
-     });
-</script>
+<facebookAuth:connect permissions="email,user_about_me"/>
 {code}
 
 You don't need to add anything else, just make sure that FB button is configured with cookie:true.
@@ -44,31 +36,6 @@ h1. Beans
 
 h2. FacebookAuthDao
 
-You have to implement @com.the6hours.grails.springsecurity.facebook.FacebookAuthDao@ interface, that will
-be used to map facebook user to your domains. And register it as a spring bean.
-
-For example at @conf/spring/resources.groovy@ :
-{code}
-beans = {
-
-    myFacebookAuthDao(mypackage.MyFacebookAuthDao) {
-
-    }
-
-}
-{code}
-
-and setup it at @Config.groovy@ as:
-
-{code}
-grails.plugins.springsecurity.facebook.bean.dao='myFacebookAuthDao'
-{code}
-
-{note}
-All this code (DAO example and bean) are added automatically at `grails s2-init-facebook`, you how to fix Dao to
-follow your domains structure
-{note}
-
-{note}
-It's temporal thing, i'm going to implement an default, flexible and configurable dao in next release
-{note}
+Plugin generates an Dao, after calling @s2-init-facebook@, and put it into your @conf/spring/resources.groovy@
+and @Config.groovy@. Actually it's an 'dumb' dao implementations, you have to rewrite it to follow your
+data structures (please take a look at JavaDoc for more details)
