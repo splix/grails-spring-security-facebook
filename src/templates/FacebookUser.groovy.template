@@ -1,10 +1,10 @@
-${packageDeclaration}
+${domainPackageDeclaration}
 
 import com.the6hours.grails.springsecurity.facebook.FacebookUserDomain
 
-${userImport}
+import ${userClassFullName}
 
-class FacebookUser implements FacebookUserDomain {
+class ${domainClassName} implements FacebookUserDomain {
 
 	long uid
     String secret

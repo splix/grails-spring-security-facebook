@@ -72,18 +72,60 @@ private void configure() {
 	def SpringSecurityUtils = classLoader.loadClass('org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils')
 	def conf = SpringSecurityUtils.securityConfig
 
+    String userClassFullName = conf.userLookup.userDomainClassName
+    def userDomain = splitClassName(userClassFullName)
+
 	templateAttributes = [
             daoClassName: 'FacebookAuthDaoImpl',
             packageDeclaration: '',
-            'bean.dao': 'facebookAuthDaoImpl'
+            'bean.dao': 'facebookAuthDaoImpl',
+            userClassFullName: userClassFullName,
+            userPackage: userDomain[0],
+            userClassName: userDomain[1]
     ]
 
-    templateAttributes.entrySet().each {
-        println "$it.key = $it.value"
-    }
+    //templateAttributes.entrySet().each {
+    //    println "$it.key = $it.value"
+    //}
 }
 
 private void copyData() {
+
+    ant.input(message: "Do you already have FacebookUser domain? 'N' - if not, it will be created for you. Or domain name if already exists [N or DomainName]",
+            addproperty: 'create.facebookdomain',
+            defaultvalue: 'N')
+    if (ant.antProject.properties['create.facebookdomain'].toLowerCase() == 'n') {
+        ant.input(message: "Enter name of FacebookUser class that will be created for you",
+                addproperty: 'facebookdomain',
+                defaultvalue: 'FacebookUser')
+
+        templateAttributes['domainClassFullName'] = ant.antProject.properties['facebookdomain']
+        def dbUserDomain = splitClassName(templateAttributes['domainClassFullName'])
+        templateAttributes['domainPackage'] = dbUserDomain[0]
+        templateAttributes['domainPackageDeclaration'] = ''
+        if (templateAttributes['domainPackage']) {
+            templateAttributes['domainPackageDeclaration'] = "package $templateAttributes.domainPackage"
+        }
+        templateAttributes['domainClassName'] = dbUserDomain[1]
+        String domainDir = packageToDir(templateAttributes['domainPackage'])
+        if (domainDir) {
+            domainDir += '/'
+        }
+
+        generateFile "$templateDir/FacebookUser.groovy.template",
+                     "$basedir/grails-app/domain/${domainDir}${templateAttributes.domainClassName}.groovy"
+        ant.echo message: ""
+        ant.echo message: "I'v added `$appDir/src/groovy/${templateAttributes.daoClassName}.groovy` file"
+        ant.echo message: "You need to implement all methods there, to start using Facebook Auth"
+        ant.echo message: ""
+    } else {
+        templateAttributes['domainClassFullName'] = ant.antProject.properties['create.facebookdomain']
+        def dbUserDomain = splitClassName(templateAttributes['domainClassFullName'])
+        templateAttributes['domainPackage'] = dbUserDomain[0]
+        templateAttributes['domainClassName'] = dbUserDomain[1]
+    }
+
+
 	generateFile "$templateDir/FacebookAuthDaoImpl.groovy.template",
 	             "$basedir/src/groovy/${templateAttributes.daoClassName}.groovy"
     ant.echo message: ""
