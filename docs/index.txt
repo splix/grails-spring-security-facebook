@@ -39,3 +39,30 @@ h2. FacebookAuthDao
 Plugin generates an Dao, after calling @s2-init-facebook@, and put it into your @conf/spring/resources.groovy@
 and @Config.groovy@. Actually it's an 'dumb' dao implementations, you have to rewrite it to follow your
 data structures (please take a look at JavaDoc for more details)
+
+h1. FAQ
+
+h2. How it works?
+
+Facebook setup special cookies after successful authorization, so this plugin just handles this cookies, and your
+user will be automatically logged in to your webapp when she logged in into Facebook (and she has clicked
+'Connect with Facebook' before)
+
+h2. How to get user email?
+
+{note}
+First of all: you need 'email' permission on connect @<facebookAuth:connect permissions="email"/>@
+{note}
+
+Add Spring Social lib into your classpath, by adding following dependencies into your @BuildConfig.groovy@:
+{code}
+compile 'org.springframework.social:spring-social-core:1.0.0.RELEASE'
+compile 'org.springframework.social:spring-social-facebook:1.0.0.RELEASE'
+{code}
+
+and then you can use Facebook API. For example you can fetch user's email on user cretion step:
+{code}
+Facebook facebook = new FacebookTemplate(token.accessToken)
+FacebookProfile fbProfile = facebook.userOperations().userProfile
+String email = fbProfile.getEmail()
+{code}
