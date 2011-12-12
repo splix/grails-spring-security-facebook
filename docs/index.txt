@@ -38,7 +38,31 @@ h2. FacebookAuthDao
 
 Plugin generates an Dao, after calling @s2-init-facebook@, and put it into your @conf/spring/resources.groovy@
 and @Config.groovy@. Actually it's an 'dumb' dao implementations, you have to rewrite it to follow your
-data structures (please take a look at JavaDoc for more details)
+data structures:
+
+h3. FacebookUser findUser(long uid)
+
+Called on every authorization attempt. If must return existing user (instance of FaceboobUser domain) if user is already exists
+in database. Or null if user not exists yet, it will be created at this case.
+
+h3. FacebookUser create(FacebookAuthToken token)
+
+Called when authenticated Facebook User not exists yet (when findUser has returned null value). It's the place to 
+prepare all domain objects for your user, fill user roles, fetch extra data from Facebook API (using profided token.accessToken), etc.
+And return just create user.
+
+h3. void update(FacebookUser user)
+
+Called when user details has changed (accessToken, session data, etc). If you don't using this data (it not using Facebook API) - you can skip this, make just empty method.
+
+h3. Object getPrincipal(FacebookUser user)
+
+Called to get actual user. Useful when you're storing Facebook User details in different model, related to main user domain. If your user and facebook user are same objects - just return it 
+
+h3. Collection<GrantedAuthority> getRoles(FacebookUser user)
+
+Return roles list for user related to specified Facebook user
+
 
 h1. FAQ
 
