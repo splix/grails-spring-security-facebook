@@ -18,7 +18,7 @@ public class FacebookAuthProvider implements AuthenticationProvider {
 	public Authentication authenticate(Authentication authentication) {
 		FacebookAuthToken token = authentication
 		
-		FacebookUserDomain user = facebookAuthDao.findUser(token.uid)
+		FacebookUserDomain user = facebookAuthDao.findUser(token.uid as Long)
 		
 		if (user == null) {
 			//log.debug "New person with $token.uid"
@@ -30,15 +30,13 @@ public class FacebookAuthProvider implements AuthenticationProvider {
                 return null
             }
 		} else {
-			if (token.session != user.session) {
-				//User's secret and session can be changed any time
-				user.session = token.session
-				user.secret = token.secret
+			if (token.accessToken != user.accessToken) {
+				user.accessToken = token.accessToken
 				facebookAuthDao.update(user)
 			}
 		}
         if (user != null) {
-            UserDetails userDetails = createUserDetails(user, token.secret)
+            UserDetails userDetails = createUserDetails(user, token.accessToken)
 
             token.details = userDetails
             token.principal = facebookAuthDao.getPrincipal(user)

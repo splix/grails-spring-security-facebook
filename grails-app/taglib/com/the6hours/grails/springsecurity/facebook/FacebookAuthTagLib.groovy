@@ -34,7 +34,8 @@ class FacebookAuthTagLib {
             out << "    appId  : '${appId}',\n"
             out << "    status : true,\n"
             out << "    cookie : true,\n"
-            out << "    xfbml  : true\n"
+            out << "    xfbml  : true,\n"
+            out << "    oauth  : true\n"
             out << "  });\n"
             out << "};\n"
 

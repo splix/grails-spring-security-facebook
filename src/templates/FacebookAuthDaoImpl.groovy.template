@@ -48,7 +48,7 @@ class ${daoClassName} implements FacebookAuthDao<${domainClassName}>  {
     }
 
     /**
-     * Called when facebook session/auth token has been changed
+     * Called when facebook auth token has been changed
      *
      * @param user updates used details
      */

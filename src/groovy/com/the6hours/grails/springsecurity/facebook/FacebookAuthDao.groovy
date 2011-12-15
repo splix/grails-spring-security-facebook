@@ -19,7 +19,7 @@ public interface FacebookAuthDao<F extends FacebookUserDomain> {
     F create(FacebookAuthToken token)
 
     /**
-     * Called when facebook session/auth token has been changed
+     * Called when facebook auth token has been changed
      * @param user updates used details
      */
     void update(F user)
