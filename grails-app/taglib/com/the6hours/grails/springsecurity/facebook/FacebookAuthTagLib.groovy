@@ -72,7 +72,9 @@ class FacebookAuthTagLib {
             }
         }
 
-        out << "<div class=\"fb-login-button\" data-perms=\"${permissions.join(', ')}\">$buttonText</div>"
+        boolean showFaces = false
+
+        out << "<div class=\"fb-login-button\" data-scope=\"${permissions.join(', ')}\" data-show-faces=\"${showFaces}\">$buttonText</div>"
     }
 
 }
