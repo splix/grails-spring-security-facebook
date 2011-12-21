@@ -4,6 +4,8 @@ grails.project.test.reports.dir	= 'target/test-reports'
 
 String springSecurityVer = "3.0.4.RELEASE"
 
+grails.release.scm.enabled=false
+
 grails.project.dependency.resolution = {
 
 	inherits('global') {

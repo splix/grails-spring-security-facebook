@@ -22,10 +22,12 @@ import com.the6hours.grails.springsecurity.facebook.FacebookAuthCookieLogoutHand
 
 class SpringSecurityFacebookGrailsPlugin {
 
-   String version = '0.5.2'
+   String version = '0.5.3'
    String grailsVersion = '1.3.7 > *'
    Map dependsOn = ['springSecurityCore': '1.0 > *']
 
+
+   def license = 'APACHE'
    String author = 'Igor Artamonov'
    String authorEmail = 'igor@artamonov.ru'
    String title = 'Facebook Connect authentication support for the Spring Security plugin.'
