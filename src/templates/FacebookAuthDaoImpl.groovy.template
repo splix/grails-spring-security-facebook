@@ -35,8 +35,7 @@ class ${daoClassName} implements FacebookAuthDao<${domainClassName}>  {
      */
     ${domainClassName} create(FacebookAuthToken token) {
         ${domainClassName} user = new ${domainClassName}(
-            session: token.session,
-            secret: token.secret,
+            accessToken: token.accessToken,
             uid: token.uid
         )
         //TODO set relations with your own domains (user,roles)
