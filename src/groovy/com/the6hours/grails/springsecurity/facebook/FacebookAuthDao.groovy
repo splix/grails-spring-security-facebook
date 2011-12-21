@@ -2,7 +2,7 @@ package com.the6hours.grails.springsecurity.facebook
 
 import org.springframework.security.core.GrantedAuthority
 
-public interface FacebookAuthDao<F extends FacebookUserDomain> {
+public interface FacebookAuthDao<F> {
 
     /**
      * Tries to load app user for Facebook user
