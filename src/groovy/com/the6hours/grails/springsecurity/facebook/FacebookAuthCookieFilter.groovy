@@ -11,6 +11,7 @@ import javax.servlet.http.Cookie
 import org.springframework.security.core.Authentication
 import org.springframework.security.authentication.AuthenticationManager
 import javax.servlet.http.HttpServletResponse
+import org.springframework.security.authentication.BadCredentialsException
 
 /**
  * TODO
@@ -28,29 +29,33 @@ class FacebookAuthCookieFilter extends GenericFilterBean implements ApplicationE
     void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, javax.servlet.FilterChain chain) {
         HttpServletRequest request = servletRequest
         HttpServletResponse response = servletResponse
-        Cookie cookie = facebookAuthUtils.getAuthCookie(request)
         String url = request.requestURI.substring(request.contextPath.length())
         logger.debug("Processing url: $url")
         if (url != logoutUrl && SecurityContextHolder.context.authentication == null) {
             logger.debug("Applying facebook auth filter")
 
+            Cookie cookie = facebookAuthUtils.getAuthCookie(request)
             if (cookie != null) {
-                FacebookAuthToken token = facebookAuthUtils.build(cookie.value)
-                if (token != null) {
-                    Authentication authentication = authenticationManager.authenticate(token);
-                    // Store to SecurityContextHolder
-                    SecurityContextHolder.context.authentication = authentication;
+                try {
+                    FacebookAuthToken token = facebookAuthUtils.build(cookie.value)
+                    if (token != null) {
+                        Authentication authentication = authenticationManager.authenticate(token);
+                        // Store to SecurityContextHolder
+                        SecurityContextHolder.context.authentication = authentication;
 
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("SecurityContextHolder populated with FacebookAuthToken: '"
-                            + SecurityContextHolder.context.authentication + "'");
+                        if (logger.isDebugEnabled()) {
+                            logger.debug("SecurityContextHolder populated with FacebookAuthToken: '"
+                                + SecurityContextHolder.context.authentication + "'");
+                        }
+                        try {
+                            chain.doFilter(request, response);
+                        } finally {
+                            SecurityContextHolder.context.authentication = null;
+                        }
+                        return
                     }
-                    try {
-                        chain.doFilter(request, response);
-                    } finally {
-                        SecurityContextHolder.context.authentication = null;
-                    }
-                    return
+                } catch (BadCredentialsException e) {
+                    logger.info("Invalid cookie, skip. Message was: $e.message")
                 }
             } else {
                 logger.debug("No auth cookie")
@@ -58,7 +63,8 @@ class FacebookAuthCookieFilter extends GenericFilterBean implements ApplicationE
         } else {
             logger.debug("SecurityContextHolder not populated with FacebookAuthToken token, as it already contained: $SecurityContextHolder.context.authentication");
         }
-        chain.doFilter(request, response);
+        //when not authenticated, dont have auth cookie or bad credentials
+        chain.doFilter(servletRequest, servletResponse)
     }
 
 
