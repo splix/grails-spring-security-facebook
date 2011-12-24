@@ -19,12 +19,6 @@ public interface FacebookAuthDao<F extends FacebookUserDomain> {
     F create(FacebookAuthToken token)
 
     /**
-     * Called when facebook auth token has been changed
-     * @param user updates used details
-     */
-    void update(F user)
-
-    /**
      * Returns `principal` that will be stored into Security Context. It's good if it
      * implements {@link org.springframework.security.core.userdetails.UserDetails UserDetails} or
      * {@link java.security.Principal Principal}.

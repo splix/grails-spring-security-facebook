@@ -13,6 +13,8 @@ public class FacebookAuthProvider implements AuthenticationProvider {
     private static def log = Logger.getLogger(this)
 
 	FacebookAuthDao facebookAuthDao
+    FacebookAuthUtils facebookAuthUtils
+
 	boolean createNew = true 
 
 	public Authentication authenticate(Authentication authentication) {
@@ -21,22 +23,17 @@ public class FacebookAuthProvider implements AuthenticationProvider {
 		FacebookUserDomain user = facebookAuthDao.findUser(token.uid as Long)
 		
 		if (user == null) {
-			//log.debug "New person with $token.uid"
+			//log.debug "New person $token.uid"
 			if (createNew) {
 				log.info "Create new facebook user with uid $token.uid"
+                token.accessToken = facebookAuthUtils.getAccessToken(token.code)
 				user = facebookAuthDao.create(token)
 			} else {
                 log.error "User $token.uid not exists - not authenticated"
-                return null
             }
-		} else {
-			if (token.accessToken != user.accessToken) {
-				user.accessToken = token.accessToken
-				facebookAuthDao.update(user)
-			}
 		}
         if (user != null) {
-            UserDetails userDetails = createUserDetails(user, token.accessToken)
+            UserDetails userDetails = createUserDetails(user, token.code)
 
             token.details = userDetails
             token.principal = facebookAuthDao.getPrincipal(user)

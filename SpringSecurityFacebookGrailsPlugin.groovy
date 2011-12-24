@@ -64,6 +64,7 @@ class SpringSecurityFacebookGrailsPlugin {
        SpringSecurityUtils.registerProvider 'facebookAuthProvider'
 	   facebookAuthProvider(FacebookAuthProvider) {
            facebookAuthDao = ref(conf.facebook.bean.dao)
+           facebookAuthUtils = ref('facebookAuthUtils')
 	   }
 
        int position = conf.facebook.filter.position

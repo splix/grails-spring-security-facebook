@@ -8,6 +8,7 @@ public class FacebookAuthToken extends AbstractAuthenticationToken implements Au
 	
 	long uid
     String accessToken
+    String code
     Object principal
 	
 	Collection<GrantedAuthority> authorities
