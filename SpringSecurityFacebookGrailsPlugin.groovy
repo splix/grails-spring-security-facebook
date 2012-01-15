@@ -19,12 +19,13 @@ import com.the6hours.grails.springsecurity.facebook.FacebookAuthUtils
 import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
 import org.codehaus.groovy.grails.plugins.springsecurity.SecurityFilterPosition
 import com.the6hours.grails.springsecurity.facebook.FacebookAuthCookieLogoutHandler
+import com.the6hours.grails.springsecurity.facebook.DefaultFacebookAuthDao
 
 class SpringSecurityFacebookGrailsPlugin {
 
-   String version = '0.5.4'
+   String version = '0.6'
    String grailsVersion = '1.3.7 > *'
-   Map dependsOn = ['springSecurityCore': '1.0 > *']
+   Map dependsOn = ['springSecurityCore': '1.2.6 > *']
 
 
    def license = 'APACHE'
@@ -50,9 +51,13 @@ class SpringSecurityFacebookGrailsPlugin {
 	   conf = SpringSecurityUtils.securityConfig
 
        if (!conf.facebook.bean.dao) {
-           println 'ERROR: There is no dao configired for Facebook Auth'
-           println 'ERROR: Stop configuring Spring Security Facebook'
-           return
+           conf.facebook.bean.dao = 'facebookAuthDao'
+           facebookAuthDao(DefaultFacebookAuthDao) {
+               domainClassName = conf.facebook.domain.classname
+               connectionPropertyName = conf.facebook.domain.connectionPropertyName
+               userDomainClassName = conf.userLookup.userDomainClassName
+               rolesPropertyName = conf.userLookup.authoritiesPropertyName
+           }
        }
 
        facebookAuthUtils(FacebookAuthUtils) {

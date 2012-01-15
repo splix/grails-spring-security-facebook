@@ -64,7 +64,7 @@ class FacebookAuthCookieFilter extends GenericFilterBean implements ApplicationE
             logger.debug("SecurityContextHolder not populated with FacebookAuthToken token, as it already contained: $SecurityContextHolder.context.authentication");
         }
         //when not authenticated, dont have auth cookie or bad credentials
-        chain.doFilter(servletRequest, servletResponse)
+        chain.doFilter(request, response)
     }
 
 
