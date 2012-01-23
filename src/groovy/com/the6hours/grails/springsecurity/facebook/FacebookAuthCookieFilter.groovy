@@ -33,7 +33,7 @@ class FacebookAuthCookieFilter extends GenericFilterBean implements ApplicationE
         logger.debug("Processing url: $url")
         if (url != logoutUrl && SecurityContextHolder.context.authentication == null) {
             logger.debug("Applying facebook auth filter")
-
+            assert facebookAuthUtils != null
             Cookie cookie = facebookAuthUtils.getAuthCookie(request)
             if (cookie != null) {
                 try {
@@ -63,6 +63,7 @@ class FacebookAuthCookieFilter extends GenericFilterBean implements ApplicationE
         } else {
             logger.debug("SecurityContextHolder not populated with FacebookAuthToken token, as it already contained: $SecurityContextHolder.context.authentication");
         }
+
         //when not authenticated, dont have auth cookie or bad credentials
         chain.doFilter(request, response)
     }

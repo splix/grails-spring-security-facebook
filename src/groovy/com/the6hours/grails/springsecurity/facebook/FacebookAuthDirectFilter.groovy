@@ -20,12 +20,7 @@ public class FacebookAuthDirectFilter extends AbstractAuthenticationProcessingFi
     }
 
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) {
-
-        Map params = [:]
-        request.getParameterNames().each {
-            params[it] = request.getParameter(it)
-        }
-        FacebookAuthToken token = facebookAuthUtils.build(params)
+        FacebookAuthToken token = facebookAuthUtils.build(request.getParameter('signedRequest'))
         if (token != null) {
             Authentication authentication = getAuthenticationManager().authenticate(token);
             return authentication

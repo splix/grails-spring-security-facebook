@@ -24,6 +24,9 @@ class FacebookAuthUtils {
     String applicationId
 
     FacebookAuthToken build(String signedRequest) {
+        if (!signedRequest) {
+            return null
+        }
         String[] signedRequestParts = signedRequest.split('\\.')
         if (signedRequestParts.length != 2) {
             throw new BadCredentialsException("Invalid Signed Request")
