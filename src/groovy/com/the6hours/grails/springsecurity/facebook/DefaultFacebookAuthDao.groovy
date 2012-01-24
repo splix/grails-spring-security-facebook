@@ -91,13 +91,18 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object>, InitializingBea
             user[connectionPropertyName] = appUser
         }
 
-        if (facebookAuthService && facebookAuthService.respondsTo('afterCreate', UserClass, token)) {
-            facebookAuthService.afterCreate(user, token)
+        if (facebookAuthService && facebookAuthService.respondsTo('onCreate', UserClass, token)) {
+            facebookAuthService.onCreate(user, token)
         }
 
         UserClass.withTransaction {
             user.save(flush: true, failOnError: true)
         }
+
+        if (facebookAuthService && facebookAuthService.respondsTo('afterCreate', UserClass, token)) {
+            facebookAuthService.afterCreate(user, token)
+        }
+
         return user
     }
 
