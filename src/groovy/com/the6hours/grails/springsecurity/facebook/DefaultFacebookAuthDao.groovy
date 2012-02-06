@@ -56,6 +56,9 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object>, InitializingBea
         if (facebookAuthService && facebookAuthService.respondsTo('create', FacebookAuthToken)) {
             return facebookAuthService.create(token)
         }
+
+        def securityConf = SpringSecurityUtils.securityConfig
+
         Class<?> UserClass = grailsApplication.getDomainClass(domainClassName)?.clazz
         if (!UserClass) {
             log.error("Can't find domain: $domainClassName")
@@ -82,8 +85,12 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object>, InitializingBea
                 if (facebookAuthService && facebookAuthService.respondsTo('prepopulateAppUser', UserDomainClass)) {
                     facebookAuthService.prepopulateAppUser(appUser)
                 } else {
-                    appUser.username = "facebook_$token.uid"
-                    appUser.password = token.accessToken
+                    appUser."$securityConf.userLookup.usernamePropertyName" = "facebook_$token.uid"
+                    appUser."$securityConf.userLookup.passwordPropertyName" = token.accessToken
+                    appUser."$securityConf.userLookup.enabledPropertyName" = true
+                    appUser."$securityConf.userLookup.accountExpiredPropertyName" = false
+                    appUser."$securityConf.userLookup.accountLockedPropertyName" = false
+                    appUser."$securityConf.userLookup.passwordExpiredPropertyName" = false
                 }
                 UserDomainClass.withTransaction {
                     appUser.save(flush: true, failOnError: true)
@@ -107,12 +114,11 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object>, InitializingBea
         if (facebookAuthService && facebookAuthService.respondsTo('createRoles', UserClass)) {
             facebookAuthService.createRoles(user)
         } else {
-            def conf = SpringSecurityUtils.securityConfig
-            Class<?> PersonRole = grailsApplication.getDomainClass(conf.userLookup.authorityJoinClassName).clazz
-            Class<?> Authority = grailsApplication.getDomainClass(conf.authority.className).clazz
+            Class<?> PersonRole = grailsApplication.getDomainClass(securityConf.userLookup.authorityJoinClassName).clazz
+            Class<?> Authority = grailsApplication.getDomainClass(securityConf.authority.className).clazz
             PersonRole.withTransaction { status ->
                 defaultRoleNames.each { String roleName ->
-                    String findByField = conf.authority.nameField[0].toUpperCase() + conf.authority.nameField.substring(1)
+                    String findByField = securityConf.authority.nameField[0].toUpperCase() + securityConf.authority.nameField.substring(1)
                     def auth = Authority."findBy${findByField}"(roleName)
                     if (auth) {
                         PersonRole.create(appUser, auth)
