@@ -28,6 +28,7 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object>, InitializingBea
     String connectionPropertyName
     String userDomainClassName
     String rolesPropertyName
+    List<String> defaultRoleNames = ['ROLE_USER', 'ROLE_FACEBOOK']
 
     def facebookAuthService
     DomainsRelation domainsRelation = DomainsRelation.JoinedUser
@@ -67,8 +68,8 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object>, InitializingBea
             user.accessToken = token.accessToken
         }
 
+        def appUser
         if (domainsRelation == DomainsRelation.JoinedUser) {
-            def appUser
             if (facebookAuthService && facebookAuthService.respondsTo('createAppUser')) {
                 appUser = facebookAuthService.createAppUser()
             } else {
@@ -103,6 +104,26 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object>, InitializingBea
             facebookAuthService.afterCreate(user, token)
         }
 
+        if (facebookAuthService && facebookAuthService.respondsTo('createRoles', UserClass)) {
+            facebookAuthService.createRoles(user)
+        } else {
+            def conf = SpringSecurityUtils.securityConfig
+            Class<?> PersonRole = grailsApplication.getDomainClass(conf.userLookup.authorityJoinClassName).clazz
+            Class<?> Authority = grailsApplication.getDomainClass(conf.authority.className).clazz
+            PersonRole.withTransaction { status ->
+                defaultRoleNames.each { String roleName ->
+                    String findByField = conf.authority.nameField[0].toUpperCase() + conf.authority.nameField.substring(1)
+                    def auth = Authority."findBy${findByField}"(roleName)
+                    if (auth) {
+                        PersonRole.create(appUser, auth)
+                    } else {
+                        log.error("Can't find authority for name '$roleName'")
+                    }
+                }
+            }
+
+        }
+
         return user
     }
 
@@ -130,12 +151,10 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object>, InitializingBea
         if (roles.empty) {
             return roles
         }
-        if (roles.first().class == String) {
-            return roles.collect {
-                new GrantedAuthorityImpl(it)
-            }
-        } else {
-            return roles.collect {
+        return roles.collect {
+            if (it instanceof String) {
+                return new GrantedAuthorityImpl(it.toString())
+            } else {
                 new GrantedAuthorityImpl(it[conf.authority.nameField])
             }
         }
