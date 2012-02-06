@@ -1,15 +1,11 @@
 ${domainPackageDeclaration}
 
-import com.the6hours.grails.springsecurity.facebook.FacebookUserDomain
-
 import ${userClassFullName}
 
-class ${domainClassName} implements FacebookUserDomain {
+class ${domainClassName} {
 
 	long uid
-    String secret
-    String session
-    String email
+    String accessToken
 
 	static belongsTo = [user: ${userClassName}]
 

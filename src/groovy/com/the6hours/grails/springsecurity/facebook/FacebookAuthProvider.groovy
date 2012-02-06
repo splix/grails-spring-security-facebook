@@ -20,7 +20,7 @@ public class FacebookAuthProvider implements AuthenticationProvider {
 	public Authentication authenticate(Authentication authentication) {
 		FacebookAuthToken token = authentication
 		
-		FacebookUserDomain user = facebookAuthDao.findUser(token.uid as Long)
+		def user = facebookAuthDao.findUser(token.uid as Long)
 		
 		if (user == null) {
 			//log.debug "New person $token.uid"
@@ -48,7 +48,7 @@ public class FacebookAuthProvider implements AuthenticationProvider {
 		return FacebookAuthToken.isAssignableFrom(authentication);
 	}
 	
-   protected UserDetails createUserDetails(FacebookUserDomain user, String secret) {
+   protected UserDetails createUserDetails(Object user, String secret) {
 	   Collection<GrantedAuthority> roles = facebookAuthDao.getRoles(user)
 	   new User(user.uid.toString(), secret, true,
 			   true, true, true, roles)

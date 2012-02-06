@@ -1,7 +1,6 @@
 ${packageDeclaration}
 
 import com.the6hours.grails.springsecurity.facebook.FacebookAuthDao
-import com.the6hours.grails.springsecurity.facebook.FacebookUserDomain
 import com.the6hours.grails.springsecurity.facebook.FacebookAuthToken
 import org.springframework.security.core.GrantedAuthority
 import org.apache.log4j.Logger
