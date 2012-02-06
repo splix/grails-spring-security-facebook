@@ -73,7 +73,7 @@ class SpringSecurityFacebookGrailsPlugin {
 	   }
 
        int position = conf.facebook.filter.position
-       SpringSecurityUtils.registerFilter 'facebookAuthDirectFilter', position
+/*       SpringSecurityUtils.registerFilter 'facebookAuthDirectFilter', position
 	   facebookAuthDirectFilter(FacebookAuthDirectFilter, '/j_spring_facebook_security_check') {
 		   rememberMeServices = ref('rememberMeServices')
 		   authenticationManager = ref('authenticationManager')
@@ -82,7 +82,7 @@ class SpringSecurityFacebookGrailsPlugin {
 		   authenticationDetailsSource = ref('authenticationDetailsSource')
 		   sessionAuthenticationStrategy = ref('sessionAuthenticationStrategy')
            facebookAuthUtils = ref('facebookAuthUtils')
-	   }
+	   }*/
 
        SpringSecurityUtils.registerFilter 'facebookAuthCookieFilter', position + 1
        facebookAuthCookieFilter(FacebookAuthCookieFilter) {
