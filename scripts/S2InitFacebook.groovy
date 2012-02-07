@@ -22,14 +22,14 @@ target(s2InitFacebook: 'Initializes Twitter artifacts for the Spring Security Fa
 	if (configFile.exists()) {
         def conf = new ConfigSlurper().parse(configFile.text)
         println "Creating app based on configuration:"
-        pluginConfig.each { name, config ->
-		    println "$name = ${config.flatten()}"
-        }
+        //pluginConfig.each { name, config ->
+		//    println "$name = ${config.flatten()}"
+        //}
 
         pluginConfig = conf.security.facebook
-        pluginConfig.each { name, config ->
-		    println "$name = $config"
-        }
+        //pluginConfig.each { name, config ->
+		//    println "$name = $config"
+        //}
 	} else {
         ant.echo message: "ERROR $configFile.path not found"
     }
@@ -43,7 +43,10 @@ target(s2InitFacebook: 'Initializes Twitter artifacts for the Spring Security Fa
 }
 
 private void fillConfig() {
-    def config = [:]
+    Map config = [:]
+
+    config['domain.classname'] = pluginConfig.domain.classname
+
     String code
 
     code = "facebook.appId"
@@ -53,8 +56,6 @@ private void fillConfig() {
     code = "facebook.secret"
     ant.input(message: "Enter your Facebook App Secret", addproperty: code)
     config['secret'] = ant.antProject.properties[code]
-
-    config['bean.dao'] = templateAttributes['bean.dao']
 
     def configFile = new File(appDir, 'conf/Config.groovy')
     if (configFile.exists()) {
@@ -76,9 +77,7 @@ private void configure() {
     def userDomain = splitClassName(userClassFullName)
 
 	templateAttributes = [
-            daoClassName: 'FacebookAuthDaoImpl',
             packageDeclaration: '',
-            'bean.dao': 'facebookAuthDaoImpl',
             userClassFullName: userClassFullName,
             userPackage: userDomain[0],
             userClassName: userDomain[1]
@@ -91,11 +90,12 @@ private void configure() {
 
 private void copyData() {
 
-    ant.input(message: "Do you already have FacebookUser domain? 'N' - if not, it will be created for you. Or domain name if already exists [N or DomainName]",
+    ant.input(message: "Do you already have FacebookUser domain? 'N' - if not, it will be created (Y/N):",
             addproperty: 'create.facebookdomain',
             defaultvalue: 'N')
+
     if (ant.antProject.properties['create.facebookdomain'].toLowerCase() == 'n') {
-        ant.input(message: "Enter name of FacebookUser class that will be created for you",
+        ant.input(message: "Enter name of FacebookUser domain class that will be created for you",
                 addproperty: 'facebookdomain',
                 defaultvalue: 'FacebookUser')
 
@@ -114,26 +114,32 @@ private void copyData() {
 
         generateFile "$templateDir/FacebookUser.groovy.template",
                      "$basedir/grails-app/domain/${domainDir}${templateAttributes.domainClassName}.groovy"
-        ant.echo message: ""
-        ant.echo message: "I'v added `$appDir/src/groovy/${templateAttributes.daoClassName}.groovy` file"
-        ant.echo message: "You need to implement all methods there, to start using Facebook Auth"
-        ant.echo message: ""
-    } else {
-        templateAttributes['domainClassFullName'] = ant.antProject.properties['create.facebookdomain']
+        pluginConfig.domain.classname = templateAttributes['domainClassFullName']
+    } else if (ant.antProject.properties['create.facebookdomain'].toLowerCase() == 'y') {
+        ant.input(message: "Existing domain name:",
+                addproperty: 'create.facebookdomainname',
+                defaultvalue: pluginConfig.domain.classname)
+
+        templateAttributes['domainClassFullName'] = ant.antProject.properties['create.facebookdomainname']
         def dbUserDomain = splitClassName(templateAttributes['domainClassFullName'])
         templateAttributes['domainPackage'] = dbUserDomain[0]
         templateAttributes['domainClassName'] = dbUserDomain[1]
+
+        pluginConfig.domain.classname = templateAttributes['domainClassFullName']
+    } else {
+        ant.echo(message: "Skip FacebookUser domain configuration")
     }
+}
 
-
-	generateFile "$templateDir/FacebookAuthDaoImpl.groovy.template",
-	             "$basedir/src/groovy/${templateAttributes.daoClassName}.groovy"
+generateDao = {
+    generateFile "$templateDir/FacebookAuthDaoImpl.groovy.template",
+                 "$basedir/src/groovy/${templateAttributes.daoClassName}.groovy"
     ant.echo message: ""
     ant.echo message: "I'v added `$appDir/src/groovy/${templateAttributes.daoClassName}.groovy` file"
     ant.echo message: "You need to implement all methods there, to start using Facebook Auth"
     ant.echo message: ""
-    beans << generateBeanStr(templateAttributes['bean.dao'], templateAttributes['daoClassName'], [:])
 
+    beans << generateBeanStr(templateAttributes['bean.dao'], templateAttributes['daoClassName'], [:])
 }
 
 packageToDir = { String packageName ->
