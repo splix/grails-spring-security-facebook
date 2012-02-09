@@ -25,7 +25,7 @@ class SpringSecurityFacebookGrailsPlugin {
 
    String version = '0.6'
    String grailsVersion = '1.3.7 > *'
-   Map dependsOn = ['springSecurityCore': '1.2.6 > *']
+   Map dependsOn = ['springSecurityCore': '1.1.2 > *']
 
 
    def license = 'APACHE'
@@ -47,7 +47,7 @@ class SpringSecurityFacebookGrailsPlugin {
 
 	   println 'Configuring Spring Security Facebook ...'
 	   SpringSecurityUtils.loadSecondaryConfig 'DefaultFacebookSecurityConfig'
-	   // have to get again after overlaying DefaultOpenIdSecurityConfig
+	   // have to get again after overlaying DefaultFacebookecurityConfig
 	   conf = SpringSecurityUtils.securityConfig
 
        if (!conf.facebook.bean.dao) {
