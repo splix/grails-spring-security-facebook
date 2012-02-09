@@ -73,8 +73,8 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object>, InitializingBea
 
         def appUser
         if (domainsRelation == DomainsRelation.JoinedUser) {
-            if (facebookAuthService && facebookAuthService.respondsTo('createAppUser')) {
-                appUser = facebookAuthService.createAppUser()
+            if (facebookAuthService && facebookAuthService.respondsTo('createAppUser', UserClass, FacebookAuthToken)) {
+                appUser = facebookAuthService.createAppUser(user, token)
             } else {
                 Class<?> UserDomainClass = grailsApplication.getDomainClass(userDomainClassName).clazz
                 if (!UserDomainClass) {
@@ -82,15 +82,15 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object>, InitializingBea
                     return null
                 }
                 appUser = UserDomainClass.newInstance()
-                if (facebookAuthService && facebookAuthService.respondsTo('prepopulateAppUser', UserDomainClass)) {
+                if (facebookAuthService && facebookAuthService.respondsTo('prepopulateAppUser', UserDomainClass, FacebookAuthToken)) {
                     facebookAuthService.prepopulateAppUser(appUser)
                 } else {
-                    appUser."$securityConf.userLookup.usernamePropertyName" = "facebook_$token.uid"
-                    appUser."$securityConf.userLookup.passwordPropertyName" = token.accessToken
-                    appUser."$securityConf.userLookup.enabledPropertyName" = true
-                    appUser."$securityConf.userLookup.accountExpiredPropertyName" = false
-                    appUser."$securityConf.userLookup.accountLockedPropertyName" = false
-                    appUser."$securityConf.userLookup.passwordExpiredPropertyName" = false
+                    appUser[securityConf.userLookup.usernamePropertyName] = "facebook_$token.uid"
+                    appUser[securityConf.userLookup.passwordPropertyName] = token.accessToken
+                    appUser[securityConf.userLookup.enabledPropertyName] = true
+                    appUser[securityConf.userLookup.accountExpiredPropertyName] = false
+                    appUser[securityConf.userLookup.accountLockedPropertyName] = false
+                    appUser[securityConf.userLookup.passwordExpiredPropertyName] = false
                 }
                 UserDomainClass.withTransaction {
                     appUser.save(flush: true, failOnError: true)
