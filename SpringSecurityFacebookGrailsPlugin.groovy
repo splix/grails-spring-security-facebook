@@ -23,7 +23,7 @@ import com.the6hours.grails.springsecurity.facebook.DefaultFacebookAuthDao
 
 class SpringSecurityFacebookGrailsPlugin {
 
-   String version = '0.6'
+   String version = '0.6.2'
    String grailsVersion = '1.3.7 > *'
    Map dependsOn = ['springSecurityCore': '1.1.2 > *']
 
