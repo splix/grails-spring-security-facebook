@@ -83,7 +83,7 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object>, InitializingBea
                 }
                 appUser = UserDomainClass.newInstance()
                 if (facebookAuthService && facebookAuthService.respondsTo('prepopulateAppUser', UserDomainClass, FacebookAuthToken)) {
-                    facebookAuthService.prepopulateAppUser(appUser)
+                    facebookAuthService.prepopulateAppUser(appUser, token)
                 } else {
                     appUser[securityConf.userLookup.usernamePropertyName] = "facebook_$token.uid"
                     appUser[securityConf.userLookup.passwordPropertyName] = token.accessToken
