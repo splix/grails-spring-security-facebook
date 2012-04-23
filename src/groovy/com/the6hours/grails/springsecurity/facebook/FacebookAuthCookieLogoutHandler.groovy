@@ -28,6 +28,14 @@ class FacebookAuthCookieLogoutHandler implements LogoutHandler {
             cookie.maxAge = 0
             cookie.path = '/'
             httpServletResponse.addCookie(cookie)
+
+            //println "Cookie domain: '$cookie.domain'"
+            if (!cookie.domain.startsWith('.')) {
+              //see issue [8]
+              Cookie dotCookie = cookie.clone()
+              dotCookie.domain = '.' + dotCookie.domain
+              httpServletResponse.addCookie(dotCookie)
+            }
         }
     }
 }
