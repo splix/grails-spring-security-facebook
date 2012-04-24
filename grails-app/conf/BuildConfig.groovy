@@ -2,7 +2,7 @@ grails.project.class.dir = 'target/classes'
 grails.project.test.class.dir = 'target/test-classes'
 grails.project.test.reports.dir	= 'target/test-reports'
 
-String springSecurityVer = "3.0.4.RELEASE"
+String springSecurityVer = "3.0.7.RELEASE"
 
 grails.release.scm.enabled=false
 grails.project.repos.default = "grailsCentral"
