@@ -5,6 +5,7 @@ grails.project.test.reports.dir	= 'target/test-reports'
 String springSecurityVer = "3.0.4.RELEASE"
 
 grails.release.scm.enabled=false
+grails.project.repos.default = "grailsCentral"
 
 grails.project.dependency.resolution = {
 
@@ -49,4 +50,8 @@ grails.project.dependency.resolution = {
         }
 
 	}
+
+  plugins {
+    //build ":release:2.0.0"
+  }
 }

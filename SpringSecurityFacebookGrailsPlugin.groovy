@@ -23,12 +23,18 @@ import com.the6hours.grails.springsecurity.facebook.DefaultFacebookAuthDao
 
 class SpringSecurityFacebookGrailsPlugin {
 
-   String version = '0.6.2'
-   String grailsVersion = '1.3.7 > *'
-   Map dependsOn = ['springSecurityCore': '1.1.2 > *']
-
+   String version = '0.7'
+   String grailsVersion = '2.0.0 > *'
+   Map dependsOn = ['springSecurityCore': '1.2.7.2 > *']
 
    def license = 'APACHE'
+
+   def developers = [
+       //extra developers
+   ]
+   def issueManagement = [ system: "GitHub", url: "https://github.com/splix/grails-spring-security-facebook/issues" ]
+   def scm = [ url: "git@github.com:splix/grails-spring-security-facebook.git" ]
+
    String author = 'Igor Artamonov'
    String authorEmail = 'igor@artamonov.ru'
    String title = 'Facebook Connect authentication support for the Spring Security plugin.'
