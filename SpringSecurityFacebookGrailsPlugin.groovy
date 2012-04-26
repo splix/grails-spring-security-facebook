@@ -37,7 +37,7 @@ class SpringSecurityFacebookGrailsPlugin {
 
    String author = 'Igor Artamonov'
    String authorEmail = 'igor@artamonov.ru'
-   String title = 'Facebook Connect authentication support for the Spring Security plugin.'
+   String title = 'Facebook Authentication'
    String description = 'Facebook Connect authentication support for the Spring Security plugin.'
 
    String documentation = 'http://grails.org/plugin/spring-security-facebook'
