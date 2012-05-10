@@ -40,19 +40,21 @@ class FacebookAuthCookieFilter extends GenericFilterBean implements ApplicationE
                     FacebookAuthToken token = facebookAuthUtils.build(cookie.value)
                     if (token != null) {
                         Authentication authentication = authenticationManager.authenticate(token);
-                        // Store to SecurityContextHolder
-                        SecurityContextHolder.context.authentication = authentication;
+                        if (authentication.authenticated) {
+                            // Store to SecurityContextHolder
+                            SecurityContextHolder.context.authentication = authentication;
 
-                        if (logger.isDebugEnabled()) {
-                            logger.debug("SecurityContextHolder populated with FacebookAuthToken: '"
-                                + SecurityContextHolder.context.authentication + "'");
+                            if (logger.isDebugEnabled()) {
+                                logger.debug("SecurityContextHolder populated with FacebookAuthToken: '"
+                                    + SecurityContextHolder.context.authentication + "'");
+                            }
+                            try {
+                                chain.doFilter(request, response);
+                            } finally {
+                                SecurityContextHolder.context.authentication = null;
+                            }
+                            return
                         }
-                        try {
-                            chain.doFilter(request, response);
-                        } finally {
-                            SecurityContextHolder.context.authentication = null;
-                        }
-                        return
                     }
                 } catch (BadCredentialsException e) {
                     logger.info("Invalid cookie, skip. Message was: $e.message")
