@@ -95,6 +95,7 @@ class SpringSecurityFacebookGrailsPlugin {
            authenticationManager = ref('authenticationManager')
            facebookAuthUtils = ref('facebookAuthUtils')
            logoutUrl = conf.logout.filterProcessesUrl
+           forceLoginParameter = conf.facebook.filter.forceLoginParameter
        }
        facebookAuthCookieLogout(FacebookAuthCookieLogoutHandler) {
            facebookAuthUtils = ref('facebookAuthUtils')

@@ -25,13 +25,17 @@ class FacebookAuthCookieFilter extends GenericFilterBean implements ApplicationE
     FacebookAuthUtils facebookAuthUtils
     AuthenticationManager authenticationManager
     String logoutUrl = '/j_spring_security_logout'
+    String forceLoginParameter = null
 
     void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, javax.servlet.FilterChain chain) {
         HttpServletRequest request = servletRequest
         HttpServletResponse response = servletResponse
         String url = request.requestURI.substring(request.contextPath.length())
         logger.debug("Processing url: $url")
-        if (url != logoutUrl && SecurityContextHolder.context.authentication == null) {
+        if (url != logoutUrl
+            && (SecurityContextHolder.context.authentication == null
+                || (forceLoginParameter
+                    && servletRequest.getParameter(forceLoginParameter) == 'true'))) {
             logger.debug("Applying facebook auth filter")
             assert facebookAuthUtils != null
             Cookie cookie = facebookAuthUtils.getAuthCookie(request)

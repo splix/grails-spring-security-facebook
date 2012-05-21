@@ -35,6 +35,7 @@ security {
         filter {
             processUrl = "/j_spring_facebook_security_check"
             position = 720 //see SecurityFilterPosition
+            forceLoginParameter = 'j_spring_facebook_force'
         }
 
         beans {
