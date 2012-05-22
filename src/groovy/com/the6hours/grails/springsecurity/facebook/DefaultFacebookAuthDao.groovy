@@ -163,14 +163,14 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object>, InitializingBea
         }
 
         if (UserDetails.isAssignableFrom(user.class)) {
-          return ((UserDetails)user).getAuthorities()
+            return ((UserDetails)user).getAuthorities()
         }
 
         def conf = SpringSecurityUtils.securityConfig
         Class<?> PersonRole = grailsApplication.getDomainClass(conf.userLookup.authorityJoinClassName)?.clazz
         if (!PersonRole) {
-          log.error("Can't load roles for user $user. Reason: can't find ${conf.userLookup.authorityJoinClassName} class")
-          return []
+            log.error("Can't load roles for user $user. Reason: can't find ${conf.userLookup.authorityJoinClassName} class")
+            return []
         }
         Collection roles = []
         PersonRole.withTransaction { status ->
@@ -260,30 +260,30 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object>, InitializingBea
 
         List serviceMethods = []
         if (facebookAuthService) {
-          facebookAuthService.metaClass.methods.each {
-            serviceMethods<< it.name
-          }
+            facebookAuthService.metaClass.methods.each {
+                serviceMethods<< it.name
+            }
         }
 
         def conf = SpringSecurityUtils.securityConfig
         if (!serviceMethods.contains('getRoles')) {
             Class<?> UserDomainClass = grailsApplication.getDomainClass(userDomainClassName)?.clazz
             if (UserDomainClass == null || !UserDetails.isAssignableFrom(UserDomainClass)) {
-              if (!conf.userLookup.authorityJoinClassName) {
-                  log.error("Don't have authority join class configuration. Please configure 'grails.plugins.springsecurity.userLookup.authorityJoinClassName' value")
-              } else if (!grailsApplication.getDomainClass(conf.userLookup.authorityJoinClassName)) {
-                log.error("Can't find authority join class (${conf.userLookup.authorityJoinClassName}). Please configure 'grails.plugins.springsecurity.userLookup.authorityJoinClassName' value, or create your own 'facebookAuthService.getRoles()'")
-              }
+                if (!conf.userLookup.authorityJoinClassName) {
+                    log.error("Don't have authority join class configuration. Please configure 'grails.plugins.springsecurity.userLookup.authorityJoinClassName' value")
+                } else if (!grailsApplication.getDomainClass(conf.userLookup.authorityJoinClassName)) {
+                    log.error("Can't find authority join class (${conf.userLookup.authorityJoinClassName}). Please configure 'grails.plugins.springsecurity.userLookup.authorityJoinClassName' value, or create your own 'facebookAuthService.getRoles()'")
+                }
             }
         }
         if (!serviceMethods.contains('findUser')) {
             if (!domainClassName) {
-              log.error("Don't have facebook user class configuration. Please configure 'grails.plugins.springsecurity.facebook.domain.classname' value")
+                log.error("Don't have facebook user class configuration. Please configure 'grails.plugins.springsecurity.facebook.domain.classname' value")
             } else {
-              Class<?> User = grailsApplication.getDomainClass(domainClassName)?.clazz
-              if (!User) {
-                log.error("Can't find facebook user class ($domainClassName). Please configure 'grails.plugins.springsecurity.facebook.domain.classname' value, or create your own 'facebookAuthService.findUser()'")
-              }
+                Class<?> User = grailsApplication.getDomainClass(domainClassName)?.clazz
+                if (!User) {
+                    log.error("Can't find facebook user class ($domainClassName). Please configure 'grails.plugins.springsecurity.facebook.domain.classname' value, or create your own 'facebookAuthService.findUser()'")
+                }
             }
         }
     }
