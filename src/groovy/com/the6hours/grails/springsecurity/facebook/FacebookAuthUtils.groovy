@@ -8,6 +8,7 @@ import javax.crypto.Mac
 import org.apache.commons.codec.binary.Base64
 import org.springframework.security.authentication.BadCredentialsException
 import grails.converters.JSON
+import java.util.concurrent.TimeUnit
 
 /**
  * TODO
@@ -65,11 +66,49 @@ class FacebookAuthUtils {
         }
     }
 
-    String getAccessToken(String code) {
+
+
+    FacebookAccessToken refreshAccessToken(String existingAccessToken) {
+        String authUrl = "https://graph.facebook.com/oauth/access_token?client_id=$applicationId&client_secret=$secret&grant_type=fb_exchange_token&fb_exchange_token=$existingAccessToken"
+        return requestAccessToken(authUrl)
+    }
+
+    FacebookAccessToken getAccessToken(String code) {
+        String authUrl = "https://graph.facebook.com/oauth/access_token?client_id=$applicationId&redirect_uri=&client_secret=$secret&code=$code"
+        return requestAccessToken(authUrl)
+    }
+
+    FacebookAccessToken requestAccessToken(String authUrl) {
         try {
-            String authUrl = "https://graph.facebook.com/oauth/access_token?client_id=$applicationId&redirect_uri=&client_secret=$secret&code=$code"
             URL url = new URL(authUrl)
-            return url.readLines().first().split('&').first().split('=')[1]
+            String response = url.readLines().first()
+            //println "AccessToken response: $response"
+            Map data = [:]
+            response.split('&').each {
+                String[] kv = it.split('=')
+                if (kv.length != 2) {
+                    log.warn("Invalid response part: $it")
+                } else {
+                    data[kv[0]] = kv[1]
+                }
+            }
+            FacebookAccessToken token = new FacebookAccessToken()
+            if (data.access_token) {
+                token.accessToken = data.access_token
+            } else {
+                log.error("No access_token in response: $response")
+            }
+            if (data.expires) {
+                if (data.expires =~ /^\d+$/) {
+                    token.expireAt = new Date(System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(Long.parseLong(data.expires)))
+                } else {
+                    log.warn("Invalid 'expires' value: $data.expires")
+                }
+            } else {
+              log.error("No expires in response: $response")
+            }
+            log.debug("Got AccessToken: $token")
+            return token
         } catch (IOException e) {
             log.error("Can't read data from Facebook", e)
             return null

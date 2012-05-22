@@ -38,4 +38,25 @@ public interface FacebookAuthDao<F> {
      */
     Collection<GrantedAuthority> getRoles(F user)
 
+    /**
+    *
+    * @param user target user
+    * @return false when user have invalid token, or don't have token
+    */
+    Boolean hasValidToken(F user)
+
+    /**
+    * Setup new Facebook Access Token for specified user
+    *
+    * @param user target user
+    * @param token valid access token
+    */
+    void updateToken(F user, FacebookAuthToken token)
+
+    /**
+    *
+    * @param user target user
+    * @return current access_token, or null if not exists
+    */
+    String getAccessToken(F user)
 }
