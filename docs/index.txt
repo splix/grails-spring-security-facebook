@@ -5,7 +5,7 @@ h1. Information
 Sources: [https://github.com/splix/grails-spring-security-facebook]
 
 h2. Requirements:
- * grails 1.3.7
+ * grails 2.0.0
  * spring-security-core plugin 1.1+
 
 h2. How to install:
@@ -176,4 +176,44 @@ and then you can use Facebook API. For example you can fetch user's email on use
 Facebook facebook = new FacebookTemplate(token.accessToken)
 FacebookProfile fbProfile = facebook.userOperations().userProfile
 String email = fbProfile.getEmail()
+{code}
+
+h1. Common issues
+
+h2. Please enable logging
+
+If you have troubles with plugin, please enabled logging, so you can see what's happening:
+{code}
+log4j = {
+  debug 'com.the6hours'
+}
+{code}
+
+h2. Can't find a cookie / user not authenticated by plugin
+
+Make sure that you're using some kind of domain, not @localhost@, because Facebook can't setup
+cookie for localhost. Avoid @.local@ domains as well.
+
+You can use domain like @myapp.dev@, that you should setup at file @/etc/hosts@ (or
+@C:/Windows/system32/etc/hosts@ on Windows), by adding following line:
+{code}
+127.0.0.1  myapp.dev
+{code}
+
+Notice: if you already have line starting with @127.0.0.1@, then put your @myapp.dev@ domain in this line too (it can
+have multiply associated domains)
+
+After that, you should configure your Grails app to use this domain, by adding following line into @Config.groovy@:
+{code}
+grails.serverURL = "http://myapp.dev:8080/${appName}"
+{code}
+
+Of course, you need to use this domain only for development, so put this configuration into @development@
+environment config:
+{code}
+environments {
+    development {
+      grails.serverURL = "http://myapp.dev:8080/${appName}"
+    }
+}
 {code}
