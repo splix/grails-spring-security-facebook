@@ -174,7 +174,10 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object>, InitializingBea
         }
         Collection roles = []
         PersonRole.withTransaction { status ->
-            roles = getPrincipal(user)?.getAt(rolesPropertyName)
+            roles = user?.getAt(rolesPropertyName)
+        }
+        if (!roles) {
+            roles = []
         }
         if (roles.empty) {
             return roles
