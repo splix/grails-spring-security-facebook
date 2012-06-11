@@ -37,6 +37,10 @@ class FacebookAuthTagLib {
             out << "    xfbml  : true,\n"
             out << "    oauth  : true\n"
             out << "  });\n"
+
+
+            out << body.call()
+
             out << "};\n"
 
             out << '(function(d){'
