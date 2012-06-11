@@ -50,7 +50,7 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object>, InitializingBea
         if (facebookAuthService && facebookAuthService.respondsTo('findUser', Long)) {
             return facebookAuthService.findUser(uid)
         }
-		    Class<?> User = grailsApplication.getDomainClass(domainClassName)?.clazz
+		Class<?> User = grailsApplication.getDomainClass(domainClassName)?.clazz
         if (!User) {
             log.error("Can't find domain: $domainClassName")
             return null
