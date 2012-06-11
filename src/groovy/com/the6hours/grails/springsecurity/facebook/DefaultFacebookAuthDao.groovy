@@ -79,10 +79,10 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object>, InitializingBea
         def user = grailsApplication.getDomainClass(domainClassName).newInstance()
         user.uid = token.uid
         if (user.properties.containsKey('accessToken')) {
-            user.accessToken = token.accessToken.accessToken
+            user.accessToken = token.accessToken?.accessToken
         }
         if (user.properties.containsKey('accessTokenExpires')) {
-            user.accessTokenExpires = token.accessToken.expireAt
+            user.accessTokenExpires = token.accessToken?.expireAt
         }
 
         def appUser

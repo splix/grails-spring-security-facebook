@@ -28,6 +28,9 @@ public class FacebookAuthProvider implements AuthenticationProvider {
             if (createNew) {
                 log.info "Create new facebook user with uid $token.uid"
                 token.accessToken = facebookAuthUtils.getAccessToken(token.code)
+                if (token.accessToken == null) {
+                    log.error("Creating user w/o access_token")
+                }
                 user = facebookAuthDao.create(token)
                 justCreated = true
             } else {
