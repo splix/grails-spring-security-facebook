@@ -7,6 +7,7 @@ import org.springframework.security.core.Authentication
 import javax.servlet.http.Cookie
 import org.apache.log4j.Logger
 import java.util.regex.Matcher
+import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
 
 /**
  * 
@@ -37,6 +38,7 @@ class FacebookAuthCookieLogoutHandler implements LogoutHandler {
       if (!baseDomain) {
         //Facebook uses invalid cookie format, so sometimes we need to parse it manually
         String rawCookie = httpServletRequest.getHeader('Cookie')
+        logger.info("raw cookie: $rawCookie")
         if (rawCookie) {
           Matcher m = rawCookie =~ /fbm_$facebookAuthUtils.applicationId=base_domain=(.+?);/
           if (m.find()) {
@@ -46,7 +48,11 @@ class FacebookAuthCookieLogoutHandler implements LogoutHandler {
       }
 
       if (!baseDomain) {
-        logger.warn("Can't find base domain for Facebook cookie. Running on localhost?")
+          def conf = SpringSecurityUtils.securityConfig.facebook
+          if (conf.host && conf.host.length > 0) {
+              baseDomain = conf.host
+          }
+          logger.debug("Can't find base domain for Facebook cookie. Use '$baseDomain'")
       }
 
       cookies.each { cookie ->
