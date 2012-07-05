@@ -7,13 +7,18 @@ import org.springframework.security.core.GrantedAuthority
 
 import org.springframework.security.core.userdetails.User
 import org.apache.log4j.Logger
+import org.springframework.context.ApplicationContext
+import org.springframework.beans.factory.InitializingBean
+import org.springframework.context.ApplicationContextAware
 
-public class FacebookAuthProvider implements AuthenticationProvider {
+public class FacebookAuthProvider implements AuthenticationProvider, InitializingBean, ApplicationContextAware {
 
     private static def log = Logger.getLogger(this)
 
     FacebookAuthDao facebookAuthDao
     FacebookAuthUtils facebookAuthUtils
+    def facebookAuthService
+    ApplicationContext applicationContext
 
     boolean createNew = true
 
@@ -78,9 +83,19 @@ public class FacebookAuthProvider implements AuthenticationProvider {
     }
 	
     protected UserDetails createUserDetails(Object facebookUser, String secret) {
+        if (facebookAuthService && facebookAuthService.respondsTo('createUserDetails', facebookUser.class)) {
+            return facebookAuthService.createUserDetails(facebookUser)
+        }
         Collection<GrantedAuthority> roles = facebookAuthDao.getRoles(facebookAuthDao.getPrincipal(facebookUser))
         new User(facebookUser.uid.toString(), secret, true,
              true, true, true, roles)
     }
 
+    void afterPropertiesSet() {
+        if (!facebookAuthService) {
+            if (applicationContext.containsBean('facebookAuthService')) {
+                facebookAuthService = applicationContext.getBean('facebookAuthService')
+            }
+        }
+    }
 }
