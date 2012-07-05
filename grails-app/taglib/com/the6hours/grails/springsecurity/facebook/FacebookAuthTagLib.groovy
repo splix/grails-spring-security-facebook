@@ -18,12 +18,20 @@ class FacebookAuthTagLib {
 	/** Dependency injection for springSecurityService. */
 	def springSecurityService
 
-	def connect = { attrs, body ->
-        def conf = SpringSecurityUtils.securityConfig.facebook
-
+    def init = { attrs, body ->
         Boolean init = request.getAttribute(MARKER)
-        if (attrs.requirejs != 'false' && (init == null || !init)) {
-            String lang = conf.language
+        if (init == null) {
+            init = false
+        }
+
+        def conf = SpringSecurityUtils.securityConfig.facebook
+        if (conf.taglib?.initfb == false) {
+            log.debug("FB Init is disabled. Skip")
+            return
+        }
+
+        if (!init || attrs.force == 'true') {
+            String lang = conf.taglib.language
             def appId = conf.appId
             out << '<div id="fb-root"></div>\n'
 
@@ -54,17 +62,30 @@ class FacebookAuthTagLib {
 
             request.setAttribute(MARKER, true)
         }
+    }
 
+	def connect = { attrs, body ->
+        def conf = SpringSecurityUtils.securityConfig.facebook
 
-        String buttonText = conf.button.text
+        if (attrs.skipInit != 'false') {
+            init(attrs, body)
+        }
+
+        String buttonText = conf.taglib.button.text
         if (attrs.text) {
             buttonText = attrs.text
         }
 
         List permissions = []
+        def rawPermissions
         if (attrs.permissions) {
-            if (attrs.permissions instanceof Collection) {
-                permissions = attrs.permissions.findAll {
+            rawPermissions = attrs.permissions
+        } else {
+            rawPermissions = conf.taglib.permissions
+        }
+        if (rawPermissions) {
+            if (rawPermissions instanceof Collection) {
+                permissions = rawPermissions.findAll {
                     it != null
                 }.collect {
                     it.toString().trim()
@@ -72,8 +93,10 @@ class FacebookAuthTagLib {
                     it.length() > 0
                 }
             } else {
-                permissions = attrs.permissions.toString().split(',').collect { it.trim() }
+                permissions = rawPermissions.toString().split(',').collect { it.trim() }
             }
+        } else {
+            log.debug("Permissions aren't configured")
         }
 
         boolean showFaces = false

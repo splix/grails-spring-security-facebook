@@ -6,25 +6,24 @@ security {
         secret = 'Invalid'
         apiKey = 'Invalid'
 
-        language = "en_US"
-        button.text = "Login with Facebook"
-
         domain {
             classname = 'FacebookUser'
             connectionPropertyName = "user"
         }
-
-        //see http://developers.facebook.com/docs/authentication/permissions/
-        permissions = ["email"]
 
         useAjax = true
         autoCheck = true
 
         jsconf = "fbSecurity"
 
-        jsevent {
-            login = 'onFacebookLogin'
-            logout = 'onFacebookLogout'
+        taglib {
+            language = "en_US"
+            button {
+                text = "Login with Facebook"
+            }
+            initfb = true
+            //see http://developers.facebook.com/docs/authentication/permissions/
+            permissions = ["email"]
         }
 
         autoCreate {
