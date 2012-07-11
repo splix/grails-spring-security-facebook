@@ -33,6 +33,7 @@ security {
 
         filter {
             processUrl = "/j_spring_facebook_security_check"
+            type = 'transparent' //transparent or cookieDirect
             position = 720 //see SecurityFilterPosition
             forceLoginParameter = 'j_spring_facebook_force'
         }

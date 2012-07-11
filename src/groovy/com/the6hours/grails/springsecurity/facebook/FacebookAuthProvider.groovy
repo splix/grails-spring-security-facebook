@@ -47,8 +47,12 @@ public class FacebookAuthProvider implements AuthenticationProvider, Initializin
                 String currentAccessToken = facebookAuthDao.getAccessToken(user)
                 FacebookAccessToken freshToken = null
                 if (currentAccessToken) {
-                    freshToken = facebookAuthUtils.refreshAccessToken(currentAccessToken)
-                    if (!freshToken) {
+                    try {
+                        freshToken = facebookAuthUtils.refreshAccessToken(currentAccessToken)
+                        if (!freshToken) {
+                            log.warn("Can't refresh access token")
+                        }
+                    } catch (IOException e) {
                         log.warn("Can't refresh access token")
                     }
                 }
@@ -94,6 +98,7 @@ public class FacebookAuthProvider implements AuthenticationProvider, Initializin
     void afterPropertiesSet() {
         if (!facebookAuthService) {
             if (applicationContext.containsBean('facebookAuthService')) {
+                log.debug("Use provided facebookAuthService")
                 facebookAuthService = applicationContext.getBean('facebookAuthService')
             }
         }

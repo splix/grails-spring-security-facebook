@@ -36,6 +36,9 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object>, InitializingBea
     DomainsRelation domainsRelation = DomainsRelation.JoinedUser
 
     Object getFacebookUser(Object user) {
+        if (facebookAuthService && facebookAuthService.respondsTo('getFacebookUser', user.class)) {
+            return facebookAuthService.getFacebookUser(user)
+        }
         if (domainsRelation == DomainsRelation.JoinedUser) {
             return user?.getAt(connectionPropertyName)// load the User object to memory prevent LazyInitializationException
         }
@@ -252,6 +255,7 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object>, InitializingBea
     void afterPropertiesSet() {
         if (!facebookAuthService) {
             if (applicationContext.containsBean('facebookAuthService')) {
+                log.debug("Use provided facebookAuthService")
                 facebookAuthService = applicationContext.getBean('facebookAuthService')
             }
         }
@@ -272,7 +276,7 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object>, InitializingBea
                 if (!conf.userLookup.authorityJoinClassName) {
                     log.error("Don't have authority join class configuration. Please configure 'grails.plugins.springsecurity.userLookup.authorityJoinClassName' value")
                 } else if (!grailsApplication.getDomainClass(conf.userLookup.authorityJoinClassName)) {
-                    log.error("Can't find authority join class (${conf.userLookup.authorityJoinClassName}). Please configure 'grails.plugins.springsecurity.userLookup.authorityJoinClassName' value, or create your own 'facebookAuthService.getRoles()'")
+                    log.error("Can't find authority join class (${conf.userLookup.authorityJoinClassName}). Please configure 'grails.plugins.springsecurity.userLookup.authorityJoinClassName' value, or create your own 'List<GrantedAuthority> facebookAuthService.getRoles(user)'")
                 }
             }
         }
@@ -282,7 +286,7 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object>, InitializingBea
             } else {
                 Class<?> User = grailsApplication.getDomainClass(domainClassName)?.clazz
                 if (!User) {
-                    log.error("Can't find facebook user class ($domainClassName). Please configure 'grails.plugins.springsecurity.facebook.domain.classname' value, or create your own 'facebookAuthService.findUser()'")
+                    log.error("Can't find facebook user class ($domainClassName). Please configure 'grails.plugins.springsecurity.facebook.domain.classname' value, or create your own 'Object facebookAuthService.findUser(long)'")
                 }
             }
         }

@@ -14,12 +14,13 @@
 */
 import com.the6hours.grails.springsecurity.facebook.FacebookAuthProvider
 import com.the6hours.grails.springsecurity.facebook.FacebookAuthDirectFilter
-import com.the6hours.grails.springsecurity.facebook.FacebookAuthCookieFilter
+import com.the6hours.grails.springsecurity.facebook.FacebookAuthCookieTransparentFilter
 import com.the6hours.grails.springsecurity.facebook.FacebookAuthUtils
 import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
 import org.codehaus.groovy.grails.plugins.springsecurity.SecurityFilterPosition
 import com.the6hours.grails.springsecurity.facebook.FacebookAuthCookieLogoutHandler
 import com.the6hours.grails.springsecurity.facebook.DefaultFacebookAuthDao
+import com.the6hours.grails.springsecurity.facebook.FacebookAuthCookieDirectFilter
 
 class SpringSecurityFacebookGrailsPlugin {
 
@@ -90,17 +91,33 @@ class SpringSecurityFacebookGrailsPlugin {
            facebookAuthUtils = ref('facebookAuthUtils')
 	   }*/
 
-       SpringSecurityUtils.registerFilter 'facebookAuthCookieFilter', position + 1
-       facebookAuthCookieFilter(FacebookAuthCookieFilter) {
-           authenticationManager = ref('authenticationManager')
-           facebookAuthUtils = ref('facebookAuthUtils')
-           logoutUrl = conf.logout.filterProcessesUrl
-           forceLoginParameter = conf.facebook.filter.forceLoginParameter
+       String type = conf.facebook.filter.type
+       List validTypes = ['transparent', 'cookieDirect']
+       String defaultType = 'transparent'
+       if (!(type in validTypes)) {
+           log.error("Invalid Facebook Authentication filter type '$type'. Should be used on of: $validTypes. Current value will be ignored, and type '$defaultType' will be used instead.")
+           type = defaultType
        }
-       facebookAuthCookieLogout(FacebookAuthCookieLogoutHandler) {
-           facebookAuthUtils = ref('facebookAuthUtils')
+
+       if (type == 'transparent') {
+           SpringSecurityUtils.registerFilter 'facebookFilter', position + 1
+           facebookAuthFilter(FacebookAuthCookieTransparentFilter) {
+               authenticationManager = ref('authenticationManager')
+               facebookAuthUtils = ref('facebookAuthUtils')
+               logoutUrl = conf.logout.filterProcessesUrl
+               forceLoginParameter = conf.facebook.filter.forceLoginParameter
+           }
+           facebookAuthCookieLogout(FacebookAuthCookieLogoutHandler) {
+               facebookAuthUtils = ref('facebookAuthUtils')
+           }
+           SpringSecurityUtils.registerLogoutHandler('facebookAuthCookieLogout')
+       } else if (type == 'cookieDirect') {
+           SpringSecurityUtils.registerFilter 'facebookAuthFilter', position + 1
+           facebookAuthFilter(FacebookAuthCookieDirectFilter, conf.facebook.filter.processUrl) {
+               authenticationManager = ref('authenticationManager')
+               facebookAuthUtils = ref('facebookAuthUtils')
+           }
        }
-       SpringSecurityUtils.registerLogoutHandler('facebookAuthCookieLogout')
    }
 
    def doWithApplicationContext = { ctx ->

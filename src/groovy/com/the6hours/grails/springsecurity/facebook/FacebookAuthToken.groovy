@@ -6,7 +6,7 @@ import org.springframework.security.authentication.AbstractAuthenticationToken
 
 public class FacebookAuthToken extends AbstractAuthenticationToken implements Authentication {
 	
-	  long uid
+	long uid
     FacebookAccessToken accessToken
     String code
 

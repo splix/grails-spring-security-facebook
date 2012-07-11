@@ -19,13 +19,14 @@ import org.springframework.security.authentication.BadCredentialsException
  * @since 14.10.11
  * @author Igor Artamonov (http://igorartamonov.com)
  */
-class FacebookAuthCookieFilter extends GenericFilterBean implements ApplicationEventPublisherAware {
+class FacebookAuthCookieTransparentFilter extends GenericFilterBean implements ApplicationEventPublisherAware {
 
     ApplicationEventPublisher applicationEventPublisher
     FacebookAuthUtils facebookAuthUtils
     AuthenticationManager authenticationManager
     String logoutUrl = '/j_spring_security_logout'
     String forceLoginParameter = null
+    String filterProcessUrl
 
     void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, javax.servlet.FilterChain chain) {
         HttpServletRequest request = servletRequest
