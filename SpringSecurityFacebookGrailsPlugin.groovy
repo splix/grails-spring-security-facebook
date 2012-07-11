@@ -79,29 +79,50 @@ class SpringSecurityFacebookGrailsPlugin {
            facebookAuthUtils = ref('facebookAuthUtils')
 	   }
 
-       int position = conf.facebook.filter.position
-/*       SpringSecurityUtils.registerFilter 'facebookAuthDirectFilter', position
-	   facebookAuthDirectFilter(FacebookAuthDirectFilter, '/j_spring_facebook_security_check') {
-		   rememberMeServices = ref('rememberMeServices')
-		   authenticationManager = ref('authenticationManager')
-		   authenticationSuccessHandler = ref('authenticationSuccessHandler')
-		   authenticationFailureHandler = ref('authenticationFailureHandler')
-		   authenticationDetailsSource = ref('authenticationDetailsSource')
-		   sessionAuthenticationStrategy = ref('sessionAuthenticationStrategy')
-           facebookAuthUtils = ref('facebookAuthUtils')
-	   }*/
+       addFilters(conf, delegate)
+   }
 
-       String type = conf.facebook.filter.type
-       List validTypes = ['transparent', 'cookieDirect']
-       String defaultType = 'transparent'
-       if (!(type in validTypes)) {
-           log.error("Invalid Facebook Authentication filter type '$type'. Should be used on of: $validTypes. Current value will be ignored, and type '$defaultType' will be used instead.")
-           type = defaultType
+   private void addFilters(def conf, def delegate) {
+       def typesRaw = conf.facebook.filter.types
+       List<String> types = null
+       if (!typesRaw) {
+           typesRaw = conf.facebook.filter.type
        }
 
-       if (type == 'transparent') {
-           SpringSecurityUtils.registerFilter 'facebookAuthFilter', position + 1
-           facebookAuthFilter(FacebookAuthCookieTransparentFilter) {
+       String defaultType = 'transparent'
+       List validTypes = ['transparent', 'cookieDirect']
+
+       if (!typesRaw) {
+           log.error("Invalid Facebook Authentication filters configuration: '$typesRaw'. Should be used on of: $validTypes. Current value will be ignored, and type '$defaultType' will be used instead.")
+           types = [defaultType]
+       } else if (typesRaw instanceof Collection) {
+           types = typesRaw.collect { it.toString() }.findAll { it in validTypes }
+       } else if (typesRaw instanceof String) {
+           types = typesRaw.split(',').collect { it.trim() }.findAll { it in validTypes }
+       }
+
+       if (!types || types.empty) {
+           log.error("Facebook Authentication filter is not configured. Should be used on of: $validTypes, and '$defaultType' will be used by default.")
+           log.error("To configure Facebook Authentication filters you should add to Config.groovy:")
+           log.error("grails.plugins.springsecurity.facebook.filter.types='transparent'")
+           log.error("or")
+           log.error("grails.plugins.springsecurity.facebook.filter.types='transparent,cookieDirect'")
+
+           types = [defaultType]
+       }
+
+       int basePosition = conf.facebook.filter.position
+
+       addFilter.delegate = delegate
+       types.eachWithIndex { name, idx ->
+           addFilter(conf, name, basePosition + 1 + idx)
+       }
+   }
+
+   private addFilter = { def conf, String name, int position ->
+       if (name == 'transparent') {
+           SpringSecurityUtils.registerFilter 'facebookAuthCookieTransparentFilter', position
+           facebookAuthCookieTransparentFilter(FacebookAuthCookieTransparentFilter) {
                authenticationManager = ref('authenticationManager')
                facebookAuthUtils = ref('facebookAuthUtils')
                logoutUrl = conf.logout.filterProcessesUrl
@@ -111,12 +132,14 @@ class SpringSecurityFacebookGrailsPlugin {
                facebookAuthUtils = ref('facebookAuthUtils')
            }
            SpringSecurityUtils.registerLogoutHandler('facebookAuthCookieLogout')
-       } else if (type == 'cookieDirect') {
-           SpringSecurityUtils.registerFilter 'facebookAuthFilter', position + 1
-           facebookAuthFilter(FacebookAuthCookieDirectFilter, conf.facebook.filter.processUrl) {
+       } else if (name == 'cookieDirect') {
+           SpringSecurityUtils.registerFilter 'facebookAuthCookieDirectFilter', position
+           facebookAuthCookieDirectFilter(FacebookAuthCookieDirectFilter, conf.facebook.filter.processUrl) {
                authenticationManager = ref('authenticationManager')
                facebookAuthUtils = ref('facebookAuthUtils')
            }
+       } else {
+           log.error("Invalid filter type: $name")
        }
    }
 
