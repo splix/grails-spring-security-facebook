@@ -100,7 +100,7 @@ class SpringSecurityFacebookGrailsPlugin {
        }
 
        if (type == 'transparent') {
-           SpringSecurityUtils.registerFilter 'facebookFilter', position + 1
+           SpringSecurityUtils.registerFilter 'facebookAuthFilter', position + 1
            facebookAuthFilter(FacebookAuthCookieTransparentFilter) {
                authenticationManager = ref('authenticationManager')
                facebookAuthUtils = ref('facebookAuthUtils')
