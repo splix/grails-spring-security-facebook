@@ -9,6 +9,7 @@ import org.apache.commons.codec.binary.Base64
 import org.springframework.security.authentication.BadCredentialsException
 import grails.converters.JSON
 import java.util.concurrent.TimeUnit
+import org.codehaus.groovy.grails.web.json.JSONException
 
 /**
  * TODO
@@ -34,7 +35,18 @@ class FacebookAuthUtils {
         }
 
         String jsonData = new String(Base64.decodeBase64(signedRequestParts[1].getBytes()), 'UTF-8')
-        def json = JSON.parse(jsonData)
+        jsonData = jsonData.trim()
+        def json
+        try {
+            if (!jsonData.endsWith('}')) {
+                log.info("Seems that Facebook cookie contains corrupted value. SignedRequest: ${signedRequestParts[1]}")
+                jsonData = jsonData + '}'
+            }
+            json = JSON.parse(jsonData)
+        } catch (JSONException e) {
+            log.error("Cannot parse Facebook cookie. If you're sure that it should be valid cookie, please send '${signedRequestParts[1]}' to plugin author (igor@artamonov.ru)", e)
+            throw new BadCredentialsException("Invalid cookie format")
+        }
 
         if (json.algorithm != 'HMAC-SHA256') {
             throw new BadCredentialsException("Unknown hashing algoright: $json.algorithm")
