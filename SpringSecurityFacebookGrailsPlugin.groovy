@@ -24,7 +24,7 @@ import com.the6hours.grails.springsecurity.facebook.FacebookAuthCookieDirectFilt
 
 class SpringSecurityFacebookGrailsPlugin {
 
-   String version = '0.8'
+   String version = '0.9'
    String grailsVersion = '2.0.0 > *'
    Map dependsOn = ['springSecurityCore': '1.2.7.2 > *']
 
