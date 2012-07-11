@@ -61,7 +61,11 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object>, InitializingBea
         def user = null
         User.withTransaction { status ->
             user = User.findWhere(uid: uid)
-            getFacebookUser(user) // load the User object to memory prevent LazyInitializationException
+            if (user
+                    && !(facebookAuthService && facebookAuthService.respondsTo('getFacebookUser', user.class))
+                    && domainsRelation == DomainsRelation.JoinedUser) {
+                getFacebookUser(user) // load the User object to memory prevent LazyInitializationException
+            }
         }
         return user
     }
