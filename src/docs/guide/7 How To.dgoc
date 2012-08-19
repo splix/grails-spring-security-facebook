@@ -1,0 +1,27 @@
+h2. How to get user full name and/or email?
+
+Main goal of the plugin is to make authorization. All other usage of Facebook API should be done by
+using additional library, [Spring Social|http://www.springsource.org/spring-social] for example.
+
+{note}
+First of all: you need 'email' permission on connect <facebookAuth:connect permissions="email"/>
+{note}
+
+Add Spring Social lib into your classpath, by adding following dependencies into your @BuildConfig.groovy@:
+
+{code}
+compile 'org.springframework.social:spring-social-core:1.0.1.RELEASE'
+compile 'org.springframework.social:spring-social-facebook:1.0.1.RELEASE'
+{code}
+
+and then you can use Facebook API. For example you can fetch user's email on user creation step:
+
+{code}
+Facebook facebook = new FacebookTemplate(token.accessToken.accessToken)
+FacebookProfile fbProfile = facebook.userOperations().userProfile
+String email = fbProfile.email
+String firstName = fbProfile.firstName
+String lastName = fbProfile.lastName
+{code}
+
+See documentations for Spring Social Facebook: [http://static.springsource.org/spring-social-facebook/docs/1.0.1.RELEASE/reference/html/apis.html#facebook-getProfile|http://static.springsource.org/spring-social-facebook/docs/1.0.1.RELEASE/reference/html/apis.html#facebook-getProfile]

@@ -1,0 +1,13 @@
+Grails plugin for Facebook Authentication, as extension to Grails Spring Security Core plugin.
+
+h1. Introduction
+
+Sources: [https://github.com/splix/grails-spring-security-facebook|https://github.com/splix/grails-spring-security-facebook]
+
+h2. Requirements:
+ * grails 2.0.0
+ * spring-security-core plugin 1.2.7.2
+
+h2. Examples:
+
+  * [https://github.com/splix/s2-facebook-example|https://github.com/splix/s2-facebook-example] - Example app (based on Grails 2.0.3)

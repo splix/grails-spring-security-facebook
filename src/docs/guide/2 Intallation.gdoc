@@ -1,0 +1,8 @@
+h2. How to install:
+
+{code}
+grails install-plugin spring-security-core
+grails s2-quickstart
+grails install-plugin spring-security-facebook
+grails s2-init-facebook
+{code}

@@ -1,0 +1,12 @@
+h2. :init
+
+Usage: <facebookAuth:init />
+
+Puts Facebook Javascript SDK initialization code.
+
+h2. :connect
+
+Usage: <facebookAuth:connect />
+
+Puts Facebook Connect button.
+

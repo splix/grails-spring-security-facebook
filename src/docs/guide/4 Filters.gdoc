@@ -1,0 +1,26 @@
+There are two types of authorization, and two filters.
+
+h2. Transparent cookie based authorization / FacebookAuthCookieTransparentFilter
+
+Based on [Facebook Javascript SDK|https://developers.facebook.com/docs/reference/javascript/] authorization. On
+client side it makes Facebook authorization and put Facebook Cookie (it's made by Facebook Javascript,
+you don't need anything special)
+
+After successful authorization on client side, the browser should reload current page. Or open any other page.
+
+This filter will *process each request*, and if it sees valid Facebook cookie, it makes authorization for
+current user. If it's a new user, it creates a new one for application, with provided Facebook credentials.
+
+{note}
+It's per-request authorization.
+{note}
+
+h2. Manual cookie based authorization / FacebookAuthCookieDirectFilter
+
+Based on [Facebook Javascript SDK|https://developers.facebook.com/docs/reference/javascript/] authorization. On
+client side it makes Facebook authorization and put Facebook Cookie (it's made by Facebook Javascript,
+you don't need anything special)
+
+Same as FacebookAuthCookieTransparentFilter, it parse Facebook cookie, but only for specified url. Like
+username/password filter from spring-security-core or similar. After successful authorization it
+can redirect user to specified url.
