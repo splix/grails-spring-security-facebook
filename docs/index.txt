@@ -30,12 +30,16 @@ grails.plugins.springsecurity.facebook.secret = '<Facebook secret for your app>'
 grails.plugins.springsecurity.facebook.appId = '<Facebooks's app ID>'
 {code}
 
-and now you can put Facebook Connect button in you GSP:
+and now you can put Facebook Connect button in you GSP, first into a header:
+{code}
+<facebookAuth:init />
+{code}
+(or add your oown Facebook button javascript with cookie:true)
+
+and then, in page body:
 {code}
 <facebookAuth:connect permissions="email,user_about_me"/>
 {code}
-
-You don't need to add anything else, just make sure that FB button is configured with cookie:true.
 
 h1. Extend with service
 
@@ -134,7 +138,7 @@ in database. Or null if user not exists yet, it will be created at this case.
 
 h3. FacebookUser create(FacebookAuthToken token)
 
-Called when authenticated Facebook User not exists yet (when findUser has returned null value). It's the place to 
+Called when authenticated Facebook User not exists yet (when findUser has returned null value). It's the place to
 prepare all domain objects for your user, fill user roles, fetch extra data from Facebook API (using profided token.accessToken), etc.
 And return just create user.
 
@@ -144,7 +148,7 @@ Called when user details has changed (accessToken, session data, etc). If you do
 
 h3. Object getPrincipal(FacebookUser user)
 
-Called to get actual user. Useful when you're storing Facebook User details in different model, related to main user domain. If your user and facebook user are same objects - just return it 
+Called to get actual user. Useful when you're storing Facebook User details in different model, related to main user domain. If your user and facebook user are same objects - just return it
 
 h3. Collection<GrantedAuthority> getRoles(FacebookUser user)
 
