@@ -20,4 +20,4 @@ When you have valid configuration you can put Facebook Connect button in you GSP
 <facebookAuth:connect permissions="email,user_about_me"/>
 {code}
 
-You don't need to add anything else, just make sure that FB button is configured with cookie:true.
+You don't need to add anything else.
