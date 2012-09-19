@@ -36,10 +36,14 @@ can redirect user to specified url.
 h1. Filter configuration
 
 You can use config parameter @grails.plugins.springsecurity.facebook.filter.type@ to configure which filters
-you want to use in your application. Notices, that it's not a Spring Security configuration, just a
-extra configuration, that used only by this plugin.
+you want to use in your application.
 
-By default its:
+{note}
+It's not a Spring Security configuration, not a configuration for Spring filters. Just a
+extra configuration, that used only by this plugin.
+{note}
+
+By default it uses only one 'transparent' filter:
 {code}
 grails.plugins.springsecurity.facebook.filter.type='transparent'
 {code}
