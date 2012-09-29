@@ -78,7 +78,19 @@ class FacebookAuthUtils {
         }
     }
 
-
+    long loadUserUid(String accessToken) {
+        String loadUrl = "https://graph.facebook.com/me?access_token=$accessToken"
+        try {
+            URL url = new URL(loadUrl)
+            String json = JSON.parse(url.readLines().first())
+            return json.id as Long
+        } catch (IOException e) {
+            log.error("Can't read data from Facebook", e)
+        } catch (JSONException e) {
+            log.error("Invalid response", e)
+        }
+        return -1
+    }
 
     FacebookAccessToken refreshAccessToken(String existingAccessToken) {
         String authUrl = "https://graph.facebook.com/oauth/access_token?client_id=$applicationId&client_secret=$secret&grant_type=fb_exchange_token&fb_exchange_token=$existingAccessToken"

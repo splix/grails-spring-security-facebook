@@ -21,6 +21,7 @@ import org.codehaus.groovy.grails.plugins.springsecurity.SecurityFilterPosition
 import com.the6hours.grails.springsecurity.facebook.FacebookAuthCookieLogoutHandler
 import com.the6hours.grails.springsecurity.facebook.DefaultFacebookAuthDao
 import com.the6hours.grails.springsecurity.facebook.FacebookAuthCookieDirectFilter
+import com.the6hours.grails.springsecurity.facebook.FacebookAuthRequestFilter
 
 class SpringSecurityFacebookGrailsPlugin {
 
@@ -135,6 +136,12 @@ class SpringSecurityFacebookGrailsPlugin {
        } else if (name == 'cookieDirect') {
            SpringSecurityUtils.registerFilter 'facebookAuthCookieDirectFilter', position
            facebookAuthCookieDirectFilter(FacebookAuthCookieDirectFilter, conf.facebook.filter.processUrl) {
+               authenticationManager = ref('authenticationManager')
+               facebookAuthUtils = ref('facebookAuthUtils')
+           }
+       } else if (name == 'request') {
+           SpringSecurityUtils.registerFilter 'facebookAuthRequestFilter', position
+           facebookAuthRequestFilter(FacebookAuthRequestFilter, conf.facebook.filter.processUrl) {
                authenticationManager = ref('authenticationManager')
                facebookAuthUtils = ref('facebookAuthUtils')
            }

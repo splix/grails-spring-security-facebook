@@ -25,6 +25,26 @@ public class FacebookAuthProvider implements AuthenticationProvider, Initializin
     public Authentication authenticate(Authentication authentication) {
         FacebookAuthToken token = authentication
 
+        if (token.uid <= 0) {
+            if (!token.code) {
+                log.error("Token should contain 'code' to get used access_token and uid")
+                token.authenticated = false
+                return token
+            }
+            token.accessToken = facebookAuthUtils.getAccessToken(token.code)
+            if (token.accessToken == null) {
+                log.error("Can't fetch access_token for code '$token.code'")
+                token.authenticated = false
+                return token
+            }
+            token.uid = facebookAuthUtils.loadUserUid(token.accessToken.accessToken)
+            if (token.uid <= 0) {
+                log.error("Can't fetch uid")
+                token.authenticated = false
+                return token
+            }
+        }
+
         def user = facebookAuthDao.findUser(token.uid as Long)
         boolean justCreated = false
 
@@ -32,7 +52,9 @@ public class FacebookAuthProvider implements AuthenticationProvider, Initializin
             //log.debug "New person $token.uid"
             if (createNew) {
                 log.info "Create new facebook user with uid $token.uid"
-                token.accessToken = facebookAuthUtils.getAccessToken(token.code)
+                if (token.accessToken == null) {
+                    token.accessToken = facebookAuthUtils.getAccessToken(token.code)
+                }
                 if (token.accessToken == null) {
                     log.error("Creating user w/o access_token")
                 }
