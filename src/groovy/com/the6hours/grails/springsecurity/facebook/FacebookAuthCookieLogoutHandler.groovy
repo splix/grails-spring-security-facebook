@@ -49,7 +49,7 @@ class FacebookAuthCookieLogoutHandler implements LogoutHandler {
 
       if (!baseDomain) {
           def conf = SpringSecurityUtils.securityConfig.facebook
-          if (conf.host && conf.host.length > 0) {
+          if (conf.host && conf.host.length() > 0) {
               baseDomain = conf.host
           }
           logger.debug("Can't find base domain for Facebook cookie. Use '$baseDomain'")
