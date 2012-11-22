@@ -54,7 +54,7 @@ class FacebookAuthRedirectFilter extends AbstractAuthenticationProcessingFilter 
         uri = uri.substring(request.contextPath.length())
 
         if (uri.equals(redirectFromUrl)) {
-            response.sendRedirect(facebookAuthUtils.prepareRedirectUrl(getAbsoluteRedirectUrl()))
+            response.sendRedirect(facebookAuthUtils.prepareRedirectUrl(getAbsoluteRedirectUrl(), facebookAuthUtils.requiredPermissions))
             return false
         }
 

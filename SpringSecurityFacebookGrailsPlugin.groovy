@@ -70,13 +70,14 @@ class SpringSecurityFacebookGrailsPlugin {
        }
 
        List<String> _filterTypes = parseFilterTypes(conf)
+       List<String> _requiredPermissions = getAsStringList(conf.facebook.permissions, 'Required Permissions', 'facebook.permissions')
 
        facebookAuthUtils(FacebookAuthUtils) {
            apiKey = conf.facebook.apiKey
            secret = conf.facebook.secret
            applicationId = conf.facebook.appId
-           linkGenerator = ref('grailsLinkGenerator')
            filterTypes = _filterTypes
+           requiredPermissions = _requiredPermissions
        }
 
        SpringSecurityUtils.registerProvider 'facebookAuthProvider'
@@ -86,6 +87,21 @@ class SpringSecurityFacebookGrailsPlugin {
 	   }
 
        addFilters(conf, delegate, _filterTypes)
+   }
+
+   private List<String> getAsStringList(def conf, String paramHumanName, String paramName) {
+       def raw = conf
+
+       if (raw == null) {
+           log.error("Invalid $paramHumanName filters configuration: '$raw'")
+       } else if (raw instanceof Collection) {
+           return raw.collect { it.toString() }
+       } else if (raw instanceof String) {
+           return raw.split(',').collect { it.trim() }
+       } else {
+           log.error("Invalid $paramHumanName filters configuration, invalid value type: '${raw.getClass()}'. Value should be defined as a Collection or String (comma separated, if you need few filters)")
+       }
+       return null
    }
 
    private List<String> parseFilterTypes(def conf) {

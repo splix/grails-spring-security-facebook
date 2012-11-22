@@ -16,6 +16,9 @@ security {
 
         jsconf = "fbSecurity"
 
+        //see http://developers.facebook.com/docs/authentication/permissions/
+        permissions = ["email"]
+
         taglib {
             language = "en_US"
             button {
@@ -23,8 +26,6 @@ security {
                 defaultImg = "/images/connect.png"
             }
             initfb = true
-            //see http://developers.facebook.com/docs/authentication/permissions/
-            permissions = ["email"]
         }
 
         autoCreate {

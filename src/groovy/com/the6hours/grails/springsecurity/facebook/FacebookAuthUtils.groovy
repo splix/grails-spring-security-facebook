@@ -30,8 +30,7 @@ class FacebookAuthUtils {
     String applicationId
 
     List<String> filterTypes = []
-
-    LinkGenerator linkGenerator
+    List<String> requiredPermissions = []
 
     FacebookAuthToken build(String signedRequest) {
         if (!signedRequest) {

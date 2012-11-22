@@ -132,7 +132,7 @@ class FacebookAuthTagLib {
         if (attrs.permissions) {
             rawPermissions = attrs.permissions
         } else {
-            rawPermissions = conf.taglib.permissions
+            rawPermissions = facebookAuthUtils.requiredPermissions
         }
         if (rawPermissions) {
             if (rawPermissions instanceof Collection) {
