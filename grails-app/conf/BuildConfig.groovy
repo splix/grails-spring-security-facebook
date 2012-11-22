@@ -49,9 +49,13 @@ grails.project.dependency.resolution = {
                      'org.springframework.web'
         }
 
-	}
+    }
 
-  plugins {
-    //build ":release:2.0.0"
-  }
+    plugins {
+        provided ':webxml:1.4.1'
+
+        build(':release:2.0.3', ':rest-client-builder:1.0.2') {
+            export = false
+        }
+    }
 }

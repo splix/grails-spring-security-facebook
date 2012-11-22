@@ -21,7 +21,8 @@ import org.codehaus.groovy.grails.plugins.springsecurity.SecurityFilterPosition
 import com.the6hours.grails.springsecurity.facebook.FacebookAuthCookieLogoutHandler
 import com.the6hours.grails.springsecurity.facebook.DefaultFacebookAuthDao
 import com.the6hours.grails.springsecurity.facebook.FacebookAuthCookieDirectFilter
-import com.the6hours.grails.springsecurity.facebook.FacebookAuthRequestFilter
+import com.the6hours.grails.springsecurity.facebook.FacebookAuthRedirectFilter
+import com.the6hours.grails.springsecurity.facebook.FacebookAuthRedirectFilter
 
 class SpringSecurityFacebookGrailsPlugin {
 
@@ -68,10 +69,14 @@ class SpringSecurityFacebookGrailsPlugin {
            }
        }
 
+       List<String> _filterTypes = parseFilterTypes(conf)
+
        facebookAuthUtils(FacebookAuthUtils) {
            apiKey = conf.facebook.apiKey
            secret = conf.facebook.secret
            applicationId = conf.facebook.appId
+           linkGenerator = ref('grailsLinkGenerator')
+           filterTypes = _filterTypes
        }
 
        SpringSecurityUtils.registerProvider 'facebookAuthProvider'
@@ -80,18 +85,19 @@ class SpringSecurityFacebookGrailsPlugin {
            facebookAuthUtils = ref('facebookAuthUtils')
 	   }
 
-       addFilters(conf, delegate)
+       addFilters(conf, delegate, _filterTypes)
    }
 
-   private void addFilters(def conf, def delegate) {
+   private List<String> parseFilterTypes(def conf) {
        def typesRaw = conf.facebook.filter.types
        List<String> types = null
        if (!typesRaw) {
+           log.warn("Value for 'grails.plugins.springsecurity.facebook.filter.types' is empty")
            typesRaw = conf.facebook.filter.type
        }
 
        String defaultType = 'transparent'
-       List validTypes = ['transparent', 'cookieDirect']
+       List validTypes = ['transparent', 'cookieDirect', 'redirect']
 
        if (!typesRaw) {
            log.error("Invalid Facebook Authentication filters configuration: '$typesRaw'. Should be used on of: $validTypes. Current value will be ignored, and type '$defaultType' will be used instead.")
@@ -100,18 +106,24 @@ class SpringSecurityFacebookGrailsPlugin {
            types = typesRaw.collect { it.toString() }.findAll { it in validTypes }
        } else if (typesRaw instanceof String) {
            types = typesRaw.split(',').collect { it.trim() }.findAll { it in validTypes }
-       }
-
-       if (!types || types.empty) {
-           log.error("Facebook Authentication filter is not configured. Should be used on of: $validTypes, and '$defaultType' will be used by default.")
-           log.error("To configure Facebook Authentication filters you should add to Config.groovy:")
-           log.error("grails.plugins.springsecurity.facebook.filter.types='transparent'")
-           log.error("or")
-           log.error("grails.plugins.springsecurity.facebook.filter.types='transparent,cookieDirect'")
-
+       } else {
+           log.error("Invalid Facebook Authentication filters configuration, invalid value type: '${typesRaw.getClass()}'. Filter typer should be defined as a Collection or String (comma separated, if you need few filters). Type '$defaultType' will be used instead.")
            types = [defaultType]
        }
 
+       if (!types || types.empty) {
+           log.error("Facebook Authentication filter is not configured. Should be used one of: $validTypes. So '$defaultType' will be used by default.")
+           log.error("To configure Facebook Authentication filters you should add to Config.groovy:")
+           log.error("grails.plugins.springsecurity.facebook.filter.types='transparent'")
+           log.error("or")
+           log.error("grails.plugins.springsecurity.facebook.filter.types='redirect,transparent,cookieDirect'")
+
+           types = [defaultType]
+       }
+       return types
+   }
+
+   private void addFilters(def conf, def delegate, def types) {
        int basePosition = conf.facebook.filter.position
 
        addFilter.delegate = delegate
@@ -139,11 +151,13 @@ class SpringSecurityFacebookGrailsPlugin {
                authenticationManager = ref('authenticationManager')
                facebookAuthUtils = ref('facebookAuthUtils')
            }
-       } else if (name == 'request') {
-           SpringSecurityUtils.registerFilter 'facebookAuthRequestFilter', position
-           facebookAuthRequestFilter(FacebookAuthRequestFilter, conf.facebook.filter.processUrl) {
+       } else if (name == 'redirect') {
+           SpringSecurityUtils.registerFilter 'facebookAuthRedirectFilter', position
+           facebookAuthRedirectFilter(FacebookAuthRedirectFilter, conf.facebook.filter.processUrl) {
                authenticationManager = ref('authenticationManager')
                facebookAuthUtils = ref('facebookAuthUtils')
+               redirectFromUrl = conf.facebook.filter.redirectFromUrl
+               linkGenerator = ref('grailsLinkGenerator')
            }
        } else {
            log.error("Invalid filter type: $name")

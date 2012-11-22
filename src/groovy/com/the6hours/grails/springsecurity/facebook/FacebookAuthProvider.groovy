@@ -31,7 +31,7 @@ public class FacebookAuthProvider implements AuthenticationProvider, Initializin
                 token.authenticated = false
                 return token
             }
-            token.accessToken = facebookAuthUtils.getAccessToken(token.code)
+            token.accessToken = facebookAuthUtils.getAccessToken(token.code, token.redirectUri)
             if (token.accessToken == null) {
                 log.error("Can't fetch access_token for code '$token.code'")
                 token.authenticated = false

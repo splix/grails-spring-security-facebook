@@ -20,6 +20,7 @@ security {
             language = "en_US"
             button {
                 text = "Login with Facebook"
+                defaultImg = "/images/connect.png"
             }
             initfb = true
             //see http://developers.facebook.com/docs/authentication/permissions/
@@ -32,8 +33,9 @@ security {
         }
 
         filter {
-            processUrl = "/j_spring_facebook_security_check"
-            type = 'transparent' //transparent or cookieDirect
+            processUrl = "/j_spring_security_facebook_check"
+            redirectFromUrl = "/j_spring_security_facebook_redirect"
+            type = 'redirect' //transparent, cookieDirect or redirect
             position = 720 //see SecurityFilterPosition
             forceLoginParameter = 'j_spring_facebook_force'
         }

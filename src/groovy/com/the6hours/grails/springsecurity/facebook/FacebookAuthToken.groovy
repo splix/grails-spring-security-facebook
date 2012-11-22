@@ -9,6 +9,7 @@ public class FacebookAuthToken extends AbstractAuthenticationToken implements Au
 	long uid
     FacebookAccessToken accessToken
     String code
+    String redirectUri
 
     Object principal
 	

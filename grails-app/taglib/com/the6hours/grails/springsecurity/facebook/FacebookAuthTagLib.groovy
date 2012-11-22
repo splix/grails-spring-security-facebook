@@ -1,6 +1,8 @@
 package com.the6hours.grails.springsecurity.facebook
 
 import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
+import org.codehaus.groovy.grails.web.mapping.LinkGenerator
+import grails.plugins.springsecurity.SpringSecurityService
 
 /**
  * TODO
@@ -15,10 +17,11 @@ class FacebookAuthTagLib {
 
     static final String MARKER = 'com.the6hours.grails.springsecurity.facebook.FacebookAuthTagLib#init'
 
-	/** Dependency injection for springSecurityService. */
-	def springSecurityService
+	//SpringSecurityService springSecurityService
 
-    def init = { attrs, body ->
+    FacebookAuthUtils facebookAuthUtils
+
+    Closure init = { attrs, body ->
         Boolean init = request.getAttribute(MARKER)
         if (init == null) {
             init = false
@@ -64,7 +67,55 @@ class FacebookAuthTagLib {
         }
     }
 
-	def connect = { attrs, body ->
+    Closure connect = { attrs, body ->
+        if (attrs.type) {
+            if (attrs.type == 'server') {
+                serverSideConnect(attrs, body)
+                return
+            } else if (attrs.type == 'client') {
+                clientSideConnect(attrs, body)
+                return
+            } else {
+                log.error("Invalid connect type: ${attrs.type}")
+            }
+        }
+
+        def writer = getOut()
+        if (facebookAuthUtils.filterTypes.contains('redirect')) {
+            log.debug("Do default server-sider authentication redirect")
+            writer << serverSideConnect(attrs, body)
+            return
+        } else {
+            log.debug("Do default client-sider authentication")
+            writer << clientSideConnect(attrs, body)
+            return
+        }
+    }
+
+    Closure serverSideConnect = { attrs, body ->
+        log.debug("apply server side connect")
+        def writer = getOut()
+        def conf = SpringSecurityUtils.securityConfig.facebook
+        String target = conf.filter.redirectFromUrl
+        String bodyValue = body()
+        if (bodyValue == null || bodyValue.trim().length() == 0) {
+            String imgUrl
+            if (attrs.img) {
+                imgUrl = attrs.img
+            } else if (conf.taglib.button.img) {
+                imgUrl = resource(file: conf.taglib.button.img)
+            } else {
+                imgUrl = resource(file: conf.taglib.button.defaultImg, plugin: 'spring-security-facebook')
+            }
+            bodyValue = img(attrs, imgUrl)
+        }
+        Closure newBody = {
+            return bodyValue
+        }
+        writer << link([uri: target], newBody)
+    }
+
+    Closure clientSideConnect = { attrs, body ->
         def conf = SpringSecurityUtils.securityConfig.facebook
 
         if (attrs.skipInit != 'false') {
@@ -104,4 +155,28 @@ class FacebookAuthTagLib {
         out << "<div class=\"fb-login-button\" data-scope=\"${permissions.join(', ')}\" data-show-faces=\"${showFaces}\">$buttonText</div>"
     }
 
+    private String img(Map attrs, String src) {
+        def conf = SpringSecurityUtils.securityConfig.facebook
+
+        StringBuilder buf = new StringBuilder()
+        buf.append('<img src="').append(src).append('" ')
+        Map used = [:]
+        attrs.entrySet().each { Map.Entry it ->
+            if (it.key in ['height', 'width', 'img-class', 'img-style', 'img-id', 'alt']) {
+                String attr = it.key
+                if (attr.startsWith('img-')) {
+                    attr = attr.substring('img-'.length())
+                }
+                used[attr] = it.value?.toString()
+            }
+        }
+        if (!used.alt) {
+            used.alt = conf.taglib.button.text
+        }
+        used.entrySet().each { Map.Entry it ->
+            buf.append(it.key).append('="').append(it.value).append('" ')
+        }
+        buf.append("/>")
+        return buf.toString()
+    }
 }

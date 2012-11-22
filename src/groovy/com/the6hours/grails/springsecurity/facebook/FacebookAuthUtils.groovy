@@ -10,6 +10,7 @@ import org.springframework.security.authentication.BadCredentialsException
 import grails.converters.JSON
 import java.util.concurrent.TimeUnit
 import org.codehaus.groovy.grails.web.json.JSONException
+import org.codehaus.groovy.grails.web.mapping.LinkGenerator
 
 /**
  * TODO
@@ -21,9 +22,16 @@ class FacebookAuthUtils {
 
     private static def log = Logger.getLogger(this)
 
+    private static Random RND = new Random()
+    private int seq = 0
+
     String apiKey
     String secret
     String applicationId
+
+    List<String> filterTypes = []
+
+    LinkGenerator linkGenerator
 
     FacebookAuthToken build(String signedRequest) {
         if (!signedRequest) {
@@ -73,7 +81,7 @@ class FacebookAuthUtils {
     public Cookie getAuthCookie(HttpServletRequest request) {
         String cookieName = "fbsr_" + applicationId
         return request.cookies.find { Cookie it ->
-            //FacebookAuthUtils.log.debug("Cookier $it.name, expected $cookieName")
+            //FacebookAuthUtils.log.debug("Cookie $it.name, expected $cookieName")
             return it.name == cookieName
         }
     }
@@ -82,7 +90,7 @@ class FacebookAuthUtils {
         String loadUrl = "https://graph.facebook.com/me?access_token=$accessToken"
         try {
             URL url = new URL(loadUrl)
-            String json = JSON.parse(url.readLines().first())
+            def json = JSON.parse(url.readLines().first())
             return json.id as Long
         } catch (IOException e) {
             log.error("Can't read data from Facebook", e)
@@ -97,8 +105,11 @@ class FacebookAuthUtils {
         return requestAccessToken(authUrl)
     }
 
-    FacebookAccessToken getAccessToken(String code) {
-        String authUrl = "https://graph.facebook.com/oauth/access_token?client_id=$applicationId&redirect_uri=&client_secret=$secret&code=$code"
+    FacebookAccessToken getAccessToken(String code, String redirectUri = '') {
+        if (redirectUri == null) {
+            redirectUri = ''
+        }
+        String authUrl = "https://graph.facebook.com/oauth/access_token?client_id=$applicationId&redirect_uri=$redirectUri&client_secret=$secret&code=$code"
         return requestAccessToken(authUrl)
     }
 
@@ -139,7 +150,7 @@ class FacebookAuthUtils {
         }
     }
 
-    public boolean verifySign(String sign, String payload) {
+    boolean verifySign(String sign, String payload) {
         String signer = 'HMACSHA256'
         //log.debug("Secret $secret")
         SecretKeySpec sks = new SecretKeySpec(secret.getBytes(), signer)
@@ -159,4 +170,22 @@ class FacebookAuthUtils {
             return false;
         }
     }
+
+    String prepareRedirectUrl(String authPath, List scope = []) {
+        if (seq >= Integer.MAX_VALUE - 10000) {
+            seq = 0
+        }
+        Map data = [
+                client_id: applicationId,
+                redirect_uri:  authPath,
+                scope: scope.join(','),
+                state: [seq++, RND.nextInt(1000000)].collect {Integer.toHexString(it)}.join('-')
+        ]
+        log.debug("Redirect to ${data.redirect_uri}")
+        String url = "https://www.facebook.com/dialog/oauth?" + data.entrySet().collect {
+            [it.key, it.value].join('=')
+        }.join('&')
+        return url
+    }
+
 }
