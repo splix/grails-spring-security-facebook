@@ -6,3 +6,5 @@ grails s2-quickstart
 grails install-plugin spring-security-facebook
 grails s2-init-facebook
 {code}
+
+Last step `s2-init-facebook` is optional, useful only if you need an step-by-step wizard to make configuration.

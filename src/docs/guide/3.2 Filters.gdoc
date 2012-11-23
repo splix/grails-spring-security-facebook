@@ -5,9 +5,19 @@ Plugin is based on Spring Security and uses web filters for authorization, for m
 
 h1. Available filters
 
-There are two types of authorization, and two filters.
+There are 3 types of authorization, and 3 filters:
 
-h2. Transparent cookie based authorization / FacebookAuthCookieTransparentFilter
+ * FacebookAuthRedirectFilter - server-side authorization (used by default)
+ * FacebookAuthCookieTransparentFilter - automatic client-side authorization
+ * FacebookAuthCookieDirectFilter - manual client-side authorization
+
+h2. Server-Side authorization (FacebookAuthRedirectFilter)
+
+It's a standard [Login for Server-side Apps|https://developers.facebook.com/docs/howtos/login/server-side-login/].
+After clicking on 'connect button' user gets redirected to special Facebook page, for authentication, and then
+redirected back to your app.
+
+h2. Transparent cookie based authorization (FacebookAuthCookieTransparentFilter)
 
 Based on [Facebook Javascript SDK|https://developers.facebook.com/docs/reference/javascript/] authorization. On
 client side it makes Facebook authorization and put Facebook Cookie (it's made by Facebook Javascript,
@@ -22,7 +32,7 @@ current user. If it's a new user, it creates a new one for application, with pro
 It's per-request authorization.
 {note}
 
-h2. Manual cookie based authorization / FacebookAuthCookieDirectFilter
+h2. Manual cookie based authorization (FacebookAuthCookieDirectFilter)
 
 Based on [Facebook Javascript SDK|https://developers.facebook.com/docs/reference/javascript/] authorization. On
 client side it makes Facebook authorization and put Facebook Cookie (it's made by Facebook Javascript,
