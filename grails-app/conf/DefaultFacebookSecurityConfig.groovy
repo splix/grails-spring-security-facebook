@@ -8,7 +8,7 @@ security {
 
         domain {
             classname = 'FacebookUser'
-            connectionPropertyName = "user"
+            appUserConnectionPropertyName = "user"
         }
 
         useAjax = true

@@ -12,22 +12,26 @@ import org.apache.log4j.Logger
 import org.springframework.security.core.userdetails.UserDetails
 import java.util.concurrent.TimeUnit
 
+import org.codehaus.groovy.grails.plugins.springsecurity.GormUserDetailsService
+
 /**
  * TODO
  *
  * @since 28.10.11
  * @author Igor Artamonov (http://igorartamonov.com)
  */
-class DefaultFacebookAuthDao implements FacebookAuthDao<Object>, InitializingBean, ApplicationContextAware, GrailsApplicationAware {
+class DefaultFacebookAuthDao implements FacebookAuthDao<Object, Object>, InitializingBean, ApplicationContextAware, GrailsApplicationAware {
 
     private static def log = Logger.getLogger(this)
 
     GrailsApplication grailsApplication
     ApplicationContext applicationContext
+    def coreUserDetailsService
 
     String domainClassName
 
-    String connectionPropertyName
+    String appUserConnectionPropertyName
+
     String userDomainClassName
     String rolesPropertyName
     List<String> defaultRoleNames = ['ROLE_USER', 'ROLE_FACEBOOK']
@@ -40,13 +44,36 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object>, InitializingBea
             return facebookAuthService.getFacebookUser(user)
         }
         if (domainsRelation == DomainsRelation.JoinedUser) {
-            return user?.getAt(connectionPropertyName)// load the User object to memory prevent LazyInitializationException
+            Class<?> FacebookUser = grailsApplication.getDomainClass(domainClassName)?.clazz
+            if (!FacebookUser) {
+                log.error("Can't find domain: $domainClassName")
+                return null
+            }
+            def loaded = null
+            FacebookUser.withTransaction { status ->
+                user = FacebookUser.findWhere("$appUserConnectionPropertyName": user)
+            }
+            return loaded
         }
         if (domainsRelation == DomainsRelation.SameObject) {
             return user
         }
         log.error("Invalid domainsRelation value: $domainsRelation")
         return user
+    }
+
+    Object getAppUser(Object facebookUser) {
+        if (facebookAuthService && facebookAuthService.respondsTo('getAppUser', facebookUser.class)) {
+            return facebookAuthService.getAppUser(facebookUser)
+        }
+        if (domainsRelation == DomainsRelation.SameObject) {
+            return facebookUser
+        }
+        if (domainsRelation == DomainsRelation.JoinedUser) {
+            return facebookUser?.getAt(appUserConnectionPropertyName)// load the User object to memory prevent LazyInitializationException
+        }
+        log.error("Invalid domainsRelation value: $domainsRelation")
+        return facebookUser
     }
 
     Object findUser(long uid) {
@@ -117,7 +144,7 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object>, InitializingBea
                     appUser.save(flush: true, failOnError: true)
                 }
             }
-            user[connectionPropertyName] = appUser
+            user[appUserConnectionPropertyName] = appUser
         }
 
         if (facebookAuthService && facebookAuthService.respondsTo('onCreate', UserClass, token)) {
@@ -158,10 +185,11 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object>, InitializingBea
         if (facebookAuthService && facebookAuthService.respondsTo('getPrincipal', user.class)) {
             return facebookAuthService.getPrincipal(user)
         }
-        if (domainsRelation == DomainsRelation.JoinedUser) {
-            return user[connectionPropertyName]
+        Object appUser = getAppUser(user)
+        if (coreUserDetailsService) {
+            return coreUserDetailsService.createUserDetails(appUser, getRoles(appUser))
         }
-        return user
+        return appUser
     }
 
     Collection<GrantedAuthority> getRoles(Object user) {
@@ -293,6 +321,15 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object>, InitializingBea
                     log.error("Can't find facebook user class ($domainClassName). Please configure 'grails.plugins.springsecurity.facebook.domain.classname' value, or create your own 'Object facebookAuthService.findUser(long)'")
                 }
             }
+        }
+
+        if (coreUserDetailsService != null) {
+            if (!(coreUserDetailsService instanceof GormUserDetailsService && coreUserDetailsService.respondsTo('createUserDetails'))) {
+                log.warn("UserDetailsService from spring-security-core don't have method 'createUserDetails()'")
+                coreUserDetailsService = null
+            }
+        } else {
+            log.warn("No UserDetailsService bean from spring-security-core")
         }
     }
 }

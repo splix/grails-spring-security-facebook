@@ -2,7 +2,7 @@ package com.the6hours.grails.springsecurity.facebook
 
 import org.springframework.security.core.GrantedAuthority
 
-public interface FacebookAuthDao<F> {
+public interface FacebookAuthDao<F, A> {
 
     /**
      * Tries to load app user for Facebook user
@@ -23,12 +23,21 @@ public interface FacebookAuthDao<F> {
      * implements {@link org.springframework.security.core.userdetails.UserDetails UserDetails} or
      * {@link java.security.Principal Principal}.
      *
-     * At most cases it's just current user, passed as parameter
+     * Btw, it's ok to return app user (like #getAppUser()) or even same object there.
      *
      * @param user current user
      * @return user to put into Security Context
      */
     Object getPrincipal(F user)
+
+    /**
+     * Return main (spring security user domain) for given facebook user. If it's same domain, just return
+     * passed argument.
+     *
+     * @param user instance of facebook domain
+     * @return instance of spring security domain
+     */
+    A getAppUser(F user)
 
     /**
      * Roles for current user

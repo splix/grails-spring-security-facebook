@@ -93,11 +93,17 @@ public class FacebookAuthProvider implements AuthenticationProvider, Initializin
                 }
             }
 
-            UserDetails userDetails = createUserDetails(user, token.code)
+            Object principal = facebookAuthDao.getPrincipal(user)
 
-            token.details = userDetails
-            token.principal = facebookAuthDao.getPrincipal(user)
-            token.authorities = userDetails.getAuthorities()
+            token.details = null
+            token.principal = principal
+            if (UserDetails.isAssignableFrom(principal.class)) {
+                token.authorities = ((UserDetails)principal).getAuthorities()
+            } else {
+                Object appUser = facebookAuthDao.getAppUser(user)
+                token.authorities = facebookAuthDao.getRoles(appUser)
+            }
+
         } else {
             token.authenticated = false
         }
@@ -106,15 +112,6 @@ public class FacebookAuthProvider implements AuthenticationProvider, Initializin
 
     public boolean supports(Class<? extends Object> authentication) {
         return FacebookAuthToken.isAssignableFrom(authentication);
-    }
-	
-    protected UserDetails createUserDetails(Object facebookUser, String secret) {
-        if (facebookAuthService && facebookAuthService.respondsTo('createUserDetails', facebookUser.class)) {
-            return facebookAuthService.createUserDetails(facebookUser)
-        }
-        Collection<GrantedAuthority> roles = facebookAuthDao.getRoles(facebookAuthDao.getPrincipal(facebookUser))
-        new User(facebookUser.uid.toString(), secret, true,
-             true, true, true, roles)
     }
 
     void afterPropertiesSet() {

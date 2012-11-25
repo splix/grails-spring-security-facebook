@@ -63,9 +63,10 @@ class SpringSecurityFacebookGrailsPlugin {
            conf.facebook.bean.dao = 'facebookAuthDao'
            facebookAuthDao(DefaultFacebookAuthDao) {
                domainClassName = conf.facebook.domain.classname
-               connectionPropertyName = conf.facebook.domain.connectionPropertyName
+               appUserConnectionPropertyName = conf.facebook.domain.appUserConnectionPropertyName ?: conf.facebook.domain.connectionPropertyName
                userDomainClassName = conf.userLookup.userDomainClassName
                rolesPropertyName = conf.userLookup.authoritiesPropertyName
+               coreUserDetailsService = ref('userDetailsService')
            }
        }
 
