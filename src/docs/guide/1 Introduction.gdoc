@@ -11,3 +11,7 @@ h2. Requirements:
 h2. Examples:
 
   * [https://github.com/splix/s2-facebook-example|https://github.com/splix/s2-facebook-example] - Example app (based on Grails 2.1.1)
+
+h2. Support
+
+ * if you found a bug - please submit it into [GitHub Issues:https://github.com/splix/grails-spring-security-facebook/issues]

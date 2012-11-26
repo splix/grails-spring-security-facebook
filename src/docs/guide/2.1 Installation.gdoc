@@ -1,0 +1,14 @@
+h3. Install plugin
+
+Basically it's just a:
+
+{code}
+grails install-plugin spring-security-core
+grails s2-quickstart
+grails install-plugin spring-security-facebook
+grails s2-init-facebook
+{code}
+
+Last step `s2-init-facebook` is optional, useful only if you need an step-by-step wizard to make configuration.
+
+Follow [Basic Usage|guide:3.1 Basic Usage] guide for next steps.

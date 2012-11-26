@@ -29,7 +29,7 @@ This filter will *process each request*, and if it sees valid Facebook cookie, i
 current user. If it's a new user, it creates a new one for application, with provided Facebook credentials.
 
 {note}
-It's per-request authorization.
+It's per-request authorization. That means that this filter will try to authorize user on each page request.
 {note}
 
 h2. Manual cookie based authorization (FacebookAuthCookieDirectFilter)
@@ -53,9 +53,9 @@ It's not a Spring Security configuration, not a configuration for Spring filters
 extra configuration, that used only by this plugin.
 {note}
 
-By default it uses only one 'transparent' filter:
+By default it uses only one 'redirect' filter:
 {code}
-grails.plugins.springsecurity.facebook.filter.type='transparent'
+grails.plugins.springsecurity.facebook.filter.type='redirect'
 {code}
 
 You can use more that one filter at same time:
@@ -64,6 +64,7 @@ grails.plugins.springsecurity.facebook.filter.type='transparent,cookieDirect'
 {code}
 
 Value types:
+  * @redirect@ - use standard server side authorization
   * @transparent@ - use transparent cookie based authorization
   * @cookieDirect@ - use manual cookie based authorization
 

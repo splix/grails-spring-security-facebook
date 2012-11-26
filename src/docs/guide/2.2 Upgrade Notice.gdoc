@@ -1,0 +1,11 @@
+h3. Upgrading from version 0.9
+
+Since version 0.10 plugin have started to use Server Side authentication by default, instead of
+Client Side authentication (based on Facebook JS SDK) that was default implementation for version 0.9 and earlier.
+
+If you want to continue using Client Side authentication, you should add following configuration into @Config.groovy@:
+{code}
+grails.plugins.springsecurity.facebook.filter.type='transparent,cookieDirect'
+{code}
+
+See [Filters guide|guide:3.2 Filters] for details.

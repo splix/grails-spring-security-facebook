@@ -3,13 +3,13 @@ h2. Please enable logging
 If you have troubles with plugin, please enabled logging, so you can see what's happening:
 {code}
 log4j = {
-  debug 'com.the6hours'
+  debug 'com.the6hours', 'grails.app.taglib.com.the6hours'
 }
 {code}
 
-h2. Can't find a cookie / user not authenticated by plugin
+h2. Can't find a cookie / user not authenticated by plugin (client side authentication)
 
-Make sure that you're using some kind of domain, not @localhost@, because Facebook can't setup
+Make sure that you're using any domain name for you application. Not a @localhost@, because Facebook can't setup
 cookie for localhost. Avoid @.local@ domains as well.
 
 You can use domain like @myapp.dev@, that you should setup at file @/etc/hosts@ (or
