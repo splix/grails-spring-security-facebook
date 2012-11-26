@@ -26,7 +26,7 @@ import com.the6hours.grails.springsecurity.facebook.FacebookAuthRedirectFilter
 
 class SpringSecurityFacebookGrailsPlugin {
 
-   String version = '0.9'
+   String version = '0.10'
    String grailsVersion = '2.0.0 > *'
    Map dependsOn = ['springSecurityCore': '1.2.7.2 > *']
 
@@ -43,7 +43,7 @@ class SpringSecurityFacebookGrailsPlugin {
    String title = 'Facebook Authentication'
    String description = 'Facebook Connect authentication support for the Spring Security plugin.'
 
-   String documentation = 'http://grails.org/plugin/spring-security-facebook'
+   String documentation = 'http://splix.github.com/grails-spring-security-facebook/'
 
    def doWithSpring = {
 
