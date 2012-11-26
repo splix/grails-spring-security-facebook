@@ -39,19 +39,17 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object, Object>, Initial
     def facebookAuthService
     DomainsRelation domainsRelation = DomainsRelation.JoinedUser
 
+    private Class<?> FacebookUserDomainClazz
+    private Class<?> AppUserDomainClazz
+
     Object getFacebookUser(Object user) {
         if (facebookAuthService && facebookAuthService.respondsTo('getFacebookUser', user.class)) {
             return facebookAuthService.getFacebookUser(user)
         }
         if (domainsRelation == DomainsRelation.JoinedUser) {
-            Class<?> FacebookUser = grailsApplication.getDomainClass(domainClassName)?.clazz
-            if (!FacebookUser) {
-                log.error("Can't find domain: $domainClassName")
-                return null
-            }
             def loaded = null
-            FacebookUser.withTransaction { status ->
-                user = FacebookUser.findWhere("$appUserConnectionPropertyName": user)
+            FacebookUserDomainClazz.withTransaction { status ->
+                user = FacebookUserDomainClazz.findWhere("$appUserConnectionPropertyName": user)
             }
             return loaded
         }
@@ -74,9 +72,8 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object, Object>, Initial
             return facebookUser
         }
         if (domainsRelation == DomainsRelation.JoinedUser) {
-            Class<?> FacebookUser = grailsApplication.getDomainClass(domainClassName)?.clazz
             Object result = null
-            FacebookUser.withTransaction { status ->
+            FacebookUserDomainClazz.withTransaction { status ->
                 facebookUser.merge()
                 result = facebookUser.getAt(appUserConnectionPropertyName)
             }
@@ -90,14 +87,9 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object, Object>, Initial
         if (facebookAuthService && facebookAuthService.respondsTo('findUser', Long)) {
             return facebookAuthService.findUser(uid)
         }
-		Class<?> User = grailsApplication.getDomainClass(domainClassName)?.clazz
-        if (!User) {
-            log.error("Can't find domain: $domainClassName")
-            return null
-        }
         def user = null
-        User.withTransaction { status ->
-            user = User.findWhere(uid: uid)
+        FacebookUserDomainClazz.withTransaction { status ->
+            user = FacebookUserDomainClazz.findWhere(uid: uid)
             if (user
                     && !(facebookAuthService && facebookAuthService.respondsTo('getFacebookUser', user.class))
                     && domainsRelation == DomainsRelation.JoinedUser) {
@@ -114,12 +106,6 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object, Object>, Initial
 
         def securityConf = SpringSecurityUtils.securityConfig
 
-        Class<?> UserClass = grailsApplication.getDomainClass(domainClassName)?.clazz
-        if (!UserClass) {
-            log.error("Can't find domain: $domainClassName")
-            return null
-        }
-
         def user = grailsApplication.getDomainClass(domainClassName).newInstance()
         user.uid = token.uid
         if (user.properties.containsKey('accessToken')) {
@@ -131,16 +117,11 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object, Object>, Initial
 
         def appUser
         if (domainsRelation == DomainsRelation.JoinedUser) {
-            if (facebookAuthService && facebookAuthService.respondsTo('createAppUser', UserClass, FacebookAuthToken)) {
+            if (facebookAuthService && facebookAuthService.respondsTo('createAppUser', FacebookUserDomainClazz, FacebookAuthToken)) {
                 appUser = facebookAuthService.createAppUser(user, token)
             } else {
-                Class<?> UserDomainClass = grailsApplication.getDomainClass(userDomainClassName).clazz
-                if (!UserDomainClass) {
-                    log.error("Can't find user domain: $userDomainClassName")
-                    return null
-                }
-                appUser = UserDomainClass.newInstance()
-                if (facebookAuthService && facebookAuthService.respondsTo('prepopulateAppUser', UserDomainClass, FacebookAuthToken)) {
+                appUser = AppUserDomainClazz.newInstance()
+                if (facebookAuthService && facebookAuthService.respondsTo('prepopulateAppUser', AppUserDomainClazz, FacebookAuthToken)) {
                     facebookAuthService.prepopulateAppUser(appUser, token)
                 } else {
                     appUser[securityConf.userLookup.usernamePropertyName] = "facebook_$token.uid"
@@ -150,26 +131,26 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object, Object>, Initial
                     appUser[securityConf.userLookup.accountLockedPropertyName] = false
                     appUser[securityConf.userLookup.passwordExpiredPropertyName] = false
                 }
-                UserDomainClass.withTransaction {
+                AppUserDomainClazz.withTransaction {
                     appUser.save(flush: true, failOnError: true)
                 }
             }
             user[appUserConnectionPropertyName] = appUser
         }
 
-        if (facebookAuthService && facebookAuthService.respondsTo('onCreate', UserClass, token)) {
+        if (facebookAuthService && facebookAuthService.respondsTo('onCreate', FacebookUserDomainClazz, token)) {
             facebookAuthService.onCreate(user, token)
         }
 
-        UserClass.withTransaction {
+        FacebookUserDomainClazz.withTransaction {
             user.save(flush: true, failOnError: true)
         }
 
-        if (facebookAuthService && facebookAuthService.respondsTo('afterCreate', UserClass, token)) {
+        if (facebookAuthService && facebookAuthService.respondsTo('afterCreate', FacebookUserDomainClazz, token)) {
             facebookAuthService.afterCreate(user, token)
         }
 
-        if (facebookAuthService && facebookAuthService.respondsTo('createRoles', UserClass)) {
+        if (facebookAuthService && facebookAuthService.respondsTo('createRoles', FacebookUserDomainClazz)) {
             facebookAuthService.createRoles(user)
         } else {
             Class<?> PersonRole = grailsApplication.getDomainClass(securityConf.userLookup.authorityJoinClassName).clazz
@@ -270,12 +251,7 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object, Object>, Initial
         if (facebookUser.properties.containsKey('accessTokenExpires')) {
             facebookUser.accessTokenExpires = token.accessToken.expireAt
         }
-        Class<?> UserClass = grailsApplication.getDomainClass(domainClassName)?.clazz
-        if (!UserClass) {
-            log.error("Can't find domain: $domainClassName")
-            return
-        }
-        UserClass.withTransaction {
+        FacebookUserDomainClazz.withTransaction {
             facebookUser.save()
         }
     }
@@ -337,5 +313,15 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object, Object>, Initial
         } else {
             log.warn("No UserDetailsService bean from spring-security-core")
         }
+
+        FacebookUserDomainClazz = grailsApplication.getDomainClass(domainClassName)?.clazz
+        if (!FacebookUserDomainClazz) {
+            log.error("Can't find domain: $domainClassName")
+        }
+        AppUserDomainClazz = grailsApplication.getDomainClass(userDomainClassName)?.clazz
+        if (!AppUserDomainClazz) {
+            log.error("Can't find domain: $userDomainClassName")
+        }
+
     }
 }
