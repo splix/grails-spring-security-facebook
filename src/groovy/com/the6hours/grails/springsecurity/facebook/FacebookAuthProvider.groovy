@@ -93,14 +93,14 @@ public class FacebookAuthProvider implements AuthenticationProvider, Initializin
                 }
             }
 
-            Object principal = facebookAuthDao.getPrincipal(user)
+            Object appUser = facebookAuthDao.getAppUser(user)
+            Object principal = facebookAuthDao.getPrincipal(appUser)
 
             token.details = null
             token.principal = principal
             if (UserDetails.isAssignableFrom(principal.class)) {
                 token.authorities = ((UserDetails)principal).getAuthorities()
             } else {
-                Object appUser = facebookAuthDao.getAppUser(user)
                 token.authorities = facebookAuthDao.getRoles(appUser)
             }
 

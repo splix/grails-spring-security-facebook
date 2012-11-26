@@ -23,12 +23,12 @@ public interface FacebookAuthDao<F, A> {
      * implements {@link org.springframework.security.core.userdetails.UserDetails UserDetails} or
      * {@link java.security.Principal Principal}.
      *
-     * Btw, it's ok to return app user (like #getAppUser()) or even same object there.
+     * Btw, it's ok to return same object here.
      *
-     * @param user current user
+     * @param user current app user (main spring security core domain instance)
      * @return user to put into Security Context
      */
-    Object getPrincipal(F user)
+    Object getPrincipal(A user)
 
     /**
      * Return main (spring security user domain) for given facebook user. If it's same domain, just return

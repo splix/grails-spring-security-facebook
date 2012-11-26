@@ -66,11 +66,21 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object, Object>, Initial
         if (facebookAuthService && facebookAuthService.respondsTo('getAppUser', facebookUser.class)) {
             return facebookAuthService.getAppUser(facebookUser)
         }
+        if (facebookUser == null) {
+            log.warn("Passed facebookUser is null")
+            return facebookUser
+        }
         if (domainsRelation == DomainsRelation.SameObject) {
             return facebookUser
         }
         if (domainsRelation == DomainsRelation.JoinedUser) {
-            return facebookUser?.getAt(appUserConnectionPropertyName)// load the User object to memory prevent LazyInitializationException
+            Class<?> FacebookUser = grailsApplication.getDomainClass(domainClassName)?.clazz
+            Object result = null
+            FacebookUser.withTransaction { status ->
+                facebookUser.merge()
+                result = facebookUser.getAt(appUserConnectionPropertyName)
+            }
+            return result
         }
         log.error("Invalid domainsRelation value: $domainsRelation")
         return facebookUser
@@ -185,11 +195,10 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object, Object>, Initial
         if (facebookAuthService && facebookAuthService.respondsTo('getPrincipal', user.class)) {
             return facebookAuthService.getPrincipal(user)
         }
-        Object appUser = getAppUser(user)
         if (coreUserDetailsService) {
-            return coreUserDetailsService.createUserDetails(appUser, getRoles(appUser))
+            return coreUserDetailsService.createUserDetails(user, getRoles(user))
         }
-        return appUser
+        return user
     }
 
     Collection<GrantedAuthority> getRoles(Object user) {
@@ -226,11 +235,10 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object, Object>, Initial
         }
     }
 
-    Boolean hasValidToken(Object user) {
-        if (facebookAuthService && facebookAuthService.respondsTo('hasValidToken', user.class)) {
-            return facebookAuthService.hasValidToken(user)
+    Boolean hasValidToken(Object facebookUser) {
+        if (facebookAuthService && facebookAuthService.respondsTo('hasValidToken', facebookUser.class)) {
+            return facebookAuthService.hasValidToken(facebookUser)
         }
-        def facebookUser = getFacebookUser(user)
         if (facebookUser.properties.containsKey('accessToken')) {
             if (facebookUser.accessToken == null) {
                 return false
@@ -250,13 +258,12 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object, Object>, Initial
         return true //not supported currently
     }
 
-    void updateToken(Object user, FacebookAuthToken token) {
-        if (facebookAuthService && facebookAuthService.respondsTo('updateToken', user.class, token.class)) {
-            facebookAuthService.updateToken(user, token)
+    void updateToken(Object facebookUser, FacebookAuthToken token) {
+        if (facebookAuthService && facebookAuthService.respondsTo('updateToken', facebookUser.class, token.class)) {
+            facebookAuthService.updateToken(facebookUser, token)
             return
         }
         log.debug("Update access token to $token")
-        def facebookUser = getFacebookUser(user)
         if (facebookUser.properties.containsKey('accessToken')) {
             facebookUser.accessToken = token.accessToken.accessToken
         }
@@ -273,11 +280,10 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object, Object>, Initial
         }
     }
 
-    String getAccessToken(Object user) {
-        if (facebookAuthService && facebookAuthService.respondsTo('getAccessToken', user.class)) {
-            return facebookAuthService.getAccessToken(user)
+    String getAccessToken(Object facebookUser) {
+        if (facebookAuthService && facebookAuthService.respondsTo('getAccessToken', facebookUser.class)) {
+            return facebookAuthService.getAccessToken(facebookUser)
         }
-        def facebookUser = getFacebookUser(user)
         if (facebookUser.properties.containsKey('accessToken')) {
             return facebookUser.accessToken
         }
