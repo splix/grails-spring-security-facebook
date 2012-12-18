@@ -45,6 +45,8 @@ class SpringSecurityFacebookGrailsPlugin {
 
    String documentation = 'http://splix.github.com/grails-spring-security-facebook/'
 
+   def observe = ["springSecurityCore"]
+
    def doWithSpring = {
 
        def conf = SpringSecurityUtils.securityConfig
@@ -59,8 +61,9 @@ class SpringSecurityFacebookGrailsPlugin {
 	   // have to get again after overlaying DefaultFacebookecurityConfig
 	   conf = SpringSecurityUtils.securityConfig
 
-       if (!conf.facebook.bean.dao) {
-           conf.facebook.bean.dao = 'facebookAuthDao'
+       String facebookDaoName = conf?.facebook?.bean?.dao ?: null
+       if (facebookDaoName == null) {
+           facebookDaoName = 'facebookAuthDao'
            facebookAuthDao(DefaultFacebookAuthDao) {
                domainClassName = conf.facebook.domain.classname
                appUserConnectionPropertyName = conf.facebook.domain.appUserConnectionPropertyName ?: conf.facebook.domain.connectionPropertyName
@@ -68,6 +71,8 @@ class SpringSecurityFacebookGrailsPlugin {
                rolesPropertyName = conf.userLookup.authoritiesPropertyName
                coreUserDetailsService = ref('userDetailsService')
            }
+       } else {
+           log.info("Using provided Facebook Auth DAO bean: $facebookDaoName")
        }
 
        List<String> _filterTypes = parseFilterTypes(conf)
@@ -83,7 +88,7 @@ class SpringSecurityFacebookGrailsPlugin {
 
        SpringSecurityUtils.registerProvider 'facebookAuthProvider'
 	   facebookAuthProvider(FacebookAuthProvider) {
-           facebookAuthDao = ref(conf.facebook.bean.dao)
+           facebookAuthDao = ref(facebookDaoName)
            facebookAuthUtils = ref('facebookAuthUtils')
 	   }
 
@@ -183,4 +188,10 @@ class SpringSecurityFacebookGrailsPlugin {
 
    def doWithApplicationContext = { ctx ->
    }
+
+    def onConfigChange = { event ->
+        println("Config change")
+		SpringSecurityUtils.resetSecurityConfig()
+
+	}
 }
