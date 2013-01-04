@@ -63,9 +63,6 @@ class FacebookAuthRedirectFilter extends AbstractAuthenticationProcessingFilter 
 
     String getAbsoluteRedirectUrl() {
         String path = getFilterProcessesUrl()
-        if (path.startsWith('/')) {
-            path = path.substring(1)
-        }
         linkGenerator.link(uri: path, absolute: true)
     }
 
