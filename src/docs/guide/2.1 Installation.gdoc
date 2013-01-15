@@ -1,14 +1,20 @@
 h3. Install plugin
 
-Basically it's just a:
+Basically it's just adding dependency into `BuildConfig.groovy`:
 
 {code}
-grails install-plugin spring-security-core
-grails s2-quickstart
-grails install-plugin spring-security-facebook
-grails s2-init-facebook
+    plugins {
+        compile "org.grails.plugins:spring-security-facebook:0.10.3"
+    }
 {code}
 
-Last step `s2-init-facebook` is optional, useful only if you need an step-by-step wizard to make configuration.
+and calling (optionaly) configuration wizards by:
+{code}
+grails s2-quickstart //configure Spring Security Core
+grails s2-init-facebook //configure Spring Security Facebook
+{code}
+
+Instead of last step you can edit `Config.groovy` manually, you need to add Facebook App key/secret there,
+and other configuration options if you need (see [Configueration|guide:4 Configuration] section)
 
 Follow [Basic Usage|guide:3.1 Basic Usage] guide for next steps.

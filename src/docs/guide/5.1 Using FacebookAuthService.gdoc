@@ -15,6 +15,11 @@ Used objects:
 <FacebookUser> and <Person> can be same object, or can be two different object (with a relation), depends
 on your architecture.
 
+h2. Take a look at sources
+
+Please, take a look at sources of [DefaultFacebookAuthDao|https://github.com/splix/grails-spring-security-facebook/blob/master/src/groovy/com/the6hours/grails/springsecurity/facebook/DefaultFacebookAuthDao.groovy]
+to understand how it works, and which methods you can use for customization
+
 h2. List of possible methods:
 
 h3. void onCreate(<FacebookUser> user, FacebookAuthToken token)

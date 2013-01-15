@@ -37,7 +37,7 @@ grails.plugins.springsecurity.facebook.appId | must be specified
 grails.plugins.springsecurity.facebook.permissions | ['email']
 {table}
 
-List of required permissions, see https://developers.facebook.com/docs/reference/login/#permissions
+List of required permissions, see [https://developers.facebook.com/docs/reference/login/#permissions|https://developers.facebook.com/docs/reference/login/#permissions]
 
 h2. App Structure
 

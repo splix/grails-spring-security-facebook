@@ -1,0 +1,8 @@
+It's the `FacebookAuthRedirectFilter`, enabled by default.
+
+It's preferred and a standard [Login for Server-side Apps|https://developers.facebook.com/docs/howtos/login/server-side-login/].
+After clicking on 'connect button' user gets redirected to special Facebook page, for authentication, and then
+redirected back to your app.
+
+Note, that user going to see Facebook Authentication screen only in first time (if not security modification was made).
+Next time user should be redirected back from Facebook to your application, without showing any Facebook screen.
