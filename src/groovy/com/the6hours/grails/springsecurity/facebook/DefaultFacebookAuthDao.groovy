@@ -49,7 +49,7 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object, Object>, Initial
         if (domainsRelation == DomainsRelation.JoinedUser) {
             def loaded = null
             FacebookUserDomainClazz.withTransaction { status ->
-                user = FacebookUserDomainClazz.findWhere("$appUserConnectionPropertyName": user)
+                user = FacebookUserDomainClazz.findWhere((appUserConnectionPropertyName): user)
             }
             return loaded
         }
