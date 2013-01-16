@@ -53,7 +53,7 @@ public class FacebookAuthProvider implements AuthenticationProvider, Initializin
             if (createNew) {
                 log.info "Create new facebook user with uid $token.uid"
                 if (token.accessToken == null) {
-                    token.accessToken = facebookAuthUtils.getAccessToken(token.code)
+                    token.accessToken = facebookAuthUtils.getAccessToken(token.code, token.redirectUri)
                 }
                 if (token.accessToken == null) {
                     log.error("Creating user w/o access_token")
@@ -80,7 +80,7 @@ public class FacebookAuthProvider implements AuthenticationProvider, Initializin
                 }
 
                 if (!freshToken) {
-                    freshToken =  facebookAuthUtils.getAccessToken(token.code)
+                    freshToken = facebookAuthUtils.getAccessToken(token.code, token.redirectUri)
                 }
 
                 if (freshToken) {
@@ -90,6 +90,10 @@ public class FacebookAuthProvider implements AuthenticationProvider, Initializin
                     } else {
                         log.debug("User already have same access token")
                     }
+                } else {
+                    log.error("Can't update accessToken from Facebook, current token is expired. Disable current authentication")
+                    token.authenticated = false
+                    return token
                 }
             }
 
