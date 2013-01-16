@@ -5,7 +5,8 @@ import ${userClassFullName}
 class ${domainClassName} {
 
 	long uid
-    String accessToken
+  String accessToken
+  Date accessTokenExpires
 
 	static belongsTo = [user: ${userClassName}]
 
