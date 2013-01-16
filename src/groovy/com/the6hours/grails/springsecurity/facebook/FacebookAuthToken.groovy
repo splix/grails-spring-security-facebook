@@ -4,7 +4,7 @@ import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.Authentication
 import org.springframework.security.authentication.AbstractAuthenticationToken
 
-public class FacebookAuthToken extends AbstractAuthenticationToken implements Authentication {
+public class FacebookAuthToken extends AbstractAuthenticationToken implements Authentication, Serializable {
 	
 	long uid
     FacebookAccessToken accessToken

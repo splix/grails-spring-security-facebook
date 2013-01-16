@@ -1,13 +1,11 @@
 package com.the6hours.grails.springsecurity.facebook
 
-import java.util.regex.Pattern
-
 /**
  * 
  * @author Igor Artamonov (http://igorartamonov.com)
  * @since 22.05.12
  */
-class FacebookAccessToken {
+class FacebookAccessToken implements Serializable {
 
   String accessToken
   Date expireAt
