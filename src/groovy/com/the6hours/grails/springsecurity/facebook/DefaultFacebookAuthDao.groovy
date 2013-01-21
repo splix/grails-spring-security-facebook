@@ -262,6 +262,17 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object, Object>, Initial
             return facebookAuthService.getAccessToken(facebookUser)
         }
         if (facebookUser.properties.containsKey('accessToken')) {
+            if (facebookUser.properties.containsKey('accessTokenExpires')) {
+                Date currentExpires = facebookUser.accessTokenExpires
+                if (currentExpires == null) {
+                    log.debug("Current access token don't have expiration timeout, and should be updated")
+                    return null
+                }
+                if (currentExpires.before(new Date())) {
+                    log.debug("Current access token is expired, and cannot be used anymore")
+                    return null
+                }
+            }
             return facebookUser.accessToken
         }
         return null
