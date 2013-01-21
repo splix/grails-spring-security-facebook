@@ -229,14 +229,15 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object, Object>, Initial
             if (facebookUser.accessTokenExpires == null) {
                 return false
             }
-            Date goodExpiration = new Date(System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(4))
-            if (goodExpiration.after(facebookUser.accessTokenExpires)) {
+            Date goodExpiration = new Date(System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(15))
+            Date currentExpires = facebookUser.accessTokenExpires
+            if (currentExpires.before(goodExpiration)) {
                 return false
             }
         } else {
-            log.warn("Domain ${facebookUser.class} don't have 'acccessTokenExpires' field, can't check accessToken expiration")
+            log.warn("Domain ${facebookUser.class} don't have 'acccessTokenExpires' field, can't check accessToken expiration. And it's very likely that your database contains expired tokens")
         }
-        return true //not supported currently
+        return true
     }
 
     void updateToken(Object facebookUser, FacebookAuthToken token) {
