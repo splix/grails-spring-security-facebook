@@ -39,23 +39,26 @@ grails.plugins.springsecurity.facebook.permissions | ['email']
 
 List of required permissions, see [https://developers.facebook.com/docs/reference/login/#permissions|https://developers.facebook.com/docs/reference/login/#permissions]
 
-h2. App Structure
+h2. Domains
 
 {table}
-*Name* | *Default Value*
-grails.plugins.springsecurity.facebook.domain.classname | 'FacebookUser'
+*Name* | *Default Value* | *Values*
+grails.plugins.springsecurity.facebook.domain.classname | 'FacebookUser' |
+grails.plugins.springsecurity.facebook.domain.relation | null | 'SameObject', 'JoinedUser'
+grails.plugins.springsecurity.facebook.domain.appUserConnectionPropertyName | 'user' |
 {table}
 
-Name of your domain class, used to store Facebook User details (uid, access_token, etc)
+ * @domain.classname@ - name of your domain class, used to store Facebook User details (uid, access_token, etc)
+ * @domain.relation@ - configure how your domains are connected, required only if you didn't specify your domains names (useful when you have your own FacebookAuthService, but still using some methods from default Dao)
 
-{table}
-*Name* | *Default Value*
-grails.plugins.springsecurity.facebook.domain.connectionPropertyName | 'user'
-{table}
+Relation Types:
+ * 'SameObject' is used when you are using same domain for Spring Security Core and for Facebook.
+ * 'JoinedUser' is used when you want to store Facebook Authentication details in its own domain.
 
-Specify how your domain class is related to main (used by Spring Security Core) user domain. It's the name
+If you're using 'JoinedUser' you should specify @domain.appUserConnectionPropertyName@: it's how your domain class is related
+to main (used by Spring Security Core) user domain. It's the name
 of the property, usually defined as @static belongsTo = [user: User]@ in your Facebook User domain class (where
-@User@ is a Spring Security core user domain, and @user@ is property name, that you should specify here)
+@User@ is a Spring Security core user domain, and @user@ is property name, that you should specify here
 
 h2. Login Button
 

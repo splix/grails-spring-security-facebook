@@ -12,6 +12,8 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
+
+import com.the6hours.grails.springsecurity.facebook.DomainsRelation
 import com.the6hours.grails.springsecurity.facebook.FacebookAuthProvider
 import com.the6hours.grails.springsecurity.facebook.FacebookAuthDirectFilter
 import com.the6hours.grails.springsecurity.facebook.FacebookAuthCookieTransparentFilter
@@ -70,6 +72,9 @@ class SpringSecurityFacebookGrailsPlugin {
                userDomainClassName = conf.userLookup.userDomainClassName
                rolesPropertyName = conf.userLookup.authoritiesPropertyName
                coreUserDetailsService = ref('userDetailsService')
+               if (conf.facebook.domain.relation) {
+                   domainsRelation = DomainsRelation.getFrom(conf.facebook.domain.relation)
+               }
            }
        } else {
            log.info("Using provided Facebook Auth DAO bean: $facebookDaoName")

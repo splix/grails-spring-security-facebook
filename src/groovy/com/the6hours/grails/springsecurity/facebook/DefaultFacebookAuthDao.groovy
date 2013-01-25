@@ -37,7 +37,7 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object, Object>, Initial
     List<String> defaultRoleNames = ['ROLE_USER', 'ROLE_FACEBOOK']
 
     def facebookAuthService
-    DomainsRelation domainsRelation = DomainsRelation.JoinedUser
+    DomainsRelation domainsRelation = null
 
     private Class<?> FacebookUserDomainClazz
     private Class<?> AppUserDomainClazz
@@ -334,6 +334,13 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object, Object>, Initial
         if (!AppUserDomainClazz) {
             log.error("Can't find domain: $userDomainClassName")
         }
-
+        if (FacebookUserDomainClazz && AppUserDomainClazz) {
+            if (FacebookUserDomainClazz == AppUserDomainClazz) {
+                domainsRelation = DomainsRelation.SameObject
+            }
+        }
+        if (domainsRelation == null) {
+            domainsRelation = DomainsRelation.JoinedUser
+        }
     }
 }
