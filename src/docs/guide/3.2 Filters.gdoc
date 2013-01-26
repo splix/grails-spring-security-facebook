@@ -10,6 +10,7 @@ There are 3 types of authorization, and 3 filters:
  * FacebookAuthRedirectFilter - server-side authorization (used by default)
  * FacebookAuthCookieTransparentFilter - automatic client-side authorization
  * FacebookAuthCookieDirectFilter - manual client-side authorization
+ * FacebookAuthJsonFilter - for AJAX or non-browser clients (Android/iOS/etc)
 
 h2. Server-Side authorization (FacebookAuthRedirectFilter)
 
@@ -42,6 +43,11 @@ Same as FacebookAuthCookieTransparentFilter, it parse Facebook cookie, but only 
 username/password filter from spring-security-core or similar. After successful authorization it
 can redirect user to specified url.
 
+h2. Android/iOS/desktop or AJAX authorization (FacebookAuthJsonFilter)
+
+Client should send Access Token or Signed Request as parameter, and will get authorization response as JSON
+
+See [filter docs|guide:3.5 Json Authorization]
 
 h1. Filter configuration
 
@@ -67,4 +73,5 @@ Value types:
   * @redirect@ - use standard server side authorization
   * @transparent@ - use transparent cookie based authorization
   * @cookieDirect@ - use manual cookie based authorization
+  * @json@ - use JSON authorization
 

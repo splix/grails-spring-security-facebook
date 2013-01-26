@@ -34,6 +34,9 @@ security {
         }
 
         filter {
+            json {
+                processUrl = "/j_spring_security_facebook_json"
+            }
             processUrl = "/j_spring_security_facebook_check"
             redirectFromUrl = "/j_spring_security_facebook_redirect"
             type = 'redirect' //transparent, cookieDirect or redirect

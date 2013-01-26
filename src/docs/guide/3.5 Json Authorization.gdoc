@@ -1,0 +1,38 @@
+Filter 'FacebookAuthJsonFilter' accepts Facebook Access Token or Signed Request as parameter, and responds
+ with JSON to authorization requests. It's useful if you an external client for your Grails application, it
+ could be Android or iOS application, or Desktop application, or just AJAX client.
+
+How it works:
+
+{code}
+> GET /j_spring_security_facebook_json?access_token=<ACCESS_TOKEN>
+{code}
+
+For successful authorization you'll get:
+{code}
+< HTTP/1.1 200 OK
+< Content-Type: application/json;charset=UTF-8
+<
+{
+  "authenticated": true,
+  "uid": 12345612345,   # Facebook User Id
+  "roles":[
+     "ROLE_FACEBOOK",
+     "ROLE_USER"
+  ],
+  "username": "facebook_12345612345", # Grails Application User Id/Username
+  "enabled": true # Grails Application User status
+}
+{code}
+
+For unsuccessful:
+{code}
+< HTTP/1.1 401 Unauthorized
+< Content-Type: application/json;charset=UTF-8
+<
+{
+  "authenticated": false,
+  "message": "Expired token" # Authentication Failure reason
+}
+{code}
+

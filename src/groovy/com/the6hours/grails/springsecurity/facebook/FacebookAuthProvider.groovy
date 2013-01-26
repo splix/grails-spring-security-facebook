@@ -1,5 +1,6 @@
 package com.the6hours.grails.springsecurity.facebook
 
+import org.apache.commons.lang.StringUtils
 import org.springframework.security.core.Authentication
 import org.springframework.security.authentication.AuthenticationProvider
 import org.springframework.security.core.userdetails.UserDetails
@@ -26,16 +27,18 @@ public class FacebookAuthProvider implements AuthenticationProvider, Initializin
         FacebookAuthToken token = authentication
 
         if (token.uid <= 0) {
-            if (!token.code) {
-                log.error("Token should contain 'code' to get used access_token and uid")
+            if (StringUtils.isEmpty(token.code) && token.accessToken == null) {
+                log.error("Token should contain 'code' OR 'accessToken' to get uid")
                 token.authenticated = false
                 return token
             }
-            token.accessToken = facebookAuthUtils.getAccessToken(token.code, token.redirectUri)
-            if (token.accessToken == null) {
-                log.error("Can't fetch access_token for code '$token.code'")
-                token.authenticated = false
-                return token
+            if (token.code) {
+                token.accessToken = facebookAuthUtils.getAccessToken(token.code, token.redirectUri)
+                if (token.accessToken == null) {
+                    log.error("Can't fetch access_token for code '$token.code'")
+                    token.authenticated = false
+                    return token
+                }
             }
             token.uid = facebookAuthUtils.loadUserUid(token.accessToken.accessToken)
             if (token.uid <= 0) {

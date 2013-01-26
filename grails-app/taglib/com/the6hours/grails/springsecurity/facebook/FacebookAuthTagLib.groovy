@@ -82,18 +82,18 @@ class FacebookAuthTagLib {
 
         def writer = getOut()
         if (facebookAuthUtils.filterTypes.contains('redirect')) {
-            log.debug("Do default server-sider authentication redirect")
+            log.debug("Do default server-side authentication redirect")
             writer << serverSideConnect(attrs, body)
             return
         } else {
-            log.debug("Do default client-sider authentication")
+            log.debug("Do default client-side authentication")
             writer << clientSideConnect(attrs, body)
             return
         }
     }
 
     Closure serverSideConnect = { attrs, body ->
-        log.debug("apply server side connect")
+        log.debug("Apply server side connect")
         def writer = getOut()
         def conf = SpringSecurityUtils.securityConfig.facebook
         String target = conf.filter.redirectFromUrl

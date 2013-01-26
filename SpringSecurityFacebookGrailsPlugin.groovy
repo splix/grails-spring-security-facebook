@@ -14,10 +14,13 @@
 */
 
 import com.the6hours.grails.springsecurity.facebook.DomainsRelation
+import com.the6hours.grails.springsecurity.facebook.FacebookAuthJsonFilter
+import com.the6hours.grails.springsecurity.facebook.FacebookAuthJsonFilter
 import com.the6hours.grails.springsecurity.facebook.FacebookAuthProvider
-import com.the6hours.grails.springsecurity.facebook.FacebookAuthDirectFilter
+import com.the6hours.grails.springsecurity.facebook.FacebookAuthJsonFilter
 import com.the6hours.grails.springsecurity.facebook.FacebookAuthCookieTransparentFilter
 import com.the6hours.grails.springsecurity.facebook.FacebookAuthUtils
+import com.the6hours.grails.springsecurity.facebook.JsonAuthenticationHandler
 import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
 import org.codehaus.groovy.grails.plugins.springsecurity.SecurityFilterPosition
 import com.the6hours.grails.springsecurity.facebook.FacebookAuthCookieLogoutHandler
@@ -124,7 +127,7 @@ class SpringSecurityFacebookGrailsPlugin {
        }
 
        String defaultType = 'transparent'
-       List validTypes = ['transparent', 'cookieDirect', 'redirect']
+       List validTypes = ['transparent', 'cookieDirect', 'redirect', 'json']
 
        if (!typesRaw) {
            log.error("Invalid Facebook Authentication filters configuration: '$typesRaw'. Should be used on of: $validTypes. Current value will be ignored, and type '$defaultType' will be used instead.")
@@ -185,6 +188,17 @@ class SpringSecurityFacebookGrailsPlugin {
                facebookAuthUtils = ref('facebookAuthUtils')
                redirectFromUrl = conf.facebook.filter.redirectFromUrl
                linkGenerator = ref('grailsLinkGenerator')
+           }
+       } else if (name == 'json') {
+           SpringSecurityUtils.registerFilter 'facebookAuthJsonFilter', position
+           String url = conf.facebook.filter.json.processUrl
+           facebookJsonAuthenticationHandler(JsonAuthenticationHandler) {
+           }
+           facebookAuthJsonFilter(FacebookAuthJsonFilter, url) {
+               authenticationManager = ref('authenticationManager')
+               facebookAuthUtils = ref('facebookAuthUtils')
+               authenticationSuccessHandler = ref('facebookJsonAuthenticationHandler')
+               authenticationFailureHandler = ref('facebookJsonAuthenticationHandler')
            }
        } else {
            log.error("Invalid filter type: $name")
