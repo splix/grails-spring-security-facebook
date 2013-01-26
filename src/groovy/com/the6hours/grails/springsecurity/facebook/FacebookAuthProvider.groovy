@@ -1,6 +1,7 @@
 package com.the6hours.grails.springsecurity.facebook
 
 import org.apache.commons.lang.StringUtils
+import org.springframework.security.authentication.CredentialsExpiredException
 import org.springframework.security.core.Authentication
 import org.springframework.security.authentication.AuthenticationProvider
 import org.springframework.security.core.userdetails.UserDetails
@@ -11,6 +12,7 @@ import org.apache.log4j.Logger
 import org.springframework.context.ApplicationContext
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.context.ApplicationContextAware
+import org.springframework.security.core.userdetails.UsernameNotFoundException
 
 public class FacebookAuthProvider implements AuthenticationProvider, InitializingBean, ApplicationContextAware {
 
@@ -59,12 +61,14 @@ public class FacebookAuthProvider implements AuthenticationProvider, Initializin
                     token.accessToken = facebookAuthUtils.getAccessToken(token.code, token.redirectUri)
                 }
                 if (token.accessToken == null) {
-                    log.error("Creating user w/o access_token")
+                    log.error("Can't create user w/o access_token")
+                    throw new CredentialsExpiredException("Can't receive access_token from Facebook")
                 }
                 user = facebookAuthDao.create(token)
                 justCreated = true
             } else {
                 log.error "User $token.uid not exists - not authenticated"
+                throw new UsernameNotFoundException("Facebook user with $token.uid is not exists")
             }
         }
         if (user != null) {

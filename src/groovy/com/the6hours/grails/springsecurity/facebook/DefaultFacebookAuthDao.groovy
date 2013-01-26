@@ -125,7 +125,7 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object, Object>, Initial
                     facebookAuthService.prepopulateAppUser(appUser, token)
                 } else {
                     appUser[securityConf.userLookup.usernamePropertyName] = "facebook_$token.uid"
-                    appUser[securityConf.userLookup.passwordPropertyName] = token.accessToken.accessToken
+                    appUser[securityConf.userLookup.passwordPropertyName] = token.accessToken?.accessToken
                     appUser[securityConf.userLookup.enabledPropertyName] = true
                     appUser[securityConf.userLookup.accountExpiredPropertyName] = false
                     appUser[securityConf.userLookup.accountLockedPropertyName] = false
