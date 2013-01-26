@@ -73,25 +73,28 @@ public class FacebookAuthProvider implements AuthenticationProvider, Initializin
                 FacebookAccessToken freshToken = null
                 if (currentAccessToken) {
                     try {
+                        log.debug("Refresh access token for $user")
                         freshToken = facebookAuthUtils.refreshAccessToken(currentAccessToken)
                         if (!freshToken) {
-                            log.warn("Can't refresh access token")
+                            log.warn("Can't refresh access token for user $user")
                         }
                     } catch (IOException e) {
-                        log.warn("Can't refresh access token")
+                        log.warn("Can't refresh access token for user $user")
                     }
                 }
 
                 if (!freshToken) {
+                    log.debug("Load a new access token, from code")
                     freshToken = facebookAuthUtils.getAccessToken(token.code, token.redirectUri)
                 }
 
                 if (freshToken) {
                     if (freshToken.accessToken != currentAccessToken) {
+                        log.debug("Update access token for user $user")
                         token.accessToken = freshToken
                         facebookAuthDao.updateToken(user, token)
                     } else {
-                        log.debug("User already have same access token")
+                        log.debug("User $user already have same access token")
                     }
                 } else {
                     log.error("Can't update accessToken from Facebook, current token is expired. Disable current authentication")
