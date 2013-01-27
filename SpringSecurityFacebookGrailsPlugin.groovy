@@ -183,11 +183,19 @@ class SpringSecurityFacebookGrailsPlugin {
            }
        } else if (name == 'redirect') {
            SpringSecurityUtils.registerFilter 'facebookAuthRedirectFilter', position
+           String successHandler = getConfigValue(conf, 'facebook.beans.redirectSuccessHandler', 'facebook.beans.successHandler')
+           String failureHandler = getConfigValue(conf, 'facebook.beans.redirectFailureHandler', 'facebook.beans.failureHandler')
            facebookAuthRedirectFilter(FacebookAuthRedirectFilter, conf.facebook.filter.processUrl) {
                authenticationManager = ref('authenticationManager')
                facebookAuthUtils = ref('facebookAuthUtils')
                redirectFromUrl = conf.facebook.filter.redirectFromUrl
                linkGenerator = ref('grailsLinkGenerator')
+               if (successHandler) {
+                   authenticationSuccessHandler = ref(successHandler)
+               }
+               if (failureHandler) {
+                   authenticationFailureHandler = ref(failureHandler)
+               }
            }
        } else if (name == 'json') {
            SpringSecurityUtils.registerFilter 'facebookAuthJsonFilter', position
@@ -213,4 +221,22 @@ class SpringSecurityFacebookGrailsPlugin {
 		SpringSecurityUtils.resetSecurityConfig()
 
 	}
+
+    private String getConfigValue(def conf, String ... values) {
+        conf = conf.flatten()
+        String key = values.find {
+            if (!conf.containsKey(it)) {
+                return false
+            }
+            def val = conf.get(it)
+            if (val == null || val.toString() == '{}') {
+                return false
+            }
+            return true
+        }
+        if (key) {
+            return conf.get(key)
+        }
+        return null
+    }
 }

@@ -45,6 +45,10 @@ security {
         }
 
         beans {
+            //successHandler =
+            //failureHandler =
+            //redirectSuccessHandler =
+            //redirectFailureHandler =
         }
 
     }
