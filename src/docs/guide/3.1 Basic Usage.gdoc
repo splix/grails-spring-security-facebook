@@ -12,16 +12,15 @@ h4. Domain Class
 Create domain class for your facebook user:
 {code}
 class FacebookUser {
-
-	long uid
+  long uid
   String accessToken
   Date accessTokenExpires
 
-	static belongsTo = [user: User] //connected to main Spring Security domain
+  static belongsTo = [user: User] //connected to main Spring Security domain
 
-	static constraints = {
-		uid unique: true
-	}
+  static constraints = {
+    uid unique: true
+  }
 }
 {code}
 
