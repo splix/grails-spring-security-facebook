@@ -245,14 +245,17 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object, Object>, Initial
             facebookAuthService.updateToken(facebookUser, token)
             return
         }
-        log.debug("Update access token to $token")
-        if (facebookUser.properties.containsKey('accessToken')) {
-            facebookUser.accessToken = token.accessToken.accessToken
-        }
-        if (facebookUser.properties.containsKey('accessTokenExpires')) {
-            facebookUser.accessTokenExpires = token.accessToken.expireAt
-        }
+        log.debug("Update access token to $token.accessToken for $facebookUser")
         FacebookUserDomainClazz.withTransaction {
+            if (!facebookUser.isAttached()) {
+                facebookUser.attach()
+            }
+            if (facebookUser.properties.containsKey('accessToken')) {
+                facebookUser.accessToken = token.accessToken.accessToken
+            }
+            if (facebookUser.properties.containsKey('accessTokenExpires')) {
+                facebookUser.accessTokenExpires = token.accessToken.expireAt
+            }
             facebookUser.save()
         }
     }
