@@ -37,9 +37,11 @@ security {
             json {
                 processUrl = "/j_spring_security_facebook_json"
             }
+            redirect {
+                redirectFromUrl = "/j_spring_security_facebook_redirect"
+            }
             processUrl = "/j_spring_security_facebook_check"
-            redirectFromUrl = "/j_spring_security_facebook_redirect"
-            type = 'redirect' //transparent, cookieDirect or redirect
+            type = 'redirect' //transparent, cookieDirect, redirect or json
             position = 720 //see SecurityFilterPosition
             forceLoginParameter = 'j_spring_facebook_force'
         }
