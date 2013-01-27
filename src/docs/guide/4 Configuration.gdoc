@@ -84,10 +84,60 @@ h2. Filters
 {table}
 *Name* | *Default Value*
 grails.plugins.springsecurity.facebook.filter.processUrl | '/j_spring_security_facebook_check'
-grails.plugins.springsecurity.facebook.filter.redirectFromUrl | '/j_spring_security_facebook_redirect'
 grails.plugins.springsecurity.facebook.filter.type | 'redirect'
 {table}
 
+ * @type@ - type of authentication, can be @transparent@, @cookieDirect@, @redirect@ or @json@.
 
- * @redirectFromUrl@ - is used for server-side authentication only, it's the url that will redirect user to special Facebook Authentication URL. You can put link to/redirect user to @redirectFromUrl@ when you want to use Facebook authentication. This url is used by default @<facebook:connect />@ button.
- * @type@ - type of authentication, can be transparent, cookieDirect or redirect. You can specify list of filters as @['cookieDirect', 'redirect']@
+You can specify list of filters as: @['redirect', 'json']@ or comma-separated string:
+{code}
+grails.plugins.springsecurity.facebook.filter.type='redirect,json'
+{code}
+
+h4. Configuration for REDIRECT filter
+
+{table}
+*Name* | *Default Value*
+grails.plugins.springsecurity.facebook.filter.redirect.processUrl | not set
+grails.plugins.springsecurity.facebook.filter.redirect.redirectFromUrl | '/j_spring_security_facebook_redirect'
+grails.plugins.springsecurity.facebook.filter.redirect.failureHandler | not set
+grails.plugins.springsecurity.facebook.filter.redirect.successHandler | not set
+{table}
+
+ * @redirectFromUrl@ - it's the url that will redirect user to special Facebook Authentication URL. You can put link to/redirect user to @redirectFromUrl@ when you want to use Facebook authentication. This url is used by default @<facebook:connect />@ button.
+ * if @filter.redirect.processUrl@ is not then, then default @filter.processUrl@ will be used
+ * @failureHandler@ - a name of the bean that implements [AuthenticationFailureHandler|http://static.springsource.org/spring-security/site/docs/3.0.x/apidocs/org/springframework/security/web/authentication/AuthenticationFailureHandler.html]
+ * @successHandler@ - a name of the bean that implements [AuthenticationSuccessHandler|http://static.springsource.org/spring-security/site/docs/3.0.x/apidocs/org/springframework/security/web/authentication/AuthenticationSuccessHandler.html]
+
+h4. Configuration for TRANSPARENT filter
+
+{table}
+*Name* | *Default Value*
+grails.plugins.springsecurity.facebook.filter.transparent.processUrl | not set
+grails.plugins.springsecurity.facebook.filter.transparent.failureHandler | not set
+grails.plugins.springsecurity.facebook.filter.transparent.successHandler | not set
+{table}
+
+ * if @filter.transparent.processUrl@ is not then, then default @filter.processUrl@ will be used
+ * @failureHandler@ - a name of the bean that implements [AuthenticationFailureHandler|http://static.springsource.org/spring-security/site/docs/3.0.x/apidocs/org/springframework/security/web/authentication/AuthenticationFailureHandler.html]
+ * @successHandler@ - a name of the bean that implements [AuthenticationSuccessHandler|http://static.springsource.org/spring-security/site/docs/3.0.x/apidocs/org/springframework/security/web/authentication/AuthenticationSuccessHandler.html]
+
+h4. Configuration for COOKIEDIRECT filter
+
+{table}
+*Name* | *Default Value*
+grails.plugins.springsecurity.facebook.filter.cookieDirect.processUrl | not set
+grails.plugins.springsecurity.facebook.filter.cookieDirect.failureHandler | not set
+grails.plugins.springsecurity.facebook.filter.cookieDirect.successHandler | not set
+{table}
+
+ * if @filter.cookieDirect.processUrl@ is not then, then default @filter.processUrl@ will be used
+ * @failureHandler@ - a name of the bean that implements [AuthenticationFailureHandler|http://static.springsource.org/spring-security/site/docs/3.0.x/apidocs/org/springframework/security/web/authentication/AuthenticationFailureHandler.html]
+ * @successHandler@ - a name of the bean that implements [AuthenticationSuccessHandler|http://static.springsource.org/spring-security/site/docs/3.0.x/apidocs/org/springframework/security/web/authentication/AuthenticationSuccessHandler.html]
+
+h4. Configuration for JSON filter
+
+{table}
+*Name* | *Default Value*
+grails.plugins.springsecurity.facebook.filter.json.processUrl | '/j_spring_security_facebook_json'
+{table}

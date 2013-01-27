@@ -69,14 +69,16 @@ class SpringSecurityFacebookGrailsPlugin {
        String facebookDaoName = conf?.facebook?.bean?.dao ?: null
        if (facebookDaoName == null) {
            facebookDaoName = 'facebookAuthDao'
+           String _domainsRelation = getConfigValue(conf, 'facebook.domain.relation')
+           String _appUserConnectionPropertyName = getConfigValue(conf, 'facebook.domain.appUserConnectionPropertyName', 'facebook.domain.connectionPropertyName')
            facebookAuthDao(DefaultFacebookAuthDao) {
                domainClassName = conf.facebook.domain.classname
-               appUserConnectionPropertyName = conf.facebook.domain.appUserConnectionPropertyName ?: conf.facebook.domain.connectionPropertyName
+               appUserConnectionPropertyName = _appUserConnectionPropertyName
                userDomainClassName = conf.userLookup.userDomainClassName
                rolesPropertyName = conf.userLookup.authoritiesPropertyName
                coreUserDetailsService = ref('userDetailsService')
-               if (conf.facebook.domain.relation) {
-                   domainsRelation = DomainsRelation.getFrom(conf.facebook.domain.relation)
+               if (_domainsRelation) {
+                   domainsRelation = DomainsRelation.getFrom(_domainsRelation)
                }
            }
        } else {
@@ -101,21 +103,6 @@ class SpringSecurityFacebookGrailsPlugin {
 	   }
 
        addFilters(conf, delegate, _filterTypes)
-   }
-
-   private List<String> getAsStringList(def conf, String paramHumanName, String paramName) {
-       def raw = conf
-
-       if (raw == null) {
-           log.error("Invalid $paramHumanName filters configuration: '$raw'")
-       } else if (raw instanceof Collection) {
-           return raw.collect { it.toString() }
-       } else if (raw instanceof String) {
-           return raw.split(',').collect { it.trim() }
-       } else {
-           log.error("Invalid $paramHumanName filters configuration, invalid value type: '${raw.getClass()}'. Value should be defined as a Collection or String (comma separated, if you need few filters)")
-       }
-       return null
    }
 
    private List<String> parseFilterTypes(def conf) {
@@ -164,31 +151,50 @@ class SpringSecurityFacebookGrailsPlugin {
 
    private addFilter = { def conf, String name, int position ->
        if (name == 'transparent') {
+           String _successHandler = getConfigValue(conf, 'facebook.filter.transparent.successHandler')
+           String _failureHandler = getConfigValue(conf, 'facebook.filter.transparent.failureHandler')
            SpringSecurityUtils.registerFilter 'facebookAuthCookieTransparentFilter', position
            facebookAuthCookieTransparentFilter(FacebookAuthCookieTransparentFilter) {
                authenticationManager = ref('authenticationManager')
                facebookAuthUtils = ref('facebookAuthUtils')
                logoutUrl = conf.logout.filterProcessesUrl
                forceLoginParameter = conf.facebook.filter.forceLoginParameter
+               if (_successHandler) {
+                   authenticationSuccessHandler = ref(_successHandler)
+               }
+               if (_failureHandler) {
+                   authenticationFailureHandler = ref(_failureHandler)
+               }
            }
            facebookAuthCookieLogout(FacebookAuthCookieLogoutHandler) {
                facebookAuthUtils = ref('facebookAuthUtils')
            }
            SpringSecurityUtils.registerLogoutHandler('facebookAuthCookieLogout')
        } else if (name == 'cookieDirect') {
+           String _successHandler = getConfigValue(conf, 'facebook.filter.cookieDirect.successHandler')
+           String _failureHandler = getConfigValue(conf, 'facebook.filter.cookieDirect.failureHandler')
+           String url =  getConfigValue(conf, 'facebook.filter.cookieDirect.processUrl', 'facebook.filter.processUrl')
            SpringSecurityUtils.registerFilter 'facebookAuthCookieDirectFilter', position
-           facebookAuthCookieDirectFilter(FacebookAuthCookieDirectFilter, conf.facebook.filter.processUrl) {
+           facebookAuthCookieDirectFilter(FacebookAuthCookieDirectFilter, url) {
                authenticationManager = ref('authenticationManager')
                facebookAuthUtils = ref('facebookAuthUtils')
+               if (_successHandler) {
+                   authenticationSuccessHandler = ref(_successHandler)
+               }
+               if (_failureHandler) {
+                   authenticationFailureHandler = ref(_failureHandler)
+               }
            }
        } else if (name == 'redirect') {
            SpringSecurityUtils.registerFilter 'facebookAuthRedirectFilter', position
-           String successHandler = getConfigValue(conf, 'facebook.beans.redirectSuccessHandler', 'facebook.beans.successHandler')
-           String failureHandler = getConfigValue(conf, 'facebook.beans.redirectFailureHandler', 'facebook.beans.failureHandler')
-           facebookAuthRedirectFilter(FacebookAuthRedirectFilter, conf.facebook.filter.processUrl) {
+           String successHandler = getConfigValue(conf, 'facebook.filter.redirect.successHandler')
+           String failureHandler = getConfigValue(conf, 'facebook.filter.redirect.failureHandler')
+           String _url =  getConfigValue(conf, 'facebook.filter.redirect.processUrl', 'facebook.filter.processUrl')
+           String _redirectFromUrl =  getConfigValue(conf, 'facebook.filter.redirect.redirectFromUrl', 'facebook.filter.redirectFromUrl')
+           facebookAuthRedirectFilter(FacebookAuthRedirectFilter, _url) {
                authenticationManager = ref('authenticationManager')
                facebookAuthUtils = ref('facebookAuthUtils')
-               redirectFromUrl = conf.facebook.filter.redirectFromUrl
+               redirectFromUrl = _redirectFromUrl
                linkGenerator = ref('grailsLinkGenerator')
                if (successHandler) {
                    authenticationSuccessHandler = ref(successHandler)
@@ -236,6 +242,21 @@ class SpringSecurityFacebookGrailsPlugin {
         }
         if (key) {
             return conf.get(key)
+        }
+        return null
+    }
+
+    private List<String> getAsStringList(def conf, String paramHumanName, String paramName) {
+        def raw = conf
+
+        if (raw == null) {
+            log.error("Invalid $paramHumanName filters configuration: '$raw'")
+        } else if (raw instanceof Collection) {
+            return raw.collect { it.toString() }
+        } else if (raw instanceof String) {
+            return raw.split(',').collect { it.trim() }
+        } else {
+            log.error("Invalid $paramHumanName filters configuration, invalid value type: '${raw.getClass()}'. Value should be defined as a Collection or String (comma separated, if you need few filters)")
         }
         return null
     }
