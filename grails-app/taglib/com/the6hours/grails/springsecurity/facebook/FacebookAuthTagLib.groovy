@@ -96,7 +96,7 @@ class FacebookAuthTagLib {
         log.debug("Apply server side connect")
         def writer = getOut()
         def conf = SpringSecurityUtils.securityConfig.facebook
-        String target = conf.filter.redirectFromUrl
+        String target = conf.filter.redirect.redirectFromUrl
         String bodyValue = body()
         if (bodyValue == null || bodyValue.trim().length() == 0) {
             String imgUrl
