@@ -72,7 +72,14 @@ public class FacebookAuthProvider implements AuthenticationProvider, Initializin
             }
         }
         if (user != null) {
-            if (!justCreated && !facebookAuthDao.hasValidToken(user)) {
+            if (justCreated) {
+                log.debug("User is just created")
+            }
+            if (!justCreated && token.accessToken != null) {
+                log.debug("Set new access token for user $user")
+                facebookAuthDao.updateToken(user, token)
+            }
+            if (!facebookAuthDao.hasValidToken(user)) {
                 String currentAccessToken = facebookAuthDao.getAccessToken(user)
                 FacebookAccessToken freshToken = null
                 if (currentAccessToken) {

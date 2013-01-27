@@ -31,6 +31,7 @@ class FacebookAuthRedirectFilter extends AbstractAuthenticationProcessingFilter 
     Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) {
         String code = request.getParameter('code')
         if (code) {
+            logger.debug("Got 'code' from Facebook. Process authentication using this code")
             FacebookAuthToken token = new FacebookAuthToken(
                     code: code,
                     uid: -1,
