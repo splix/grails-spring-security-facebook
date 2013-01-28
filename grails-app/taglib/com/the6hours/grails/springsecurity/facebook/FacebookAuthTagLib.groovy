@@ -68,19 +68,19 @@ class FacebookAuthTagLib {
     }
 
     Closure connect = { attrs, body ->
+    	def writer = getOut()
         if (attrs.type) {
             if (attrs.type == 'server') {
-                serverSideConnect(attrs, body)
+                writer << serverSideConnect(attrs, body)
                 return
             } else if (attrs.type == 'client') {
-                clientSideConnect(attrs, body)
+                writer << clientSideConnect(attrs, body)
                 return
             } else {
                 log.error("Invalid connect type: ${attrs.type}")
             }
         }
 
-        def writer = getOut()
         if (facebookAuthUtils.filterTypes.contains('redirect')) {
             log.debug("Do default server-side authentication redirect")
             writer << serverSideConnect(attrs, body)
