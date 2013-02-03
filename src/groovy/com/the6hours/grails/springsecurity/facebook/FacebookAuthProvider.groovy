@@ -67,8 +67,8 @@ public class FacebookAuthProvider implements AuthenticationProvider, Initializin
                 user = facebookAuthDao.create(token)
                 justCreated = true
             } else {
-                log.error "User $token.uid not exists - not authenticated"
-                throw new UsernameNotFoundException("Facebook user with $token.uid is not exists")
+                log.error "User $token.uid doesn't exist - not authenticated"
+                throw new UsernameNotFoundException("Facebook user with uid $token.uid doesn't exist")
             }
         }
         if (user != null) {
