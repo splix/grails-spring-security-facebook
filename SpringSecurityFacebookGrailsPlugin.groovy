@@ -71,6 +71,7 @@ class SpringSecurityFacebookGrailsPlugin {
            facebookDaoName = 'facebookAuthDao'
            String _domainsRelation = getConfigValue(conf, 'facebook.domain.relation')
            String _appUserConnectionPropertyName = getConfigValue(conf, 'facebook.domain.appUserConnectionPropertyName', 'facebook.domain.connectionPropertyName')
+           List<String> _roles = getAsStringList(conf.facebook.autoCreate.roles, 'grails.plugins.springsecurity.facebook.autoCreate.roles')
            facebookAuthDao(DefaultFacebookAuthDao) {
                domainClassName = conf.facebook.domain.classname
                appUserConnectionPropertyName = _appUserConnectionPropertyName
@@ -80,6 +81,7 @@ class SpringSecurityFacebookGrailsPlugin {
                if (_domainsRelation) {
                    domainsRelation = DomainsRelation.getFrom(_domainsRelation)
                }
+               defaultRoleNames = _roles
            }
        } else {
            log.info("Using provided Facebook Auth DAO bean: $facebookDaoName")
@@ -97,12 +99,15 @@ class SpringSecurityFacebookGrailsPlugin {
        }
 
        SpringSecurityUtils.registerProvider 'facebookAuthProvider'
+       boolean _createNew = getConfigValue(conf, 'facebook.autoCreate.enabled') ? conf.facebook.autoCreate.enabled as Boolean : false
 	   facebookAuthProvider(FacebookAuthProvider) {
            facebookAuthDao = ref(facebookDaoName)
            facebookAuthUtils = ref('facebookAuthUtils')
+           createNew = _createNew
 	   }
 
        addFilters(conf, delegate, _filterTypes)
+       println '... finished configuring Spring Security Facebook'
    }
 
    private List<String> parseFilterTypes(def conf) {
@@ -228,7 +233,7 @@ class SpringSecurityFacebookGrailsPlugin {
 
 	}
 
-    private String getConfigValue(def conf, String ... values) {
+    private Object getConfigValue(def conf, String ... values) {
         conf = conf.flatten()
         String key = values.find {
             if (!conf.containsKey(it)) {
@@ -246,7 +251,7 @@ class SpringSecurityFacebookGrailsPlugin {
         return null
     }
 
-    private List<String> getAsStringList(def conf, String paramHumanName, String paramName) {
+    private List<String> getAsStringList(def conf, String paramHumanName, String paramName = '???') {
         def raw = conf
 
         if (raw == null) {
@@ -256,7 +261,7 @@ class SpringSecurityFacebookGrailsPlugin {
         } else if (raw instanceof String) {
             return raw.split(',').collect { it.trim() }
         } else {
-            log.error("Invalid $paramHumanName filters configuration, invalid value type: '${raw.getClass()}'. Value should be defined as a Collection or String (comma separated, if you need few filters)")
+            log.error("Invalid $paramHumanName filters configuration, invalid value type: '${raw.getClass()}'. Value should be defined as a Collection or String (comma separated)")
         }
         return null
     }

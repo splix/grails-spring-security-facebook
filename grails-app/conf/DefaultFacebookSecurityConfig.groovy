@@ -29,8 +29,8 @@ security {
         }
 
         autoCreate {
-            active = true
-            roleNames = ['ROLE_USER', 'ROLE_FACEBOOK']
+            enabled = true
+            roles = ['ROLE_USER', 'ROLE_FACEBOOK']
         }
 
         filter {
