@@ -1,0 +1,20 @@
+h1. connect
+
+Puts Facebook Connect button. If Facebook Javascript SDK initialization code wasn't added into current page,
+ then calling of this tag will call @:init@ automatically.
+
+Optional attributes:
+ * @type@ - @'server'@ or @'client'@, type of authentication to use. By default it uses server-side authentication (if such authentication type is enabled)
+ * @img@ - url to image for connect button (for server-side authentication only)
+
+h2. Examples:
+
+Default:
+{code}
+<facebookAuth:connect />
+{code}
+
+Use your image for connect button:
+{code}
+<facebookAuth:connect img="${resource(dir: 'images', file: 'facebook-connect.png')}"/>
+{code}

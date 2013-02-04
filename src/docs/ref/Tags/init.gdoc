@@ -1,0 +1,25 @@
+h1. connect
+
+Add Facebook Javascript SDK initialization code. You could also provide extra initialization JS in the body of
+this tag, it will be executed just after Facebook SDK initialization.
+
+{note}
+<facebookAuth:init /> is useful only for client-side authentication.
+{note}
+
+h2. Attributes:
+
+ * @force@ Force tag to put FB SDK initialization code (even if it's already added)
+
+h2. Example:
+{code}
+<facebookAuth:init>
+    <!--
+      Put any JS code here, will be executed after FB initialization (optional)
+    -->
+    FB.Event.subscribe('auth.login', function() {
+        console.log('Process auth.login...');
+        window.location.reload();
+    });
+</facebookAuth:init>
+{code}

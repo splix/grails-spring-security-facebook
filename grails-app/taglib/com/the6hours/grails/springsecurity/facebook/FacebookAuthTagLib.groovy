@@ -10,7 +10,6 @@ import grails.plugins.springsecurity.SpringSecurityService
  * @since 31.03.11
  * @author Igor Artamonov (http://igorartamonov.com)
  */
-
 class FacebookAuthTagLib {
 
 	static namespace = 'facebookAuth'
@@ -21,6 +20,15 @@ class FacebookAuthTagLib {
 
     FacebookAuthUtils facebookAuthUtils
 
+    /**
+     * Add Facebook Javascript SDK initialization code. You could also provide extra initialization JS in the body of
+     * this tag, it will be executed just after Facebook SDK initialization.
+     *
+     * By default tag executed only once pre page
+     *
+     * @attr force Force tag to put FB SDK initialization code (even if it's already added)
+     *
+     */
     Closure init = { attrs, body ->
         Boolean init = request.getAttribute(MARKER)
         if (init == null) {
@@ -67,6 +75,15 @@ class FacebookAuthTagLib {
         }
     }
 
+    /**
+     * Put Facebook Connect button.
+     *
+     * @emptyTag
+     *
+     * @attr type - 'server' or 'client', depends on what type of authorization you would like to use. By default it
+     * uses server-side authentication (if such authentication type is enabled)
+     * @attr img - url to image for connect button (for server-side authentication only)
+     */
     Closure connect = { attrs, body ->
     	def writer = getOut()
         if (attrs.type) {
