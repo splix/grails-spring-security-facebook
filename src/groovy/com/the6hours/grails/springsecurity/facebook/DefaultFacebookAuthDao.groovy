@@ -1,5 +1,6 @@
 package com.the6hours.grails.springsecurity.facebook
 
+import org.springframework.dao.OptimisticLockingFailureException
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.GrantedAuthorityImpl
 import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
@@ -256,7 +257,13 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object, Object>, Initial
             if (facebookUser.properties.containsKey('accessTokenExpires')) {
                 facebookUser.accessTokenExpires = token.accessToken.expireAt
             }
-            facebookUser.save()
+            try {
+                facebookUser.save()
+            } catch (OptimisticLockingFailureException e) {
+                log.warn("Seems that token was updated in another thread. " + e.message)
+            } catch (Throwable e) {
+                log.error("Can't update token", e)
+            }
         }
     }
 
