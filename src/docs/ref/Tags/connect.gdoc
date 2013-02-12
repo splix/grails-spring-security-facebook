@@ -5,7 +5,15 @@ Puts Facebook Connect button. If Facebook Javascript SDK initialization code was
 
 Optional attributes:
  * @type@ - @'server'@ or @'client'@, type of authentication to use. By default it uses server-side authentication (if such authentication type is enabled)
+
+Optional attributes for @server@ button (server-side authentication):
  * @img@ - url to image for connect button (for server-side authentication only)
+ * @img-*@ - a attribute for <img> tag, like @img-id@ or @img-style@
+
+Optional attributes for @client@ button (client-side authentication):
+ * @permission@ - list of [Facebook Permission|https://developers.facebook.com/docs/reference/login/] as a String or List
+ * @text@ - text to display on button, *Login with Facebook* by default
+ * @skipInit@ - force to skip Facebook Javascript SDK initialization. By default this tag calls @<facebook:init />@, if it's not executed yet.
 
 h2. Examples:
 
@@ -16,5 +24,11 @@ Default:
 
 Use your image for connect button:
 {code}
-<facebookAuth:connect img="${resource(dir: 'images', file: 'facebook-connect.png')}"/>
+<facebookAuth:connect img="${resource(dir: 'images', file: 'facebook-connect.png')}" img-alt="Login to my site!"/>
 {code}
+
+Ask for email:
+{code}
+<facebookAuth:connect permission="email"/>
+{code}
+

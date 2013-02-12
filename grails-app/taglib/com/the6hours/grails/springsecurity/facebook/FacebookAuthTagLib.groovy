@@ -135,7 +135,7 @@ class FacebookAuthTagLib {
     Closure clientSideConnect = { attrs, body ->
         def conf = SpringSecurityUtils.securityConfig.facebook
 
-        if (attrs.skipInit != 'false') {
+        if (attrs.skipInit == null || !Boolean.valueOf(attrs.skipInit)) {
             init(attrs, body)
         }
 
@@ -179,11 +179,9 @@ class FacebookAuthTagLib {
         buf.append('<img src="').append(src).append('" ')
         Map used = [:]
         attrs.entrySet().each { Map.Entry it ->
-            if (it.key in ['height', 'width', 'img-class', 'img-style', 'img-id', 'alt']) {
-                String attr = it.key
-                if (attr.startsWith('img-')) {
-                    attr = attr.substring('img-'.length())
-                }
+            String attr = it.key
+            if (attr.startsWith('img-')) {
+                attr = attr.substring('img-'.length())
                 used[attr] = it.value?.toString()
             }
         }
