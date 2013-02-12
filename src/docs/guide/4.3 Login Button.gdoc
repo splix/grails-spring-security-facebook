@@ -1,7 +1,7 @@
 {table}
 *Name* | *Default Value*
 grails.plugins.springsecurity.facebook.taglib.button.text | 'Login with Facebook'
-grails.plugins.springsecurity.facebook.taglib.button.defaultImg | '/images/connect.png'
+grails.plugins.springsecurity.facebook.taglib.button.img |
 {table}
 
  * @button.text@ is used for client-side authentication only (using Facebook JS SDK).
