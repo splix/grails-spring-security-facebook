@@ -36,3 +36,16 @@ For unsuccessful:
 }
 {code}
 
+h4. How to extend JSON response
+
+The plugin going to call @Map onJsonSuccess(Map input, FacebookAuthToken token)@
+or @Map onJsonFailure(Map input, AuthenticationException exception)@ methods
+of [FacebookAuthService|guide:5.1 Using FacebookAuhService] (if exists).
+
+There you can update @input@ data with any other values, introduce new fields/keys, or even return your
+own structure. This structure will be transformed to JSON and sent to client.
+
+h4. Configuration
+
+See [authentication configuration page|guide:4.5 Authentication Types]
+

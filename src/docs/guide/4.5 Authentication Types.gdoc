@@ -57,4 +57,9 @@ h4. Configuration for JSON filter
 {table}
 *Name* | *Default Value*
 grails.plugins.springsecurity.facebook.filter.json.processUrl | '/j_spring_security_facebook_json'
+grails.plugins.springsecurity.facebook.filter.json.type | 'json'
+grails.plugins.springsecurity.facebook.filter.json.methods | ['POST']
 {table}
+
+ * @type@ could be @json@ (default) or @jsonp@
+ * @methods@ - allowed HTTP methods. Notice that it's used only for JSON, for JSONP it will be forced to 'GET'
