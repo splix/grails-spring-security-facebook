@@ -211,7 +211,9 @@ class SpringSecurityFacebookGrailsPlugin {
        } else if (name == 'json') {
            SpringSecurityUtils.registerFilter 'facebookAuthJsonFilter', position
            String url = conf.facebook.filter.json.processUrl
+           boolean jsonp = 'jsonp'.equalsIgnoreCase(conf.facebook.filter.json.type)
            facebookJsonAuthenticationHandler(JsonAuthenticationHandler) {
+               useJsonp = jsonp
            }
            facebookAuthJsonFilter(FacebookAuthJsonFilter, url) {
                authenticationManager = ref('authenticationManager')

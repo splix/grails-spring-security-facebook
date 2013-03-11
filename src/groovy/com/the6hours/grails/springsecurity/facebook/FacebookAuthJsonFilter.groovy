@@ -32,6 +32,8 @@ public class FacebookAuthJsonFilter extends AbstractAuthenticationProcessingFilt
                 )
                 Authentication authentication = getAuthenticationManager().authenticate(token);
                 return authentication
+            } else {
+                throw new InvalidRequestException("Invalid access_token value (or expired)")
             }
         }
 

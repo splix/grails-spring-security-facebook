@@ -36,6 +36,7 @@ security {
         filter {
             json {
                 processUrl = "/j_spring_security_facebook_json"
+                type = 'json' // or 'jsonp'
             }
             redirect {
                 redirectFromUrl = "/j_spring_security_facebook_redirect"
