@@ -31,7 +31,7 @@ import com.the6hours.grails.springsecurity.facebook.FacebookAuthRedirectFilter
 
 class SpringSecurityFacebookGrailsPlugin {
 
-   String version = '0.12.2'
+   String version = '0.13'
    String grailsVersion = '2.0.0 > *'
    Map dependsOn = ['springSecurityCore': '1.2.7.2 > *']
 
@@ -46,7 +46,7 @@ class SpringSecurityFacebookGrailsPlugin {
    String author = 'Igor Artamonov'
    String authorEmail = 'igor@artamonov.ru'
    String title = 'Facebook Authentication'
-   String description = 'Facebook Connect authentication support for the Spring Security plugin.'
+   String description = 'Facebook Authentication plugin, extension to the Spring Security Core plugin.'
 
    String documentation = 'http://splix.github.com/grails-spring-security-facebook/'
 
@@ -213,12 +213,18 @@ class SpringSecurityFacebookGrailsPlugin {
            }
        } else if (name == 'json') {
            SpringSecurityUtils.registerFilter 'facebookAuthJsonFilter', position
-           String url = conf.facebook.filter.json.processUrl
-           boolean jsonp = 'jsonp'.equalsIgnoreCase(conf.facebook.filter.json.type)
+           String _url = conf.facebook.filter.json.processUrl
+           boolean _jsonp = '_jsonp'.equalsIgnoreCase(conf.facebook.filter.json.type)
            facebookJsonAuthenticationHandler(JsonAuthenticationHandler) {
-               useJsonp = jsonp
+               useJsonp = _jsonp
            }
-           facebookAuthJsonFilter(FacebookAuthJsonFilter, url) {
+           List<String> _methods = getAsStringList(conf.facebook.filter.json.methods, '**.facebook.filter.json.type')
+           _methods = _methods ? _methods*.toUpperCase() : ['POST']
+           if (_jsonp) {
+               _methods = ['GET']
+           }
+           facebookAuthJsonFilter(FacebookAuthJsonFilter, _url) {
+               methods = _methods
                authenticationManager = ref('authenticationManager')
                facebookAuthUtils = ref('facebookAuthUtils')
                authenticationSuccessHandler = ref('facebookJsonAuthenticationHandler')

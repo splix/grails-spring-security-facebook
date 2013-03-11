@@ -15,11 +15,19 @@ public class FacebookAuthJsonFilter extends AbstractAuthenticationProcessingFilt
 
     FacebookAuthUtils facebookAuthUtils
 
+    List<String> methods = ['POST']
+
     def FacebookAuthJsonFilter(String url) {
         super(url)
     }
 
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) {
+        String method = request.method?.toUpperCase() ?: 'UNKNOWN'
+        if (!methods.contains(method)) {
+            log.error("Request method: $method, allowed only $methods")
+            throw new InvalidRequestException("$method is not accepted")
+        }
+
         FacebookAuthToken token = null
 
         if (StringUtils.isNotEmpty(request.getParameter('access_token'))) {

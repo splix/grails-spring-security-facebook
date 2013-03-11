@@ -37,6 +37,7 @@ security {
             json {
                 processUrl = "/j_spring_security_facebook_json"
                 type = 'json' // or 'jsonp'
+                methods = ['POST']
             }
             redirect {
                 redirectFromUrl = "/j_spring_security_facebook_redirect"
