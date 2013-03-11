@@ -44,8 +44,13 @@ class FacebookAuthCookieTransparentFilter extends GenericFilterBean implements A
                 try {
                     FacebookAuthToken token = facebookAuthUtils.build(cookie.value)
                     if (token != null) {
-                        Authentication authentication = authenticationManager.authenticate(token);
-                        if (authentication.authenticated) {
+                        Authentication authentication = null
+                        try {
+                            authentication = authenticationManager.authenticate(token);
+                        } catch (Throwable t) {
+                            logger.warn("Error during authentication. Skipping. Message: "+t.message)
+                        }
+                        if (authentication && authentication.authenticated) {
                             // Store to SecurityContextHolder
                             SecurityContextHolder.context.authentication = authentication;
 
