@@ -21,7 +21,7 @@ h4. User creation/initialization
 
 {table}
 *Name* | *Default Value*
-grails.plugins.springsecurity.facebook.autoCreate.roleNames | ['ROLE_USER', 'ROLE_FACEBOOK']
+grails.plugins.springsecurity.facebook.autoCreate.roles | ['ROLE_USER', 'ROLE_FACEBOOK']
 {table}
 
 List of roles for user created by the plugin.
