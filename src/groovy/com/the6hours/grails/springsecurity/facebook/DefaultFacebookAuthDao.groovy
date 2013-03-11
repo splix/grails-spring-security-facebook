@@ -252,10 +252,10 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object, Object>, Initial
                 facebookUser.attach()
             }
             if (facebookUser.properties.containsKey('accessToken')) {
-                facebookUser.accessToken = token.accessToken.accessToken
+                facebookUser.accessToken = token.accessToken?.accessToken
             }
             if (facebookUser.properties.containsKey('accessTokenExpires')) {
-                facebookUser.accessTokenExpires = token.accessToken.expireAt
+                facebookUser.accessTokenExpires = token.accessToken?.expireAt
             }
             try {
                 facebookUser.save()

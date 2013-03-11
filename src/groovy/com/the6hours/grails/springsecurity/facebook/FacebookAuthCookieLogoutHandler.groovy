@@ -20,6 +20,9 @@ class FacebookAuthCookieLogoutHandler implements LogoutHandler {
 
     FacebookAuthUtils facebookAuthUtils
 
+    boolean cleanupToken = true
+    FacebookAuthDao facebookAuthDao
+
     void logout(HttpServletRequest httpServletRequest,
                 HttpServletResponse httpServletResponse,
                 Authentication authentication) {
@@ -63,5 +66,23 @@ class FacebookAuthCookieLogoutHandler implements LogoutHandler {
         }
         httpServletResponse.addCookie(cookie)
       }
+
+      if (cleanupToken && (authentication instanceof FacebookAuthToken)) {
+          cleanupToken(authentication)
+      }
+    }
+
+    void cleanupToken(FacebookAuthToken authentication) {
+        if (!facebookAuthDao) {
+            logger.error("No FacebookAuthDao")
+            return
+        }
+        try {
+            def user = facebookAuthDao.findUser(authentication.uid)
+            authentication.accessToken = null
+            facebookAuthDao.updateToken(user, authentication)
+        } catch (Throwable t) {
+            logger.error("Can't remove existing token", t)
+        }
     }
 }

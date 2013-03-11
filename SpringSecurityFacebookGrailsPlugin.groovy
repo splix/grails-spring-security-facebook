@@ -52,7 +52,9 @@ class SpringSecurityFacebookGrailsPlugin {
 
    def observe = ["springSecurityCore"]
 
-   def doWithSpring = {
+   String _facebookDaoName
+
+    def doWithSpring = {
 
        def conf = SpringSecurityUtils.securityConfig
        if (!conf) {
@@ -66,9 +68,9 @@ class SpringSecurityFacebookGrailsPlugin {
 	   // have to get again after overlaying DefaultFacebookecurityConfig
 	   conf = SpringSecurityUtils.securityConfig
 
-       String facebookDaoName = conf?.facebook?.bean?.dao ?: null
-       if (facebookDaoName == null) {
-           facebookDaoName = 'facebookAuthDao'
+       _facebookDaoName = conf?.facebook?.bean?.dao ?: null
+       if (_facebookDaoName == null) {
+           _facebookDaoName = 'facebookAuthDao'
            String _domainsRelation = getConfigValue(conf, 'facebook.domain.relation')
            String _appUserConnectionPropertyName = getConfigValue(conf, 'facebook.domain.appUserConnectionPropertyName', 'facebook.domain.connectionPropertyName')
            List<String> _roles = getAsStringList(conf.facebook.autoCreate.roles, 'grails.plugins.springsecurity.facebook.autoCreate.roles')
@@ -84,7 +86,7 @@ class SpringSecurityFacebookGrailsPlugin {
                defaultRoleNames = _roles
            }
        } else {
-           log.info("Using provided Facebook Auth DAO bean: $facebookDaoName")
+           log.info("Using provided Facebook Auth DAO bean: $_facebookDaoName")
        }
 
        List<String> _filterTypes = parseFilterTypes(conf)
@@ -101,7 +103,7 @@ class SpringSecurityFacebookGrailsPlugin {
        SpringSecurityUtils.registerProvider 'facebookAuthProvider'
        boolean _createNew = getConfigValue(conf, 'facebook.autoCreate.enabled') ? conf.facebook.autoCreate.enabled as Boolean : false
 	   facebookAuthProvider(FacebookAuthProvider) {
-           facebookAuthDao = ref(facebookDaoName)
+           facebookAuthDao = ref(_facebookDaoName)
            facebookAuthUtils = ref('facebookAuthUtils')
            createNew = _createNew
 	   }
@@ -173,6 +175,7 @@ class SpringSecurityFacebookGrailsPlugin {
            }
            facebookAuthCookieLogout(FacebookAuthCookieLogoutHandler) {
                facebookAuthUtils = ref('facebookAuthUtils')
+               facebookAuthDao = ref(_facebookDaoName)
            }
            SpringSecurityUtils.registerLogoutHandler('facebookAuthCookieLogout')
        } else if (name == 'cookieDirect') {
