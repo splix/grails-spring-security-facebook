@@ -1,6 +1,11 @@
 package com.the6hours.grails.springsecurity.facebook
 
 import grails.converters.JSON
+import org.apache.log4j.Logger
+import org.codehaus.groovy.grails.plugins.support.aware.GrailsApplicationAware
+import org.springframework.beans.factory.InitializingBean
+import org.springframework.context.ApplicationContext
+import org.springframework.context.ApplicationContextAware
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.AuthenticationException
 import org.springframework.security.core.userdetails.UserDetails
@@ -17,10 +22,15 @@ import javax.servlet.http.HttpServletResponse
  * @author Igor Artamonov (http://igorartamonov.com)
  * @since 25.01.13
  */
-class JsonAuthenticationHandler implements AuthenticationSuccessHandler, AuthenticationFailureHandler {
+class JsonAuthenticationHandler implements AuthenticationSuccessHandler, AuthenticationFailureHandler, InitializingBean, ApplicationContextAware {
+
+    private static def log = Logger.getLogger(this)
+
+    ApplicationContext applicationContext
 
     boolean useJsonp = false
     boolean defaultJsonpCallback = 'jsonpCallback'
+    def facebookAuthService
 
     void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception)
         throws IOException, javax.servlet.ServletException {
@@ -29,6 +39,12 @@ class JsonAuthenticationHandler implements AuthenticationSuccessHandler, Authent
                 authenticated: false,
                 message: exception?.message
         ]
+        if (facebookAuthService && facebookAuthService.respondsTo('onJsonFailure')) {
+            def data2 = facebookAuthService.onJsonFailure(data, exception)
+            if (data2 != null) {
+                data = data2
+            }
+        }
         JSON json = new JSON(data)
         if (useJsonp) {
            renderAsJSONP(json, request, response)
@@ -48,6 +64,12 @@ class JsonAuthenticationHandler implements AuthenticationSuccessHandler, Authent
         if (token.principal != null && UserDetails.isAssignableFrom(token.principal.class)) {
             data.username = token.principal.username
             data.enabled = token.principal.enabled
+        }
+        if (facebookAuthService && facebookAuthService.respondsTo('onJsonSuccess')) {
+            def data2 = facebookAuthService.onJsonSuccess(data, authentication)
+            if (data2 != null) {
+                data = data2
+            }
         }
         JSON json = new JSON(data)
         if (useJsonp) {
@@ -72,5 +94,14 @@ class JsonAuthenticationHandler implements AuthenticationSuccessHandler, Authent
         out.print('(')
         out.print(jsonString)
         out.print(')')
+    }
+
+    void afterPropertiesSet() {
+        if (!facebookAuthService) {
+            if (applicationContext.containsBean('facebookAuthService')) {
+                log.debug("Use provided facebookAuthService")
+                facebookAuthService = applicationContext.getBean('facebookAuthService')
+            }
+        }
     }
 }
