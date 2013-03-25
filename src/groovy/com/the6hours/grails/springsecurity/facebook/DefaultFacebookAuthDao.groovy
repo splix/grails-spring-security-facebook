@@ -248,19 +248,19 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object, Object>, Initial
         }
         log.debug("Update access token to $token.accessToken for $facebookUser")
         FacebookUserDomainClazz.withTransaction {
-            if (!facebookUser.isAttached()) {
-                facebookUser.attach()
-            }
-            if (facebookUser.properties.containsKey('accessToken')) {
-                facebookUser.accessToken = token.accessToken?.accessToken
-            }
-            if (facebookUser.properties.containsKey('accessTokenExpires')) {
-                facebookUser.accessTokenExpires = token.accessToken?.expireAt
-            }
             try {
+                if (!facebookUser.isAttached()) {
+                    facebookUser.attach()
+                }
+                if (facebookUser.properties.containsKey('accessToken')) {
+                    facebookUser.accessToken = token.accessToken?.accessToken
+                }
+                if (facebookUser.properties.containsKey('accessTokenExpires')) {
+                    facebookUser.accessTokenExpires = token.accessToken?.expireAt
+                }
                 facebookUser.save()
             } catch (OptimisticLockingFailureException e) {
-                log.warn("Seems that token was updated in another thread. " + e.message)
+                log.warn("Seems that token was updated in another thread (${e.message}). Skip")
             } catch (Throwable e) {
                 log.error("Can't update token", e)
             }
