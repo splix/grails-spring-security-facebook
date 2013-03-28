@@ -10,7 +10,7 @@ h2. Requirements:
 
 h2. Examples:
 
-  * [https://github.com/splix/s2-facebook-example|https://github.com/splix/s2-facebook-example] - Example app (based on Grails 2.1.1)
+  * [https://github.com/splix/grails-facebook-authentication-example|https://github.com/splix/grails-facebook-authentication-example] - Example app (based on Grails 2.1.1)
 
 h2. Support
 

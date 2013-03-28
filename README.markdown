@@ -12,7 +12,7 @@ Requirements
 Examples:
 
   * Docs - http://splix.github.com/grails-spring-security-facebook/
-  * Example - https://github.com/splix/s2-facebook-example
+  * Example - https://github.com/splix/grails-facebook-authentication-example
 
 Questions?
 ----------
