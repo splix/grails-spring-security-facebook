@@ -11,7 +11,7 @@ import javax.servlet.FilterChain
 import org.codehaus.groovy.grails.web.mapping.LinkGenerator
 
 /**
- * 
+ *
  * @author Igor Artamonov (http://igorartamonov.com)
  * @since 19.09.12
  */
@@ -35,7 +35,7 @@ class FacebookAuthRedirectFilter extends AbstractAuthenticationProcessingFilter 
             FacebookAuthToken token = new FacebookAuthToken(
                     code: code,
                     uid: -1,
-                    redirectUri: getAbsoluteRedirectUrl()
+                    redirectUri: getAbsoluteRedirectUrl(request)
             )
             return authenticationManager.authenticate(token)
         }
@@ -47,6 +47,11 @@ class FacebookAuthRedirectFilter extends AbstractAuthenticationProcessingFilter 
         String uri = request.getRequestURI();
         int pathParamIndex = uri.indexOf(';');
 
+        //HL MODIFICATION
+        String redirectPath = uri.substring(uri.lastIndexOf('/') + 1, uri.length())
+        if (["parent", "sitter"].contains(redirectPath)) {
+            uri = uri.substring(0, uri.lastIndexOf('/'))
+        }
         if (pathParamIndex > 0) {
             // strip everything after the first semi-colon
             uri = uri.substring(0, pathParamIndex);
@@ -55,15 +60,23 @@ class FacebookAuthRedirectFilter extends AbstractAuthenticationProcessingFilter 
         uri = uri.substring(request.contextPath.length())
 
         if (uri.equals(redirectFromUrl)) {
-            response.sendRedirect(facebookAuthUtils.prepareRedirectUrl(getAbsoluteRedirectUrl(), facebookAuthUtils.requiredPermissions))
+            response.sendRedirect(facebookAuthUtils.prepareRedirectUrl(getAbsoluteRedirectUrl(request), facebookAuthUtils.requiredPermissions))
             return false
         }
 
         return uri.equals(filterProcessesUrl)
     }
 
-    String getAbsoluteRedirectUrl() {
-        String path = getFilterProcessesUrl()
+    String getAbsoluteRedirectUrl(HttpServletRequest request) {
+        //HL MODIFICATION
+        String uri = request.getRequestURI();
+        String path;
+        String redirectPath = uri.substring(uri.lastIndexOf('/') + 1, uri.length())
+        if (["parent", "sitter"].contains(redirectPath)) {
+            path = getFilterProcessesUrl() + "/" + redirectPath
+        } else {
+            path = getFilterProcessesUrl();
+        }
         linkGenerator.link(uri: path, absolute: true)
     }
 
