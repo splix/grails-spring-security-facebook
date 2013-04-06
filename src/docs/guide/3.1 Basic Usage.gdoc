@@ -1,6 +1,6 @@
 h2. Example app
 
-You can take a look at [Example Application|https://github.com/splix/s2-facebook-example|https://github.com/splix/s2-facebook-example], it's very
+You can take a look at [Example Application|https://github.com/splix/grails-facebook-authentication-example], it's very
 basic app, that have only one page, with 'Facebook Connect' button. Just clone it, put your FB App credentials, and play with it.
 
 h2. How to add Facebook Authentication into your existing application

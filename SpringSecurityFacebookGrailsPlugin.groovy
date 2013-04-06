@@ -41,14 +41,14 @@ class SpringSecurityFacebookGrailsPlugin {
        //extra developers
    ]
    def issueManagement = [ system: "GitHub", url: "https://github.com/splix/grails-spring-security-facebook/issues" ]
-   def scm = [ url: "git@github.com:splix/grails-spring-security-facebook.git" ]
+   def scm = [ url: "http://github.com/splix/grails-spring-security-facebook" ]
 
    String author = 'Igor Artamonov'
    String authorEmail = 'igor@artamonov.ru'
-   String title = 'Facebook Authentication'
-   String description = 'Facebook Authentication plugin, extension to the Spring Security Core plugin.'
+   String title = 'Facebook Authentication for Spring Security'
+   String description = 'Facebook Authentication for Spring Security Core plugin'
 
-   String documentation = 'http://splix.github.com/grails-spring-security-facebook/'
+   String documentation = "http://splix.github.io/grails-spring-security-facebook/"
 
    def observe = ["springSecurityCore"]
 
