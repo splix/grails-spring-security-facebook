@@ -63,6 +63,12 @@ class SpringSecurityFacebookGrailsPlugin {
            return
        }
 
+       if (!this.hasProperty('log')) {
+           println 'WARN: No such property: log for class: SpringSecurityFacebookGrailsPlugin'
+           println 'WARN: Introducing a log property for plugin'
+           this.metaClass.log = org.apache.commons.logging.LogFactory.getLog(SpringSecurityFacebookGrailsPlugin)
+       }
+
 	   println 'Configuring Spring Security Facebook ...'
 	   SpringSecurityUtils.loadSecondaryConfig 'DefaultFacebookSecurityConfig'
 	   // have to get again after overlaying DefaultFacebookecurityConfig
