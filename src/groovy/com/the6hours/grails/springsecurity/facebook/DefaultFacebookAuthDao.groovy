@@ -139,7 +139,7 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object, Object>, Initial
             user[appUserConnectionPropertyName] = appUser
         }
 
-        if (facebookAuthService && facebookAuthService.respondsTo('onCreate', FacebookUserDomainClazz, token)) {
+        if (facebookAuthService && facebookAuthService.respondsTo('onCreate', FacebookUserDomainClazz, FacebookAuthToken)) {
             facebookAuthService.onCreate(user, token)
         }
 
@@ -147,7 +147,7 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object, Object>, Initial
             user.save(flush: true, failOnError: true)
         }
 
-        if (facebookAuthService && facebookAuthService.respondsTo('afterCreate', FacebookUserDomainClazz, token)) {
+        if (facebookAuthService && facebookAuthService.respondsTo('afterCreate', FacebookUserDomainClazz, FacebookAuthToken)) {
             facebookAuthService.afterCreate(user, token)
         }
 
