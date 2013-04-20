@@ -21,6 +21,7 @@ import com.the6hours.grails.springsecurity.facebook.FacebookAuthJsonFilter
 import com.the6hours.grails.springsecurity.facebook.FacebookAuthCookieTransparentFilter
 import com.the6hours.grails.springsecurity.facebook.FacebookAuthUtils
 import com.the6hours.grails.springsecurity.facebook.JsonAuthenticationHandler
+import grails.util.Environment
 import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
 import org.codehaus.groovy.grails.plugins.springsecurity.SecurityFilterPosition
 import com.the6hours.grails.springsecurity.facebook.FacebookAuthCookieLogoutHandler
@@ -55,6 +56,11 @@ class SpringSecurityFacebookGrailsPlugin {
    String _facebookDaoName
 
     def doWithSpring = {
+
+       if (Environment.current == Environment.TEST) {
+           println "Test mode. Skipping initial plugin initialization"
+           return
+       }
 
        def conf = SpringSecurityUtils.securityConfig
        if (!conf) {
