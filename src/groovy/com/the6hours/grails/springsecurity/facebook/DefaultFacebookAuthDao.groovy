@@ -31,7 +31,7 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object, Object>, Initial
 
     String domainClassName
 
-    String appUserConnectionPropertyName
+    String appUserConnectionPropertyName = 'user'
 
     String userDomainClassName
     String rolesPropertyName
@@ -43,22 +43,26 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object, Object>, Initial
     private Class<?> FacebookUserDomainClazz
     private Class<?> AppUserDomainClazz
 
-    Object getFacebookUser(Object user) {
-        if (facebookAuthService && facebookAuthService.respondsTo('getFacebookUser', user.class)) {
-            return facebookAuthService.getFacebookUser(user)
+    boolean isSameDomain() {
+        return FacebookUserDomainClazz == AppUserDomainClazz
+    }
+
+    Object getFacebookUser(Object appUser) {
+        if (facebookAuthService && facebookAuthService.respondsTo('getFacebookUser', appUser.class)) {
+            return facebookAuthService.getFacebookUser(appUser)
         }
         if (domainsRelation == DomainsRelation.JoinedUser) {
-            def loaded = null
+            Object loaded = null
             FacebookUserDomainClazz.withTransaction { status ->
-                user = FacebookUserDomainClazz.findWhere((appUserConnectionPropertyName): user)
+                loaded = FacebookUserDomainClazz.findWhere((appUserConnectionPropertyName): appUser)
             }
             return loaded
         }
         if (domainsRelation == DomainsRelation.SameObject) {
-            return user
+            return appUser
         }
         log.error("Invalid domainsRelation value: $domainsRelation")
-        return user
+        return appUser
     }
 
     Object getAppUser(Object facebookUser) {
@@ -88,13 +92,19 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object, Object>, Initial
         if (facebookAuthService && facebookAuthService.respondsTo('findUser', Long)) {
             return facebookAuthService.findUser(uid)
         }
-        def user = null
+        Object user = null
         FacebookUserDomainClazz.withTransaction { status ->
             user = FacebookUserDomainClazz.findWhere(uid: uid)
-            if (user
-                    && !(facebookAuthService && facebookAuthService.respondsTo('getFacebookUser', user.class))
-                    && domainsRelation == DomainsRelation.JoinedUser) {
-                getFacebookUser(user) // load the User object to memory prevent LazyInitializationException
+            if (user == null) {
+                return user
+            }
+            if (!isSameDomain()) {
+                if (appUserConnectionPropertyName != null && appUserConnectionPropertyName.length() > 0) {
+                    // load the User object to memory prevent LazyInitializationException
+                    Object appUser = user.getAt(appUserConnectionPropertyName)
+                } else {
+                    log.error("appUserConnectionPropertyName is not configured")
+                }
             }
         }
         return user

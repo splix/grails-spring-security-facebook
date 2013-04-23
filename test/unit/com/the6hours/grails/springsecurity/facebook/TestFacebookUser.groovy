@@ -11,9 +11,9 @@ class TestFacebookUser {
     String accessToken
     Date accessTokenExpires
 
-   	static belongsTo = [user: TestAppUser]
+    TestAppUser user
 
-   	static constraints = {
-   		uid unique: true
-   	}
+    static def withTransaction(Closure c) {
+        return c.call()
+    }
 }
