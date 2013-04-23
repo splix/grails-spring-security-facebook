@@ -7,6 +7,8 @@ package com.the6hours.grails.springsecurity.facebook
  */
 class TestFacebookUser {
 
+    static _calls = []
+
     long uid
     String accessToken
     Date accessTokenExpires
@@ -15,5 +17,9 @@ class TestFacebookUser {
 
     static def withTransaction(Closure c) {
         return c.call()
+    }
+
+    def save(def args) {
+        _calls << ['save', args]
     }
 }

@@ -1,5 +1,8 @@
 package com.the6hours.grails.springsecurity.facebook
 
+import org.codehaus.groovy.grails.commons.DefaultGrailsApplication
+import org.codehaus.groovy.grails.commons.GrailsApplication
+import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
 import spock.lang.Specification
 
 /**
@@ -8,6 +11,44 @@ import spock.lang.Specification
  * @author Igor Artamonov, http://igorartamonov.com
  */
 class DefaultFacebookAuthDaoSpec extends Specification {
+
+    static {
+        ExpandoMetaClass.enableGlobally()
+    }
+
+    DefaultFacebookAuthDao dao
+    def grails
+
+    def setup() {
+        grails = new DefaultGrailsApplication()
+        grails.metaClass.getDomainClass = {String name ->
+            if (TestFacebookUser.canonicalName == name) {
+                return TestFacebookUser
+            }
+            if (TestAppUser.canonicalName == name) {
+                return TestAppUser
+            }
+            if (TestAuthority.canonicalName == name) {
+                return TestAuthority
+            }
+            if (TestRole.canonicalName == name) {
+                return TestRole
+            }
+            println "Uknown domain: $name"
+            return null
+        }
+        dao = new DefaultFacebookAuthDao(
+                FacebookUserDomainClazz: TestFacebookUser,
+                domainClassName: TestFacebookUser.canonicalName,
+                AppUserDomainClazz: TestAppUser,
+                appUserConnectionPropertyName: 'user',
+                grailsApplication: grails as GrailsApplication
+        )
+        TestAuthority._calls = []
+        TestRole._calls = []
+        TestFacebookUser._calls = []
+        TestAppUser._calls = []
+    }
 
     def "Use service for findUser"() {
         setup:
@@ -64,5 +105,62 @@ class DefaultFacebookAuthDaoSpec extends Specification {
         then:
         act == user
         args[0] == [uid: 1]
+    }
+
+    def "Use service for create"() {
+        setup:
+        def args = []
+        TestFacebookUser user = new TestFacebookUser()
+        def service = "temp"
+        service.metaClass.create = { FacebookAuthToken token ->
+            args << token
+            return user
+        }
+        DefaultFacebookAuthDao dao = new DefaultFacebookAuthDao()
+        dao.facebookAuthService = service
+        FacebookAuthToken token = new FacebookAuthToken(uid: 1)
+        when:
+        def act = dao.create(token)
+        then:
+        act == user
+        args == [token]
+    }
+
+    def "Basic create"() {
+        setup:
+        FacebookAuthToken token = new FacebookAuthToken(uid: 1)
+        SpringSecurityUtils.metaClass.static.getSecurityConfig = {
+            return [
+                    userLookup: [
+                            authorityJoinClassName: TestRole.canonicalName,
+                            usernamePropertyName: 'username',
+                            passwordPropertyName: 'password',
+                            enabledPropertyName: 'enabled',
+                            accountExpiredPropertyName: 'expired',
+                            accountLockedPropertyName: 'locked',
+                            passwordExpiredPropertyName: 'passwordExpired',
+                    ],
+                    authority: [
+                            className: TestAuthority.canonicalName,
+                            nameField: 'name'
+                    ]
+            ]
+        }
+        when:
+        def act = dao.create(token)
+        then:
+        act != null
+        TestAuthority._calls == [
+                ['findByName', 'ROLE_USER'],
+                ['findByName', 'ROLE_FACEBOOK']
+        ]
+        TestRole._calls.size() == 1
+        TestRole._calls[0][0] == 'create'
+        TestAppUser._calls == [
+                ['save', [flush: true, failOnError: true]]
+        ]
+        TestFacebookUser._calls == [
+                ['save', [flush: true, failOnError: true]]
+        ]
     }
 }

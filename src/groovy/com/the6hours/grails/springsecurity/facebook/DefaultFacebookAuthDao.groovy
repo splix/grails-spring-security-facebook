@@ -127,7 +127,7 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object, Object>, Initial
         }
 
         def appUser
-        if (domainsRelation == DomainsRelation.JoinedUser) {
+        if (!isSameDomain()) {
             if (facebookAuthService && facebookAuthService.respondsTo('createAppUser', FacebookUserDomainClazz, FacebookAuthToken)) {
                 appUser = facebookAuthService.createAppUser(user, token)
             } else {
@@ -147,6 +147,8 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object, Object>, Initial
                 }
             }
             user[appUserConnectionPropertyName] = appUser
+        } else {
+            appUser = user
         }
 
         if (facebookAuthService && facebookAuthService.respondsTo('onCreate', FacebookUserDomainClazz, FacebookAuthToken)) {
@@ -164,11 +166,12 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object, Object>, Initial
         if (facebookAuthService && facebookAuthService.respondsTo('createRoles', FacebookUserDomainClazz)) {
             facebookAuthService.createRoles(user)
         } else {
-            Class<?> PersonRole = grailsApplication.getDomainClass(securityConf.userLookup.authorityJoinClassName).clazz
-            Class<?> Authority = grailsApplication.getDomainClass(securityConf.authority.className).clazz
+            Class<?> PersonRole = grailsApplication.getDomainClass(securityConf.userLookup.authorityJoinClassName)
+            Class<?> Authority = grailsApplication.getDomainClass(securityConf.authority.className)
             PersonRole.withTransaction { status ->
                 defaultRoleNames.each { String roleName ->
-                    String findByField = securityConf.authority.nameField[0].toUpperCase() + securityConf.authority.nameField.substring(1)
+                    String authorityNameField = securityConf.authority.nameField
+                    String findByField = authorityNameField[0].toUpperCase() + authorityNameField.substring(1)
                     def auth = Authority."findBy${findByField}"(roleName)
                     if (auth) {
                         PersonRole.create(appUser, auth)
