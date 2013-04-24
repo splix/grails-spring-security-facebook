@@ -148,7 +148,10 @@ class DefaultFacebookAuthDaoSpec extends Specification {
 
     def "Basic create"() {
         setup:
-        FacebookAuthToken token = new FacebookAuthToken(uid: 1)
+        FacebookAuthToken token = new FacebookAuthToken(uid: 1, accessToken: new FacebookAccessToken(
+                accessToken: 'test',
+                expireAt: new Date(1000)
+        ))
         when:
         def act = dao.create(token)
         then:
@@ -165,6 +168,23 @@ class DefaultFacebookAuthDaoSpec extends Specification {
         TestFacebookUser._calls == [
                 ['save', [flush: true, failOnError: true]]
         ]
+        act instanceof TestFacebookUser
+        when:
+        TestFacebookUser user = act
+        then:
+        user.uid == 1
+        user.accessToken == 'test'
+        user.accessTokenExpires == new Date(1000)
+        user.user != null
+        when:
+        TestAppUser appUser = user.user
+        then:
+        appUser.enabled
+        !appUser.expired
+        !appUser.locked
+        appUser.password != null
+        !appUser.passwordExpired
+        appUser.username == 'facebook_1'
     }
 
     def "Call notification methods on create"() {
