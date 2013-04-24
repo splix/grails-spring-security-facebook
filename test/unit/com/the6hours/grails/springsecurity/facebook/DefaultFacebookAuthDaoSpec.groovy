@@ -74,7 +74,7 @@ class DefaultFacebookAuthDaoSpec extends Specification {
         setup:
         def args = []
         TestFacebookUser user = new TestFacebookUser()
-        def service = "temp"
+        def service = new Object()
         service.metaClass.findUser = { long uid ->
             args << uid
             return user
@@ -131,7 +131,7 @@ class DefaultFacebookAuthDaoSpec extends Specification {
         setup:
         def args = []
         TestFacebookUser user = new TestFacebookUser()
-        def service = "temp"
+        def service = new Object()
         service.metaClass.create = { FacebookAuthToken token ->
             args << token
             return user
@@ -171,7 +171,7 @@ class DefaultFacebookAuthDaoSpec extends Specification {
         setup:
         List calls = []
         FacebookAuthToken token = new FacebookAuthToken(uid: 1)
-        def service = "temp"
+        def service = new Object()
         service.metaClass.onCreate = { TestFacebookUser a1, FacebookAuthToken a2 ->
             calls << ['onCreate', [a1, a2]]
         }
