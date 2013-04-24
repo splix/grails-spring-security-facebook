@@ -18,6 +18,7 @@ class DefaultFacebookAuthDaoSpec extends Specification {
 
     DefaultFacebookAuthDao dao
     def grails
+    Map securityConfig = [:]
 
     def setup() {
         grails = new DefaultGrailsApplication()
@@ -48,6 +49,25 @@ class DefaultFacebookAuthDaoSpec extends Specification {
         TestRole._calls = []
         TestFacebookUser._calls = []
         TestAppUser._calls = []
+        securityConfig = [
+                userLookup: [
+                        authorityJoinClassName: TestRole.canonicalName,
+                        usernamePropertyName: 'username',
+                        passwordPropertyName: 'password',
+                        enabledPropertyName: 'enabled',
+                        accountExpiredPropertyName: 'expired',
+                        accountLockedPropertyName: 'locked',
+                        passwordExpiredPropertyName: 'passwordExpired',
+                ],
+                authority: [
+                        className: TestAuthority.canonicalName,
+                        nameField: 'name'
+                ]
+        ]
+        SpringSecurityUtils.metaClass.static.getSecurityConfig = {
+            return securityConfig
+        }
+
     }
 
     def "Use service for findUser"() {
@@ -129,23 +149,6 @@ class DefaultFacebookAuthDaoSpec extends Specification {
     def "Basic create"() {
         setup:
         FacebookAuthToken token = new FacebookAuthToken(uid: 1)
-        SpringSecurityUtils.metaClass.static.getSecurityConfig = {
-            return [
-                    userLookup: [
-                            authorityJoinClassName: TestRole.canonicalName,
-                            usernamePropertyName: 'username',
-                            passwordPropertyName: 'password',
-                            enabledPropertyName: 'enabled',
-                            accountExpiredPropertyName: 'expired',
-                            accountLockedPropertyName: 'locked',
-                            passwordExpiredPropertyName: 'passwordExpired',
-                    ],
-                    authority: [
-                            className: TestAuthority.canonicalName,
-                            nameField: 'name'
-                    ]
-            ]
-        }
         when:
         def act = dao.create(token)
         then:
@@ -162,5 +165,25 @@ class DefaultFacebookAuthDaoSpec extends Specification {
         TestFacebookUser._calls == [
                 ['save', [flush: true, failOnError: true]]
         ]
+    }
+
+    def "Call notification methods on create"() {
+        setup:
+        List calls = []
+        FacebookAuthToken token = new FacebookAuthToken(uid: 1)
+        def service = "temp"
+        service.metaClass.onCreate = { TestFacebookUser a1, FacebookAuthToken a2 ->
+            calls << ['onCreate', [a1, a2]]
+        }
+        service.metaClass.afterCreate = { TestFacebookUser a1, FacebookAuthToken a2 ->
+            calls << ['afterCreate', [a1, a2]]
+        }
+        dao.facebookAuthService = service
+        when:
+        def act = dao.create(token)
+        then:
+        calls.size() == 2
+        calls[0][0] == 'onCreate'
+        calls[1][0] == 'afterCreate'
     }
 }
