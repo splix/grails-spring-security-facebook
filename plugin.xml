@@ -1,0 +1,73 @@
+<plugin name='spring-security-facebook' version='0.13.2' grailsVersion='2.2.1 &gt; *'>
+  <author>Igor Artamonov</author>
+  <authorEmail>igor@artamonov.ru</authorEmail>
+  <title>Facebook Authentication</title>
+  <description>Facebook Authentication plugin, extension to the Spring Security Core plugin.</description>
+  <documentation>http://splix.github.com/grails-spring-security-facebook/</documentation>
+  <type>SpringSecurityFacebookGrailsPlugin</type>
+  <resources>
+    <resource>DefaultFacebookSecurityConfig</resource>
+    <resource>com.the6hours.grails.springsecurity.facebook.FacebookAuthTagLib</resource>
+  </resources>
+  <repositories>
+    <repository name='grailsCentral' url='http://grails.org/plugins' />
+    <repository name='mavenCentral' url='http://repo1.maven.org/maven2/' />
+    <repository name='ebrRelease' url='http://repository.springsource.com/maven/bundles/release/' />
+    <repository name='ebrExternal' url='http://repository.springsource.com/maven/bundles/external/' />
+    <repository name='http://maven.springframework.org/release' url='http://maven.springframework.org/release/' />
+    <repository name='http://maven.springframework.org/snapshot' url='http://maven.springframework.org/snapshot/' />
+    <repository name='http://maven.springframework.org/milestone' url='http://maven.springframework.org/milestone/' />
+    <repository name='http://download.java.net/maven/2/' url='http://download.java.net/maven/2/' />
+    <repository name='http://repo.grails.org/grails/plugins' url='http://repo.grails.org/grails/plugins/' />
+    <repository name='http://grails.org/plugins' url='http://grails.org/plugins' />
+  </repositories>
+  <dependencies>
+    <test>
+      <dependency group='org.seleniumhq.selenium' name='selenium-htmlunit-driver' version='2.27.0' />
+      <dependency group='org.gebish' name='geb-spock' version='0.9.0-RC-1' />
+      <dependency group='org.seleniumhq.selenium' name='selenium-chrome-driver' version='2.31.0' />
+      <dependency group='org.seleniumhq.selenium' name='selenium-firefox-driver' version='2.31.0' />
+      <dependency group='org.spockframework' name='spock-core' version='0.7-groovy-2.0' />
+    </test>
+    <runtime>
+      <dependency group='org.springframework.social' name='spring-social-facebook-web' version='1.0.2.RELEASE' />
+      <dependency group='mysql' name='mysql-connector-java' version='5.1.24' />
+      <dependency group='org.springframework.social' name='spring-social-facebook' version='1.0.2.RELEASE' />
+      <dependency group='org.codehaus.groovy.modules.http-builder' name='http-builder' version='0.6' />
+      <dependency group='org.apache.solr' name='solr-solrj' version='3.6.0' />
+      <dependency group='org.springframework.social' name='spring-social-core' version='1.0.2.RELEASE' />
+    </runtime>
+  </dependencies>
+  <plugins>
+    <test>
+      <plugin group='org.grails.plugins' name='spock' version='0.7' />
+      <plugin group='org.grails.plugins' name='geb' version='0.9.0-RC-1' />
+    </test>
+    <compile>
+      <plugin group='org.grails.plugins' name='twitter-bootstrap' version='2.2.2' />
+      <plugin group='org.grails.plugins' name='spring-security-ui' version='0.2' />
+      <plugin group='org.grails.plugins' name='mail' version='1.0.1' />
+      <plugin group='org.grails.plugins' name='webxml' version='1.4.1' />
+      <plugin group='org.grails.plugins' name='famfamfam' version='1.0.1' />
+      <plugin group='org.grails.plugins' name='cache' version='1.0.0' />
+      <plugin group='org.grails.plugins' name='angularjs-resources' version='1.0.2' />
+      <plugin group='org.grails.plugins' name='spring-social-facebook' version='0.1.32' />
+      <plugin group='org.grails.plugins' name='jquery-validation-ui' version='1.4.4' />
+      <plugin group='org.grails.plugins' name='spring-social-core' version='0.1.31' />
+      <plugin group='org.grails.plugins' name='spring-security-core' version='1.2.7.3' />
+    </compile>
+    <runtime>
+      <plugin group='org.grails.plugins' name='jquery' version='1.8.3' />
+      <plugin group='org.grails.plugins' name='jquery-ui' version='1.8.24' />
+      <plugin group='org.grails.plugins' name='resources' version='1.1.6' />
+      <plugin group='org.grails.plugins' name='jquery-validation' version='1.9' />
+      <plugin group='org.grails.plugins' name='hibernate' version='2.2.1' />
+      <plugin group='org.grails.plugins' name='database-migration' version='1.1' />
+    </runtime>
+    <build>
+      <plugin group='org.grails.plugins' name='tomcat' version='2.2.1' />
+    </build>
+  </plugins>
+  <runtimePluginRequirements />
+  <behavior />
+</plugin>
