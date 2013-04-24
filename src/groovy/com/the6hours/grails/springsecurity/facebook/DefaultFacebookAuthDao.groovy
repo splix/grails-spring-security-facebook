@@ -48,7 +48,7 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object, Object>, Initial
     }
 
     Object getFacebookUser(Object appUser) {
-        if (facebookAuthService && facebookAuthService.respondsTo('getFacebookUser', appUser.class)) {
+        if (facebookAuthService && appUser != null && facebookAuthService.respondsTo('getFacebookUser', appUser.class)) {
             return facebookAuthService.getFacebookUser(appUser)
         }
         if (domainsRelation == DomainsRelation.JoinedUser) {
@@ -66,7 +66,7 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object, Object>, Initial
     }
 
     Object getAppUser(Object facebookUser) {
-        if (facebookAuthService && facebookAuthService.respondsTo('getAppUser', facebookUser.class)) {
+        if (facebookAuthService  && facebookUser != null && facebookAuthService.respondsTo('getAppUser', facebookUser.class)) {
             return facebookAuthService.getAppUser(facebookUser)
         }
         if (facebookUser == null) {
@@ -187,7 +187,7 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object, Object>, Initial
     }
 
     Object getPrincipal(Object user) {
-        if (facebookAuthService && facebookAuthService.respondsTo('getPrincipal', user.class)) {
+        if (facebookAuthService && user != null && facebookAuthService.respondsTo('getPrincipal', user.class)) {
             return facebookAuthService.getPrincipal(user)
         }
         if (coreUserDetailsService) {
@@ -197,7 +197,7 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object, Object>, Initial
     }
 
     Collection<GrantedAuthority> getRoles(Object user) {
-        if (facebookAuthService && facebookAuthService.respondsTo('getRoles', user.class)) {
+        if (facebookAuthService && user != null && facebookAuthService.respondsTo('getRoles', user.class)) {
             return facebookAuthService.getRoles(user)
         }
 
@@ -231,7 +231,7 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object, Object>, Initial
     }
 
     Boolean hasValidToken(Object facebookUser) {
-        if (facebookAuthService && facebookAuthService.respondsTo('hasValidToken', facebookUser.class)) {
+        if (facebookAuthService && facebookUser != null && facebookAuthService.respondsTo('hasValidToken', facebookUser.class)) {
             return facebookAuthService.hasValidToken(facebookUser)
         }
         if (facebookUser.properties.containsKey('accessToken')) {
@@ -255,7 +255,7 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object, Object>, Initial
     }
 
     void updateToken(Object facebookUser, FacebookAuthToken token) {
-        if (facebookAuthService && facebookAuthService.respondsTo('updateToken', facebookUser.class, token.class)) {
+        if (facebookAuthService && facebookUser != null && facebookAuthService.respondsTo('updateToken', facebookUser.class, FacebookAuthToken)) {
             facebookAuthService.updateToken(facebookUser, token)
             return
         }
@@ -281,7 +281,7 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object, Object>, Initial
     }
 
     String getAccessToken(Object facebookUser) {
-        if (facebookAuthService && facebookAuthService.respondsTo('getAccessToken', facebookUser.class)) {
+        if (facebookAuthService && facebookUser != null && facebookAuthService.respondsTo('getAccessToken', facebookUser.class)) {
             return facebookAuthService.getAccessToken(facebookUser)
         }
         if (facebookUser.properties.containsKey('accessToken')) {
