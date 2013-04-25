@@ -71,6 +71,7 @@ class SpringSecurityFacebookGrailsPlugin {
 
        if (!this.hasProperty('log')) {
            println 'WARN: No such property: log for class: SpringSecurityFacebookGrailsPlugin'
+           println 'WARN: Running from a unit test?'
            println 'WARN: Introducing a log property for plugin'
            this.metaClass.log = org.apache.commons.logging.LogFactory.getLog(SpringSecurityFacebookGrailsPlugin)
        }
