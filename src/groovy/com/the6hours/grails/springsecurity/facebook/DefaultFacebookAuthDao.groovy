@@ -29,15 +29,21 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object, Object>, Initial
     ApplicationContext applicationContext
     def coreUserDetailsService
 
+    @Deprecated
     String domainClassName
 
     String appUserConnectionPropertyName = 'user'
 
+    @Deprecated
     String userDomainClassName
+
     String rolesPropertyName
+
     List<String> defaultRoleNames = ['ROLE_USER', 'ROLE_FACEBOOK']
 
     def facebookAuthService
+
+    @Deprecated
     DomainsRelation domainsRelation = null
 
     private Class<?> FacebookUserDomainClazz
@@ -51,18 +57,15 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object, Object>, Initial
         if (facebookAuthService && appUser != null && facebookAuthService.respondsTo('getFacebookUser', appUser.class)) {
             return facebookAuthService.getFacebookUser(appUser)
         }
-        if (domainsRelation == DomainsRelation.JoinedUser) {
+        if (isSameDomain()) {
+            return appUser
+        } else {
             Object loaded = null
             FacebookUserDomainClazz.withTransaction { status ->
                 loaded = FacebookUserDomainClazz.findWhere((appUserConnectionPropertyName): appUser)
             }
             return loaded
         }
-        if (domainsRelation == DomainsRelation.SameObject) {
-            return appUser
-        }
-        log.error("Invalid domainsRelation value: $domainsRelation")
-        return appUser
     }
 
     Object getAppUser(Object facebookUser) {
@@ -73,19 +76,16 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object, Object>, Initial
             log.warn("Passed facebookUser is null")
             return facebookUser
         }
-        if (domainsRelation == DomainsRelation.SameObject) {
+        if (isSameDomain()) {
             return facebookUser
-        }
-        if (domainsRelation == DomainsRelation.JoinedUser) {
+        } else {
             Object result = null
             FacebookUserDomainClazz.withTransaction { status ->
                 facebookUser.merge()
-                result = facebookUser.getAt(appUserConnectionPropertyName)
+                result = facebookUser.getProperty(appUserConnectionPropertyName)
             }
             return result
         }
-        log.error("Invalid domainsRelation value: $domainsRelation")
-        return facebookUser
     }
 
     Object findUser(long uid) {
@@ -101,7 +101,10 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object, Object>, Initial
             if (!isSameDomain()) {
                 if (appUserConnectionPropertyName != null && appUserConnectionPropertyName.length() > 0) {
                     // load the User object to memory prevent LazyInitializationException
-                    Object appUser = user.getAt(appUserConnectionPropertyName)
+                    Object appUser = user.getProperty(appUserConnectionPropertyName)
+                    if (appUser == null) {
+                        log.warn("No appUser for facebookUser ${user}. Property ${appUserConnectionPropertyName} have null value")
+                    }
                 } else {
                     log.error("appUserConnectionPropertyName is not configured")
                 }
@@ -117,7 +120,7 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object, Object>, Initial
 
         def securityConf = SpringSecurityUtils.securityConfig
 
-        def user = grailsApplication.getDomainClass(domainClassName).newInstance()
+        def user = grailsApplication.getDomainClass(FacebookUserDomainClazz.canonicalName).newInstance()
         user.setProperty('uid', token.uid)
         if (user.hasProperty('accessToken')) {
             user.setProperty('accessToken', token.accessToken?.accessToken)
@@ -131,7 +134,7 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object, Object>, Initial
             if (facebookAuthService && facebookAuthService.respondsTo('createAppUser', FacebookUserDomainClazz, FacebookAuthToken)) {
                 appUser = facebookAuthService.createAppUser(user, token)
             } else {
-                appUser = AppUserDomainClazz.newInstance()
+                appUser = grailsApplication.getDomainClass(AppUserDomainClazz.canonicalName).newInstance()
                 if (facebookAuthService && facebookAuthService.respondsTo('prepopulateAppUser', AppUserDomainClazz, FacebookAuthToken)) {
                     facebookAuthService.prepopulateAppUser(appUser, token)
                 } else {
@@ -166,12 +169,12 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object, Object>, Initial
         if (facebookAuthService && facebookAuthService.respondsTo('createRoles', FacebookUserDomainClazz)) {
             facebookAuthService.createRoles(user)
         } else {
-            Class<?> PersonRole = grailsApplication.getDomainClass(securityConf.userLookup.authorityJoinClassName)
-            Class<?> Authority = grailsApplication.getDomainClass(securityConf.authority.className)
+            Class<?> PersonRole = grailsApplication.getDomainClass(securityConf.userLookup.authorityJoinClassName)?.clazz
+            Class<?> Authority = grailsApplication.getDomainClass(securityConf.authority.className)?.clazz
+            String authorityNameField = securityConf.authority.nameField
+            String findByField = authorityNameField[0].toUpperCase() + authorityNameField.substring(1)
             PersonRole.withTransaction { status ->
                 defaultRoleNames.each { String roleName ->
-                    String authorityNameField = securityConf.authority.nameField
-                    String findByField = authorityNameField[0].toUpperCase() + authorityNameField.substring(1)
                     def auth = Authority."findBy${findByField}"(roleName)
                     if (auth) {
                         PersonRole.create(appUser, auth)
@@ -201,6 +204,10 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object, Object>, Initial
             return facebookAuthService.getRoles(user)
         }
 
+        if (user == null) {
+            return []
+        }
+
         if (UserDetails.isAssignableFrom(user.class)) {
             return ((UserDetails)user).getAuthorities()
         }
@@ -213,7 +220,7 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object, Object>, Initial
         }
         Collection roles = []
         PersonRole.withTransaction { status ->
-            roles = user?.getAt(rolesPropertyName)
+            roles = user?.getProperty(rolesPropertyName)
         }
         if (!roles) {
             roles = []
@@ -225,7 +232,7 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object, Object>, Initial
             if (it instanceof String) {
                 return new GrantedAuthorityImpl(it.toString())
             } else {
-                new GrantedAuthorityImpl(it[conf.authority.nameField])
+                new GrantedAuthorityImpl(it.getProperty(conf.authority.nameField))
             }
         }
     }
@@ -314,7 +321,7 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object, Object>, Initial
         List serviceMethods = []
         if (facebookAuthService) {
             facebookAuthService.metaClass.methods.each {
-                serviceMethods<< it.name
+                serviceMethods << it.name
             }
         }
 

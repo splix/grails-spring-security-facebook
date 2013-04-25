@@ -24,16 +24,16 @@ class DefaultFacebookAuthDaoSpec extends Specification {
         grails = new DefaultGrailsApplication()
         grails.metaClass.getDomainClass = {String name ->
             if (TestFacebookUser.canonicalName == name) {
-                return TestFacebookUser
+                return new GrailsDomainMock(TestFacebookUser)
             }
             if (TestAppUser.canonicalName == name) {
-                return TestAppUser
+                return new GrailsDomainMock(TestAppUser)
             }
             if (TestAuthority.canonicalName == name) {
-                return TestAuthority
+                return new GrailsDomainMock(TestAuthority)
             }
             if (TestRole.canonicalName == name) {
-                return TestRole
+                return new GrailsDomainMock(TestRole)
             }
             println "Uknown domain: $name"
             return null
