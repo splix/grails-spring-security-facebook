@@ -118,12 +118,12 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object, Object>, Initial
         def securityConf = SpringSecurityUtils.securityConfig
 
         def user = grailsApplication.getDomainClass(domainClassName).newInstance()
-        user.uid = token.uid
-        if (user.properties.containsKey('accessToken')) {
-            user.accessToken = token.accessToken?.accessToken
+        user.setProperty('uid', token.uid)
+        if (user.hasProperty('accessToken')) {
+            user.setProperty('accessToken', token.accessToken?.accessToken)
         }
-        if (user.properties.containsKey('accessTokenExpires')) {
-            user.accessTokenExpires = token.accessToken?.expireAt
+        if (user.hasProperty('accessTokenExpires')) {
+            user.setProperty('accessTokenExpires', token.accessToken?.expireAt)
         }
 
         def appUser
@@ -135,12 +135,12 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object, Object>, Initial
                 if (facebookAuthService && facebookAuthService.respondsTo('prepopulateAppUser', AppUserDomainClazz, FacebookAuthToken)) {
                     facebookAuthService.prepopulateAppUser(appUser, token)
                 } else {
-                    appUser[securityConf.userLookup.usernamePropertyName] = "facebook_$token.uid"
-                    appUser[securityConf.userLookup.passwordPropertyName] = token.accessToken?.accessToken
-                    appUser[securityConf.userLookup.enabledPropertyName] = true
-                    appUser[securityConf.userLookup.accountExpiredPropertyName] = false
-                    appUser[securityConf.userLookup.accountLockedPropertyName] = false
-                    appUser[securityConf.userLookup.passwordExpiredPropertyName] = false
+                    appUser.setProperty(securityConf.userLookup.usernamePropertyName, "facebook_$token.uid")
+                    appUser.setProperty(securityConf.userLookup.passwordPropertyName, token.accessToken?.accessToken)
+                    appUser.setProperty(securityConf.userLookup.enabledPropertyName, true)
+                    appUser.setProperty(securityConf.userLookup.accountExpiredPropertyName, false)
+                    appUser.setProperty(securityConf.userLookup.accountLockedPropertyName, false)
+                    appUser.setProperty(securityConf.userLookup.passwordExpiredPropertyName, false)
                 }
                 AppUserDomainClazz.withTransaction {
                     appUser.save(flush: true, failOnError: true)
@@ -234,17 +234,17 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object, Object>, Initial
         if (facebookAuthService && facebookUser != null && facebookAuthService.respondsTo('hasValidToken', facebookUser.class)) {
             return facebookAuthService.hasValidToken(facebookUser)
         }
-        if (facebookUser.properties.containsKey('accessToken')) {
-            if (facebookUser.accessToken == null) {
+        if (facebookUser.hasProperty('accessToken')) {
+            if (facebookUser.getProperty('accessToken') == null) {
                 return false
             }
         }
-        if (facebookUser.properties.containsKey('accessTokenExpires')) {
-            if (facebookUser.accessTokenExpires == null) {
+        if (facebookUser.hasProperty('accessTokenExpires')) {
+            if (facebookUser.getProperty('accessTokenExpires') == null) {
                 return false
             }
             Date goodExpiration = new Date(System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(15))
-            Date currentExpires = facebookUser.accessTokenExpires
+            Date currentExpires = facebookUser.getProperty('accessTokenExpires')
             if (currentExpires.before(goodExpiration)) {
                 return false
             }
@@ -265,11 +265,11 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object, Object>, Initial
                 if (!facebookUser.isAttached()) {
                     facebookUser.attach()
                 }
-                if (facebookUser.properties.containsKey('accessToken')) {
-                    facebookUser.accessToken = token.accessToken?.accessToken
+                if (facebookUser.hasProperty('accessToken')) {
+                    facebookUser.setProperty('accessToken', token.accessToken?.accessToken)
                 }
-                if (facebookUser.properties.containsKey('accessTokenExpires')) {
-                    facebookUser.accessTokenExpires = token.accessToken?.expireAt
+                if (facebookUser.hasProperty('accessTokenExpires')) {
+                    facebookUser.setProperty('accessTokenExpires', token.accessToken?.expireAt)
                 }
                 facebookUser.save()
             } catch (OptimisticLockingFailureException e) {
@@ -284,9 +284,9 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object, Object>, Initial
         if (facebookAuthService && facebookUser != null && facebookAuthService.respondsTo('getAccessToken', facebookUser.class)) {
             return facebookAuthService.getAccessToken(facebookUser)
         }
-        if (facebookUser.properties.containsKey('accessToken')) {
-            if (facebookUser.properties.containsKey('accessTokenExpires')) {
-                Date currentExpires = facebookUser.accessTokenExpires
+        if (facebookUser.hasProperty('accessToken')) {
+            if (facebookUser.hasProperty('accessTokenExpires')) {
+                Date currentExpires = facebookUser.getProperty('accessTokenExpires')
                 if (currentExpires == null) {
                     log.debug("Current access token don't have expiration timeout, and should be updated")
                     return null
@@ -296,7 +296,7 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object, Object>, Initial
                     return null
                 }
             }
-            return facebookUser.accessToken
+            return facebookUser.getProperty('accessToken')
         }
         return null
     }
