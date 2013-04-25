@@ -206,4 +206,42 @@ class DefaultFacebookAuthDaoSpec extends Specification {
         calls[0][0] == 'onCreate'
         calls[1][0] == 'afterCreate'
     }
+
+    def "Use createRoles from service"() {
+        setup:
+        List calls = []
+        FacebookAuthToken token = new FacebookAuthToken(uid: 1)
+        def service = new Object()
+        service.metaClass.createRoles = { TestFacebookUser a1 ->
+            calls << ['createRoles', a1]
+        }
+        dao.facebookAuthService = service
+        when:
+        def act = dao.create(token)
+        then:
+        calls.size() == 1
+        calls[0][0] == 'createRoles'
+        TestAuthority._calls == []
+        TestRole._calls == []
+    }
+
+    def "Use createAppUser from service"() {
+        setup:
+        List calls = []
+        FacebookAuthToken token = new FacebookAuthToken(uid: 1)
+        def service = new Object()
+        TestAppUser appUser = new TestAppUser()
+        service.metaClass.createAppUser = { TestFacebookUser a1, FacebookAuthToken a2 ->
+            calls << ['createAppUser', a1, a2]
+            return appUser
+        }
+        dao.facebookAuthService = service
+        when:
+        def act = dao.create(token)
+        then:
+        calls.size() == 1
+        calls[0][0] == 'createAppUser'
+        TestAppUser._calls == []
+        act.user == appUser
+    }
 }
