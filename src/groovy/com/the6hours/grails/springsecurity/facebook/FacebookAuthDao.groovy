@@ -16,7 +16,7 @@ public interface FacebookAuthDao<F, A> {
      * @param token information about current authnetication
      * @return just created user
      */
-    F create(FacebookAuthToken token)
+    F create(FacebookAuthToken token, String signupType)
 
     /**
      * Returns `principal` that will be stored into Security Context. It's good if it

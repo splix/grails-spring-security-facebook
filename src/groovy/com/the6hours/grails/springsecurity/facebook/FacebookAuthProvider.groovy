@@ -57,7 +57,7 @@ public class FacebookAuthProvider implements AuthenticationProvider, Initializin
             //log.debug "New person $token.uid"
             //HL modification
             //also checks if the user is coming from a signup page
-            if (createNew && isSignup(token.getRedirectUri())) {
+            if (createNew && (isParentSignup(token.getRedirectUri()) || isSitterSignup(token.getRedirectUri()))) {
                 log.info "Create new facebook user with uid $token.uid"
                 if (token.accessToken == null) {
                     token.accessToken = facebookAuthUtils.getAccessToken(token.code, token.redirectUri)
@@ -66,7 +66,7 @@ public class FacebookAuthProvider implements AuthenticationProvider, Initializin
                     log.error("Can't create user w/o access_token")
                     throw new CredentialsExpiredException("Can't receive access_token from Facebook")
                 }
-                user = facebookAuthDao.create(token)
+                user = facebookAuthDao.create(token, getSignupType(token.getRedirectUri()))
                 justCreated = true
             } else {
                 log.error "User $token.uid doesn't exist, and creation of a new user is disabled."
@@ -150,16 +150,32 @@ public class FacebookAuthProvider implements AuthenticationProvider, Initializin
 
     /**
      * HL MODIFICATION
-     * Method which identifies if the user is coming from the signup page.
+     * Method which identifies if the user is coming from the signup page and is a parent.
      * @param redirectUri the redirect uri
-     * @return if the redirect Uri contains a signup page identifier
+     * @return if the redirect Uri contains a signup page identifier parent/sitter
      */
-    boolean isSignup(String redirectUri) {
+    boolean isParentSignup(String redirectUri) {
         String redirectPath = redirectUri.substring(redirectUri.lastIndexOf('/') + 1, redirectUri.length())
-        if (facebookAuthUtils.signupFilterList.contains(redirectPath)) {
-            return true
+        return facebookAuthUtils.signupParent.equals(redirectPath)
+    }
+
+    /**
+     * HL MODIFICATION
+     * Method which identifies if the user is coming from the signup page and is a sitter.
+     * @param redirectUri the redirect uri
+     * @return if the redirect Uri contains a signup page identifier parent/sitter
+     */
+    boolean isSitterSignup(String redirectUri) {
+        String redirectPath = redirectUri.substring(redirectUri.lastIndexOf('/') + 1, redirectUri.length())
+        return facebookAuthUtils.signupSitter.equals(redirectPath)
+    }
+
+    String getSignupType(String redirectUri) {
+        if (isSitterSignup(redirectUri) || isParentSignup(redirectUri)) {
+            return redirectUri.substring(redirectUri.lastIndexOf('/') + 1, redirectUri.length())
         } else {
-            return false
+            return null
         }
     }
+
 }

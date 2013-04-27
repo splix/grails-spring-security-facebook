@@ -100,9 +100,9 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object, Object>, Initial
         return user
     }
 
-    Object create(FacebookAuthToken token) {
-        if (facebookAuthService && facebookAuthService.respondsTo('create', FacebookAuthToken)) {
-            return facebookAuthService.create(token)
+    Object create(FacebookAuthToken token, String signupType) {
+        if (facebookAuthService && facebookAuthService.respondsTo('create', FacebookAuthToken, String)) {
+            return facebookAuthService.create(token, signupType)
         }
 
         def securityConf = SpringSecurityUtils.securityConfig

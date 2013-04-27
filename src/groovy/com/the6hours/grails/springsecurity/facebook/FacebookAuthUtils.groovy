@@ -30,7 +30,8 @@ class FacebookAuthUtils {
     String applicationId
     //HL modification see SpringSecurityFacebookGrailsPlugin bean definition
     List<String> redirectFilterList
-    List<String> signupFilterList
+    String signupParent
+    String signupSitter
 
     List<String> filterTypes = []
     List<String> requiredPermissions = []
