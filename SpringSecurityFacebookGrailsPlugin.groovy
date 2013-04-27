@@ -98,6 +98,8 @@ class SpringSecurityFacebookGrailsPlugin {
            applicationId = conf.facebook.appId
            filterTypes = _filterTypes
            requiredPermissions = _requiredPermissions
+           redirectFilterList = conf.facebook.redirect.list
+           signupFilterList = conf.facebook.signup.list
        }
 
        SpringSecurityUtils.registerProvider 'facebookAuthProvider'

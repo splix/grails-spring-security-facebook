@@ -49,7 +49,7 @@ class FacebookAuthRedirectFilter extends AbstractAuthenticationProcessingFilter 
 
         //HL MODIFICATION
         String redirectPath = uri.substring(uri.lastIndexOf('/') + 1, uri.length())
-        if (["parent", "sitter"].contains(redirectPath)) {
+        if (facebookAuthUtils.redirectFilterList.contains(redirectPath)) {
             uri = uri.substring(0, uri.lastIndexOf('/'))
         }
         if (pathParamIndex > 0) {
@@ -67,17 +67,21 @@ class FacebookAuthRedirectFilter extends AbstractAuthenticationProcessingFilter 
         return uri.equals(filterProcessesUrl)
     }
 
+    /**
+     * HL modification
+     * Changed to be able to identify where the user is coming from (signup or login)
+     * @param request
+     * @return
+     */
     String getAbsoluteRedirectUrl(HttpServletRequest request) {
-        //HL MODIFICATION
         String uri = request.getRequestURI();
         String path;
         String redirectPath = uri.substring(uri.lastIndexOf('/') + 1, uri.length())
-        if (["parent", "sitter"].contains(redirectPath)) {
+        if (facebookAuthUtils.redirectFilterList.contains(redirectPath)) {
             path = getFilterProcessesUrl() + "/" + redirectPath
         } else {
             path = getFilterProcessesUrl();
         }
         linkGenerator.link(uri: path, absolute: true)
     }
-
 }

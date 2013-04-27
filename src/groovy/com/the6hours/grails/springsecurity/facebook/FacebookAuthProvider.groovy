@@ -55,7 +55,9 @@ public class FacebookAuthProvider implements AuthenticationProvider, Initializin
 
         if (user == null) {
             //log.debug "New person $token.uid"
-            if (createNew) {
+            //HL modification
+            //also checks if the user is coming from a signup page
+            if (createNew && isSignup(token.getRedirectUri())) {
                 log.info "Create new facebook user with uid $token.uid"
                 if (token.accessToken == null) {
                     token.accessToken = facebookAuthUtils.getAccessToken(token.code, token.redirectUri)
@@ -143,6 +145,21 @@ public class FacebookAuthProvider implements AuthenticationProvider, Initializin
                 log.debug("Use provided facebookAuthService")
                 facebookAuthService = applicationContext.getBean('facebookAuthService')
             }
+        }
+    }
+
+    /**
+     * HL MODIFICATION
+     * Method which identifies if the user is coming from the signup page.
+     * @param redirectUri the redirect uri
+     * @return if the redirect Uri contains a signup page identifier
+     */
+    boolean isSignup(String redirectUri) {
+        String redirectPath = redirectUri.substring(redirectUri.lastIndexOf('/') + 1, redirectUri.length())
+        if (facebookAuthUtils.signupFilterList.contains(redirectPath)) {
+            return true
+        } else {
+            return false
         }
     }
 }

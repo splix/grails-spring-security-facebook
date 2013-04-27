@@ -28,6 +28,9 @@ class FacebookAuthUtils {
     String apiKey
     String secret
     String applicationId
+    //HL modification see SpringSecurityFacebookGrailsPlugin bean definition
+    List<String> redirectFilterList
+    List<String> signupFilterList
 
     List<String> filterTypes = []
     List<String> requiredPermissions = []
