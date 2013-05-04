@@ -244,4 +244,23 @@ class DefaultFacebookAuthDaoSpec extends Specification {
         TestAppUser._calls == []
         act.user == appUser
     }
+
+    def "Use hasValidToken from service"() {
+        setup:
+        List calls = []
+        def service = new Object()
+        TestFacebookUser testUser = new TestFacebookUser()
+        service.metaClass.hasValidToken = { TestFacebookUser a1 ->
+            calls << ['hasValidToken', a1]
+            return false
+        }
+        dao.facebookAuthService = service
+        when:
+        def act = dao.hasValidToken(testUser)
+        then:
+        calls.size() == 1
+        calls[0][0] == 'hasValidToken'
+        act == false
+    }
+
 }
