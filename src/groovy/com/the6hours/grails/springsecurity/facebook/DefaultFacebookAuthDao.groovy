@@ -348,9 +348,11 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object, Object>, Initial
         }
 
         if (coreUserDetailsService != null) {
-            if (!(coreUserDetailsService instanceof GormUserDetailsService && coreUserDetailsService.respondsTo('createUserDetails'))) {
-                log.warn("UserDetailsService from spring-security-core don't have method 'createUserDetails()'")
+            if (!(coreUserDetailsService.respondsTo('createUserDetails'))) {
+                log.error("UserDetailsService from spring-security-core don't have method 'createUserDetails()'")
                 coreUserDetailsService = null
+            } else if (!(coreUserDetailsService instanceof GormUserDetailsService)) {
+                log.warn("UserDetailsService from spring-security-core isn't instance of GormUserDetailsService, but: ${coreUserDetailsService.class}")
             }
         } else {
             log.warn("No UserDetailsService bean from spring-security-core")
