@@ -28,16 +28,7 @@ grails.plugins.springsecurity.facebook.filter.redirect.successHandler | not set
 
 h4. Configuration for TRANSPARENT filter
 
-{table}
-*Name* | *Default Value*
-grails.plugins.springsecurity.facebook.filter.transparent.processUrl | not set
-grails.plugins.springsecurity.facebook.filter.transparent.failureHandler | not set
-grails.plugins.springsecurity.facebook.filter.transparent.successHandler | not set
-{table}
-
- * if @filter.transparent.processUrl@ is not then, then default @filter.processUrl@ will be used
- * @failureHandler@ - a name of the bean that implements [AuthenticationFailureHandler|http://static.springsource.org/spring-security/site/docs/3.0.x/apidocs/org/springframework/security/web/authentication/AuthenticationFailureHandler.html]
- * @successHandler@ - a name of the bean that implements [AuthenticationSuccessHandler|http://static.springsource.org/spring-security/site/docs/3.0.x/apidocs/org/springframework/security/web/authentication/AuthenticationSuccessHandler.html]
+NA
 
 h4. Configuration for COOKIEDIRECT filter
 

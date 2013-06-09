@@ -172,20 +172,12 @@ class SpringSecurityFacebookGrailsPlugin {
 
     private addFilter = { def conf, String name, int position ->
         if (name == 'transparent') {
-            String _successHandler = getConfigValue(conf, 'facebook.filter.transparent.successHandler')
-            String _failureHandler = getConfigValue(conf, 'facebook.filter.transparent.failureHandler')
             SpringSecurityUtils.registerFilter 'facebookAuthCookieTransparentFilter', position
             facebookAuthCookieTransparentFilter(FacebookAuthCookieTransparentFilter) {
                 authenticationManager = ref('authenticationManager')
                 facebookAuthUtils = ref('facebookAuthUtils')
                 logoutUrl = conf.logout.filterProcessesUrl
                 forceLoginParameter = conf.facebook.filter.forceLoginParameter
-                if (_successHandler) {
-                    authenticationSuccessHandler = ref(_successHandler)
-                }
-                if (_failureHandler) {
-                    authenticationFailureHandler = ref(_failureHandler)
-                }
             }
             facebookAuthCookieLogout(FacebookAuthCookieLogoutHandler) {
                 facebookAuthUtils = ref('facebookAuthUtils')
