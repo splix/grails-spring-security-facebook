@@ -43,6 +43,11 @@ class FacebookAuthTagLib {
 
         if (!init || attrs.force == 'true') {
             String lang = conf.taglib.language
+            if (attrs.lang?.length > 0) {
+                lang = attrs.lang
+            } else if (attrs.language?.length > 0) {
+                lang = attrs.language
+            }
             def appId = conf.appId
             out << '<div id="fb-root"></div>\n'
 

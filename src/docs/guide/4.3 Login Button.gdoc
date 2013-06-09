@@ -25,4 +25,4 @@ At this case a HTML button, provided by Facebook JS SDK, will be user.
 grails.plugins.springsecurity.facebook.taglib.language | 'en_US'
 {table}
 
- * @language@ - language for Facebook Javascript SDK (actually it's not only for connect button)
+ * @language@ - language for Facebook Javascript SDK. You could also pass this option as a @lang@ attribute for @:connect@ or @:init@ tags
