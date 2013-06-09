@@ -286,10 +286,16 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object, Object>, Initial
                         facebookUser.setProperty('accessToken', token.accessToken.accessToken)
                     }
                 }
-                if (facebookUser.hasProperty('accessTokenExpires')) {
+                if (updated && facebookUser.hasProperty('accessTokenExpires')) {
                     if (facebookUser.getProperty('accessTokenExpires') != token.accessToken) {
-                        updated = true
-                        facebookUser.setProperty('accessTokenExpires', token.accessToken.expireAt)
+                        if (token.accessToken.expireAt != null || token.accessToken.accessToken == null) { //allow null only if both expireAt and accessToken are null
+                            updated = true
+                            facebookUser.setProperty('accessTokenExpires', token.accessToken.expireAt)
+                        } else {
+                            log.warn("Provided accessToken.expiresAt value is null. Skip update")
+                        }
+                    } else {
+                        log.warn("A new accessToken have same token but different expires: $token")
                     }
                 }
                 if (updated) {
