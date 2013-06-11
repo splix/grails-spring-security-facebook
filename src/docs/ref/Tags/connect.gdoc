@@ -14,6 +14,7 @@ Optional attributes for @client@ button (client-side authentication):
  * @permission@ - list of [Facebook Permission|https://developers.facebook.com/docs/reference/login/] as a String or List
  * @text@ - text to display on button, *Login with Facebook* by default
  * @skipInit@ - force to skip Facebook Javascript SDK initialization. By default this tag calls @<facebook:init />@, if it's not executed yet.
+ * @lang@ - locale, for Facebook @all.js@ (like 'en_US', 'ru_RU', etc)
 
 h2. Examples:
 

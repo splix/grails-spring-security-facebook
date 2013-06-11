@@ -55,7 +55,8 @@ public interface FacebookAuthDao<F, A> {
     Boolean hasValidToken(F user)
 
     /**
-    * Setup new Facebook Access Token for specified user
+    * Setup a new Facebook Access Token if needed. Could be called with existing token, so
+    * implementation should check this case.
     *
     * @param user target user
     * @param token valid access token

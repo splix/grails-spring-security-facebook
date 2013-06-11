@@ -266,25 +266,67 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object, Object>, Initial
             facebookAuthService.updateToken(facebookUser, token)
             return
         }
+        if (token.accessToken == null) {
+            log.error("No access token $token")
+            return
+        }
+        if (token.accessToken.accessToken == null) {
+            log.warn("Update to empty accessToken for user $facebookUser")
+        }
         log.debug("Update access token to $token.accessToken for $facebookUser")
         FacebookUserDomainClazz.withTransaction {
             try {
+                boolean updated = false
                 if (!facebookUser.isAttached()) {
                     facebookUser.attach()
                 }
                 if (facebookUser.hasProperty('accessToken')) {
-                    facebookUser.setProperty('accessToken', token.accessToken?.accessToken)
+                    if (facebookUser.getProperty('accessToken') != token.accessToken.accessToken) {
+                        updated = true
+                        facebookUser.setProperty('accessToken', token.accessToken.accessToken)
+                    }
                 }
-                if (facebookUser.hasProperty('accessTokenExpires')) {
-                    facebookUser.setProperty('accessTokenExpires', token.accessToken?.expireAt)
+                if (updated && facebookUser.hasProperty('accessTokenExpires')) {
+                    if (!equalDates(facebookUser.getProperty('accessTokenExpires'), token.accessToken.expireAt)) {
+                        if (token.accessToken.expireAt != null || token.accessToken.accessToken == null) { //allow null only if both expireAt and accessToken are null
+                            updated = true
+                            facebookUser.setProperty('accessTokenExpires', token.accessToken.expireAt)
+                        } else {
+                            log.warn("Provided accessToken.expiresAt value is null. Skip update")
+                        }
+                    } else {
+                        log.warn("A new accessToken have same token but different expires: $token")
+                    }
                 }
-                facebookUser.save()
+                if (updated) {
+                    facebookUser.save()
+                }
             } catch (OptimisticLockingFailureException e) {
                 log.warn("Seems that token was updated in another thread (${e.message}). Skip")
             } catch (Throwable e) {
                 log.error("Can't update token", e)
             }
         }
+    }
+
+    boolean equalDates(Object x, Object y) {
+        long xtime = dateToLong(x)
+        long ytime = dateToLong(y)
+        return xtime >= 0 && ytime >= 0 && Math.abs(xtime - ytime) < 1000 //for dates w/o millisecond
+    }
+
+    long dateToLong(Object date) {
+        if (date == null) {
+            return -1
+        }
+        if (date instanceof Date) { //java.sql.Timestamp extends Date
+            return date.time
+        }
+        if (date instanceof Number) {
+            return date.toLong()
+        }
+        log.warn("Cannot convert date: $date (class: ${date.class})")
+        return -1
     }
 
     String getAccessToken(Object facebookUser) {

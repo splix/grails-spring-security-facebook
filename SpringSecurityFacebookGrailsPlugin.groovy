@@ -29,7 +29,8 @@ import com.the6hours.grails.springsecurity.facebook.FacebookAuthRedirectFilter
 
 class SpringSecurityFacebookGrailsPlugin {
 
-    String version = '0.14.3pg19'
+    String version = '0.14.5pg1'
+
     String grailsVersion = '2.0.0 > *'
     Map dependsOn = ['springSecurityCore': '1.2.7.2 > *']
 
@@ -172,20 +173,12 @@ class SpringSecurityFacebookGrailsPlugin {
 
     private addFilter = { def conf, String name, int position ->
         if (name == 'transparent') {
-            String _successHandler = getConfigValue(conf, 'facebook.filter.transparent.successHandler')
-            String _failureHandler = getConfigValue(conf, 'facebook.filter.transparent.failureHandler')
             SpringSecurityUtils.registerFilter 'facebookAuthCookieTransparentFilter', position
             facebookAuthCookieTransparentFilter(FacebookAuthCookieTransparentFilter) {
                 authenticationManager = ref('authenticationManager')
                 facebookAuthUtils = ref('facebookAuthUtils')
                 logoutUrl = conf.logout.filterProcessesUrl
                 forceLoginParameter = conf.facebook.filter.forceLoginParameter
-                if (_successHandler) {
-                    authenticationSuccessHandler = ref(_successHandler)
-                }
-                if (_failureHandler) {
-                    authenticationFailureHandler = ref(_failureHandler)
-                }
             }
             facebookAuthCookieLogout(FacebookAuthCookieLogoutHandler) {
                 facebookAuthUtils = ref('facebookAuthUtils')

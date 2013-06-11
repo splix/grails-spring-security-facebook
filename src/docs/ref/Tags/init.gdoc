@@ -10,6 +10,7 @@ this tag, it will be executed just after Facebook SDK initialization.
 h2. Attributes:
 
  * @force@ Force tag to put FB SDK initialization code (even if it's already added)
+ * @lang@ - locale, for Facebook @all.js@ (like 'en_US', 'ru_RU', etc)
 
 h2. Example:
 {code}
