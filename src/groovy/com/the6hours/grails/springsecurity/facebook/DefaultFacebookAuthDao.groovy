@@ -287,7 +287,7 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object, Object>, Initial
                     }
                 }
                 if (updated && facebookUser.hasProperty('accessTokenExpires')) {
-                    if (facebookUser.getProperty('accessTokenExpires') != token.accessToken) {
+                    if (!equalDates(facebookUser.getProperty('accessTokenExpires'), token.accessToken.expireAt)) {
                         if (token.accessToken.expireAt != null || token.accessToken.accessToken == null) { //allow null only if both expireAt and accessToken are null
                             updated = true
                             facebookUser.setProperty('accessTokenExpires', token.accessToken.expireAt)
@@ -307,6 +307,26 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object, Object>, Initial
                 log.error("Can't update token", e)
             }
         }
+    }
+
+    boolean equalDates(Object x, Object y) {
+        long xtime = dateToLong(x)
+        long ytime = dateToLong(y)
+        return xtime >= 0 && ytime >= 0 && Math.abs(xtime - ytime) < 1000 //for dates w/o millisecond
+    }
+
+    long dateToLong(Object date) {
+        if (date == null) {
+            return -1
+        }
+        if (date instanceof Date) { //java.sql.Timestamp extends Date
+            return date.time
+        }
+        if (date instanceof Number) {
+            return date.toLong()
+        }
+        log.warn("Cannot convert date: $date (class: ${date.class})")
+        return -1
     }
 
     String getAccessToken(Object facebookUser) {

@@ -5,6 +5,8 @@ import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
 import spock.lang.Specification
 
+import java.sql.Timestamp
+
 /**
  *
  * Since 20.04.13
@@ -263,4 +265,29 @@ class DefaultFacebookAuthDaoSpec extends Specification {
         act == false
     }
 
+    def "Equal Dates"() {
+        expect:
+        dao.equalDates(x, y)
+        where:
+        x                   | y
+        100                 | 100
+        new Date()          | new Date()
+        new Date(5000)      | new Date(5000)
+        new Date(5000)      | new Long(5000)
+        new Date(5000)      | 5000
+        new Date(5000)      | new Timestamp(5000)
+    }
+
+    def "Not Equal Dates"() {
+        expect:
+        !dao.equalDates(x, y)
+        where:
+        x                   | y
+        100                 | null
+        new Date()          | new Date(516161)
+        new Date(5000)      | new Date(500061)
+        new Date(5000)      | new Long(5000948378)
+        new Date(5000)      | "hi!"
+        new Date(5000)      | new Timestamp(0)
+    }
 }
