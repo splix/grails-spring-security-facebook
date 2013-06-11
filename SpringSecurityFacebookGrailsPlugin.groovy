@@ -48,6 +48,8 @@ class SpringSecurityFacebookGrailsPlugin {
 
     String documentation = "http://splix.github.io/grails-spring-security-facebook/"
 
+    def organization = [ name: "The 6 Hours", url: "http://the6hours.com/" ]
+
     def observe = ["springSecurityCore"]
 
     String _facebookDaoName
