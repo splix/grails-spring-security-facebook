@@ -197,7 +197,7 @@ class FacebookAuthUtils {
         }
     }
 
-    String prepareRedirectUrl(String authPath, List scope = []) {
+    String prepareRedirectUrl(String authPath, String redirectAfterLogin, List scope = []) {
         if (seq >= Integer.MAX_VALUE - 10000) {
             seq = 0
         }
@@ -207,13 +207,18 @@ class FacebookAuthUtils {
                 scope: scope.join(','),
                 state: [seq++, RND.nextInt(1000000)].collect {Integer.toHexString(it)}.join('-')
         ]
+		if (redirectAfterLogin){
+			data.redirect_uri += data.redirect_uri.contains('?')? '&' : '?'
+			data.redirect_uri += "redirectAfterLogin="+  URLEncoder.encode(redirectAfterLogin, 'UTF-8')
+			//see http://stackoverflow.com/questions/4386691/facebook-error-error-validating-verification-code
+		}
         log.debug("Redirect to ${data.redirect_uri}")
         String url = "https://www.facebook.com/dialog/oauth?" + encodeParams(data)
         return url
     }
 
     private String encodeParams(Map params) {
-        return params.entrySet().each { Map.Entry<String, Object> it ->
+        return params.entrySet().collect { Map.Entry<String, Object> it ->
             [
                     URLEncoder.encode(it.key, 'UTF-8'),
                     URLEncoder.encode(it.value ? it.value.toString() : '', 'UTF-8'),

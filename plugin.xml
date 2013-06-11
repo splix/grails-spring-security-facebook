@@ -1,0 +1,40 @@
+<plugin name='spring-security-facebook' version='0.14.3pg19' grailsVersion='2.0.0 &gt; *'>
+  <author>Igor Artamonov</author>
+  <authorEmail>igor@artamonov.ru</authorEmail>
+  <title>Facebook Authentication for Spring Security</title>
+  <description>Facebook Authentication for Spring Security Core plugin</description>
+  <documentation>http://splix.github.io/grails-spring-security-facebook/</documentation>
+  <type>SpringSecurityFacebookGrailsPlugin</type>
+  <resources>
+    <resource>DefaultFacebookSecurityConfig</resource>
+    <resource>com.the6hours.grails.springsecurity.facebook.FacebookAuthTagLib</resource>
+  </resources>
+  <repositories>
+    <repository name='grailsCentral' url='http://grails.org/plugins' />
+    <repository name='http://repo.grails.org/grails/core' url='http://repo.grails.org/grails/core/' />
+    <repository name='mavenCentral' url='http://repo1.maven.org/maven2/' />
+    <repository name='ebrRelease' url='http://repository.springsource.com/maven/bundles/release/' />
+    <repository name='ebrExternal' url='http://repository.springsource.com/maven/bundles/external/' />
+  </repositories>
+  <dependencies>
+    <runtime>
+      <dependency group='org.springframework.security' name='spring-security-core' version='3.0.7.RELEASE' />
+      <dependency group='org.springframework.security' name='spring-security-web' version='3.0.7.RELEASE' />
+    </runtime>
+  </dependencies>
+  <plugins>
+    <test>
+      <plugin group='org.grails.plugins' name='spock' version='0.7' />
+    </test>
+    <compile>
+      <plugin group='org.grails.plugins' name='spring-security-core' version='1.2.7.2' />
+    </compile>
+    <provided>
+      <plugin group='org.grails.plugins' name='webxml' version='1.4.1' />
+    </provided>
+  </plugins>
+  <runtimePluginRequirements>
+    <plugin name='springSecurityCore' version='1.2.7.2 &gt; *' />
+  </runtimePluginRequirements>
+  <behavior />
+</plugin>
