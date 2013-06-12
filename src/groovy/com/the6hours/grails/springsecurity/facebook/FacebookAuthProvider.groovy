@@ -1,17 +1,15 @@
 package com.the6hours.grails.springsecurity.facebook
 
 import org.apache.commons.lang.StringUtils
+import org.apache.log4j.Logger
+import org.springframework.beans.factory.InitializingBean
+import org.springframework.context.ApplicationContext
+import org.springframework.context.ApplicationContextAware
+import org.springframework.security.authentication.AuthenticationProvider
+import org.springframework.security.authentication.AuthenticationServiceException
 import org.springframework.security.authentication.CredentialsExpiredException
 import org.springframework.security.core.Authentication
-import org.springframework.security.authentication.AuthenticationProvider
 import org.springframework.security.core.userdetails.UserDetails
-import org.springframework.security.core.GrantedAuthority
-
-import org.springframework.security.core.userdetails.User
-import org.apache.log4j.Logger
-import org.springframework.context.ApplicationContext
-import org.springframework.beans.factory.InitializingBean
-import org.springframework.context.ApplicationContextAware
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 
 public class FacebookAuthProvider implements AuthenticationProvider, InitializingBean, ApplicationContextAware {
@@ -31,22 +29,19 @@ public class FacebookAuthProvider implements AuthenticationProvider, Initializin
         if (token.uid <= 0) {
             if (StringUtils.isEmpty(token.code) && token.accessToken == null) {
                 log.error("Token should contain 'code' OR 'accessToken' to get uid")
-                token.authenticated = false
-                return token
+                throw new AuthenticationServiceException("Token should contain 'code' OR 'accessToken' to get uid")
             }
             if (token.code) {
                 token.accessToken = facebookAuthUtils.getAccessToken(token.code, token.redirectUri)
                 if (token.accessToken == null) {
                     log.error("Can't fetch access_token for code '$token.code'")
-                    token.authenticated = false
-                    return token
+                   throw new AuthenticationServiceException("Can't fetch access_token for code '$token.code'")
                 }
             }
             token.uid = facebookAuthUtils.loadUserUid(token.accessToken.accessToken)
             if (token.uid <= 0) {
                 log.error("Can't fetch uid")
-                token.authenticated = false
-                return token
+                throw new AuthenticationServiceException("Can't fetch uid")
             }
         }
 
@@ -111,8 +106,7 @@ public class FacebookAuthProvider implements AuthenticationProvider, Initializin
                     }
                 } else {
                     log.error("Can't update accessToken from Facebook, current token is expired. Disable current authentication")
-                    token.authenticated = false
-                    return token
+                    throw new AuthenticationServiceException("Can't update accessToken from Facebook, current token is expired. Disable current authentication")
                 }
             }
 
