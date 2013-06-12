@@ -133,9 +133,21 @@ class FacebookAuthUtils {
 
     FacebookAccessToken requestAccessToken(String authUrl) {
         try {
+			log.debug "Getting the access token for URL $authUrl"
             URL url = new URL(authUrl)
-            String response = url.readLines().first()
-            //println "AccessToken response: $response"
+			HttpURLConnection connection = (HttpURLConnection) url.openConnection()
+			String response 
+			if (connection.responseCode == HttpURLConnection.HTTP_OK){
+				response = connection.getInputStream().readLines().first()
+			}else{
+				String error = connection.getErrorStream().getText()
+				log.error "Failed to get the access token when requesting $authUrl. Error is $error"
+				return null
+			}
+			
+          
+            log.debug "AccessToken response: $response"
+			
             Map data = [:]
             response.split('&').each {
                 String[] kv = it.split('=')
