@@ -87,7 +87,6 @@ class SpringSecurityFacebookGrailsPlugin {
         _facebookDaoName = conf?.facebook?.bean?.dao ?: null
         if (_facebookDaoName == null) {
             _facebookDaoName = 'facebookAuthDao'
-            String _domainsRelation = getConfigValue(conf, 'facebook.domain.relation')
             String _appUserConnectionPropertyName = getConfigValue(conf, 'facebook.domain.appUserConnectionPropertyName', 'facebook.domain.connectionPropertyName')
             List<String> _roles = getAsStringList(conf.facebook.autoCreate.roles, 'grails.plugins.springsecurity.facebook.autoCreate.roles')
             facebookAuthDao(DefaultFacebookAuthDao) {
@@ -96,9 +95,6 @@ class SpringSecurityFacebookGrailsPlugin {
                 userDomainClassName = conf.userLookup.userDomainClassName
                 rolesPropertyName = conf.userLookup.authoritiesPropertyName
                 coreUserDetailsService = ref('userDetailsService')
-                if (_domainsRelation) {
-                    domainsRelation = DomainsRelation.getFrom(_domainsRelation)
-                }
                 defaultRoleNames = _roles
             }
         } else {

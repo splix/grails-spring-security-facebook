@@ -7,19 +7,18 @@ log4j = {
 }
 {code}
 
-h2. Can't find a cookie / user not authenticated by plugin (client side authentication)
+h2. Client side authentication don't work on dev server
 
-Make sure that you're using any domain name for you application. Not a @localhost@, because Facebook can't setup
-cookie for localhost. Avoid @.local@ domains as well.
+Make sure that you're using a real domain name for your application. Not a @localhost@, because Facebook can't setup
+cookie for localhost, and avoid @.local@ domains as well.
 
-You can use domain like @myapp.dev@, that you should setup at file @/etc/hosts@ (or
-@C:/Windows/system32/etc/hosts@ on Windows), by adding following line:
+You can make a fake domain like @myapp.dev@, by putting into @/etc/hosts@ the following line:
 {code}
 127.0.0.1  myapp.dev
 {code}
+If you already have line starting with @127.0.0.1@, just add your @myapp.dev@ at the end of the line.
 
-Notice: if you already have line starting with @127.0.0.1@, then put your @myapp.dev@ domain in this line too (it can
-have multiply associated domains)
+See more details about hosts file, and location of the file for different operation systems see: http://en.wikipedia.org/wiki/Hosts_(file)
 
 After that, you should configure your Grails app to use this domain, by adding following line into @Config.groovy@:
 {code}

@@ -4,7 +4,7 @@ Basically it's just adding dependency into `BuildConfig.groovy`:
 
 {code}
     plugins {
-        compile "org.grails.plugins:spring-security-facebook:0.11"
+        compile "org.grails.plugins:spring-security-facebook:0.14.5"
     }
 {code}
 
@@ -14,7 +14,6 @@ grails s2-quickstart //configure Spring Security Core
 grails s2-init-facebook //configure Spring Security Facebook
 {code}
 
-Instead of last step you can edit `Config.groovy` manually, you need to add Facebook App key/secret there,
-and other configuration options if you need (see [Configuration|guide:4 Configuration] section)
+Or you can edit `Config.groovy` instead, see [Configuration|guide:4 Configuration] section.
 
 Follow [Basic Usage|guide:3.1 Basic Usage] guide for next steps.

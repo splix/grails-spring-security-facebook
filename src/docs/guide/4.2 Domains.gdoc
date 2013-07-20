@@ -1,21 +1,15 @@
 {table}
 *Name* | *Default Value* | *Values*
 grails.plugins.springsecurity.facebook.domain.classname | 'FacebookUser' |
-grails.plugins.springsecurity.facebook.domain.relation | null | 'SameObject', 'JoinedUser'
 grails.plugins.springsecurity.facebook.domain.appUserConnectionPropertyName | 'user' |
 {table}
 
- * @domain.classname@ - name of your domain class, used to store Facebook User details (uid, access_token, etc)
- * @domain.relation@ - configure how your domains are connected, required only if you didn't specify your domains names (useful when you have your own FacebookAuthService, but still using some methods from default Dao)
+ * @domain.classname@ - name of your domain class, used to store Facebook User details (uid, access_token, etc). Could be same as configured for Spring Security Core, or a own domain, just for Facebook User details.
 
-Relation Types:
- * 'SameObject' is used when you are using same domain for Spring Security Core and for Facebook.
- * 'JoinedUser' is used when you want to store Facebook Authentication details in its own domain.
-
-If you're using 'JoinedUser' you should specify @domain.appUserConnectionPropertyName@: it's how your domain class is related
+If you're using own domain for Facebook user (a joined to main User) you should
+specify @domain.appUserConnectionPropertyName@: it's how your domain class is related
 to main (used by Spring Security Core) user domain. It's the name
-of the property, usually defined as @static belongsTo = [user: User]@ in your Facebook User domain class (where
-@User@ is a Spring Security core user domain, and @user@ is property name, that you should specify here
+of the property, usually defined as @static belongsTo = [user: User]@ in your Facebook User domain class.
 
 h4. User creation/initialization
 

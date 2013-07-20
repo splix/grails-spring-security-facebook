@@ -10,7 +10,7 @@ There are 4 types of filter:
  * FacebookAuthRedirectFilter - server-side authorization (used by default)
  * FacebookAuthCookieTransparentFilter - automatic client-side authorization
  * FacebookAuthCookieDirectFilter - manual client-side authorization
- * FacebookAuthJsonFilter - for AJAX or non-browser clients (Android/iOS/etc)
+ * FacebookAuthJsonFilter - for external clients (like Android/iOS app)
 
 h2. Server-Side authentication (FacebookAuthRedirectFilter)
 
@@ -46,7 +46,7 @@ can redirect user to specified url.
 
 h2. JSON or Android/iOS/desktop authorization (FacebookAuthJsonFilter)
 
-Client should send Access Token or Signed Request as parameter, and will get authorization response as JSON
+Client should send Access Token or Signed Request as parameter, and will get JSON response with user details.
 
 See [filter docs|guide:3.5 Json Authentication]
 

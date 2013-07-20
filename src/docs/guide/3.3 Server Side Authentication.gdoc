@@ -4,15 +4,17 @@ It's preferred and a standard [Login for Server-side Apps|https://developers.fac
 After clicking on 'connect button' user gets redirected to special Facebook page, for authentication, and then
 redirected back to your app.
 
-Note, that user going to see Facebook Authentication screen only in first time (if not security modification was made).
-Next time user should be redirected back from Facebook to your application, without showing any Facebook screen.
+{note}
+User going to see Facebook Authentication screen only at the first time. Next time user will be redirected
+back from Facebook to your application immediately.
+{note}
 
 h4. How to process failed login
 
 When user declines Facebook Authentication (click Cancel, for example), you'll '401 Authentication Failed' by default.
 It's default configuration of Spring Security failure handler, but for most cases it's not what you really want.
 
-To handle this situation you should create your own Failure Handler, a bean implementing
+To handle this situation you have to create your own Failure Handler, a bean implementing
 @org.springframework.security.web.authentication.AuthenticationFailureHandler@. If you just need to
 show a page (a GSP view), you can use standard @SimpleUrlAuthenticationFailureHandler@, that could redirect
 failed authentication to specified URL.

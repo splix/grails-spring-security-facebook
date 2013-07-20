@@ -6,7 +6,7 @@ And there are two ways:
  * try authenticate user on each request, to any page - it's @transparent@ filter
  * authenticate only when user redirected to specified page, like a standard username/password authentication - it's @cookieDirect@ filter
 
-If you're using first way (@transparent@ filter), your user will automatically authenticated whenever he has
+If you're using first way (@transparent@ filter), your user will be automatically authenticated whenever he has
 Facebook cookie. Btw, don't forget that you should *reload* current page after you have successfully authenticated user
 on client side. Like:
 
