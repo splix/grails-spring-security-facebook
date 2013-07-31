@@ -1,8 +1,7 @@
 package com.the6hours.grails.springsecurity.facebook
 
 import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
-import org.codehaus.groovy.grails.web.mapping.LinkGenerator
-import grails.plugins.springsecurity.SpringSecurityService
+
 
 /**
  * TODO
@@ -119,6 +118,9 @@ class FacebookAuthTagLib {
         def writer = getOut()
         def conf = SpringSecurityUtils.securityConfig.facebook
         String target = conf.filter.redirect.redirectFromUrl
+		if (attrs.redirectAfterLogin){
+			target+= (target.contains('?') ? '&' : '?') + "redirectAfterLogin=${attrs.redirectAfterLogin}"
+		}
         String bodyValue = body()
         if (bodyValue == null || bodyValue.trim().length() == 0) {
             String imgUrl
