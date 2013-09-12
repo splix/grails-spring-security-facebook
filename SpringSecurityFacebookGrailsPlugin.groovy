@@ -189,6 +189,7 @@ class SpringSecurityFacebookGrailsPlugin {
             SpringSecurityUtils.registerFilter 'facebookAuthCookieDirectFilter', position
             facebookAuthCookieDirectFilter(FacebookAuthCookieDirectFilter, url) {
                 authenticationManager = ref('authenticationManager')
+                rememberMeServices = ref('rememberMeServices')
                 facebookAuthUtils = ref('facebookAuthUtils')
                 if (_successHandler) {
                     authenticationSuccessHandler = ref(_successHandler)
@@ -205,6 +206,7 @@ class SpringSecurityFacebookGrailsPlugin {
             String _redirectFromUrl = getConfigValue(conf, 'facebook.filter.redirect.redirectFromUrl', 'facebook.filter.redirectFromUrl')
             facebookAuthRedirectFilter(FacebookAuthRedirectFilter, _url) {
                 authenticationManager = ref('authenticationManager')
+                rememberMeServices = ref('rememberMeServices')
                 facebookAuthUtils = ref('facebookAuthUtils')
                 redirectFromUrl = _redirectFromUrl
                 linkGenerator = ref('grailsLinkGenerator')
