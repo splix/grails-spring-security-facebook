@@ -2,7 +2,7 @@ package com.the6hours.grails.springsecurity.facebook
 
 import org.codehaus.groovy.grails.commons.DefaultGrailsApplication
 import org.codehaus.groovy.grails.commons.GrailsApplication
-import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
+import grails.plugin.springsecurity.SpringSecurityUtils
 import spock.lang.Specification
 
 import java.sql.Timestamp

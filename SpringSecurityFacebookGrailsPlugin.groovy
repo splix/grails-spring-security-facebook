@@ -21,7 +21,7 @@ import com.the6hours.grails.springsecurity.facebook.FacebookAuthUtils
 import com.the6hours.grails.springsecurity.facebook.JsonAuthenticationHandler
 import grails.util.Environment
 import grails.util.Metadata
-import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
+import grails.plugin.springsecurity.SpringSecurityUtils
 import com.the6hours.grails.springsecurity.facebook.FacebookAuthCookieLogoutHandler
 import com.the6hours.grails.springsecurity.facebook.DefaultFacebookAuthDao
 import com.the6hours.grails.springsecurity.facebook.FacebookAuthCookieDirectFilter
@@ -29,9 +29,9 @@ import com.the6hours.grails.springsecurity.facebook.FacebookAuthRedirectFilter
 
 class SpringSecurityFacebookGrailsPlugin {
 
-    String version = '0.15'
+    String version = '0.15.1'
     String grailsVersion = '2.0.0 > *'
-    Map dependsOn = ['springSecurityCore': '1.2.7.2 > *']
+    Map dependsOn = ['springSecurityCore': '2.0-RC2> *']
 
     def license = 'APACHE'
 
