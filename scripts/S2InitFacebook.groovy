@@ -70,7 +70,7 @@ private void fillConfig() {
 
 private void configure() {
 
-	def SpringSecurityUtils = classLoader.loadClass('org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils')
+	def SpringSecurityUtils = classLoader.loadClass('grails.plugin.springsecurity.SpringSecurityUtils')
 	def conf = SpringSecurityUtils.securityConfig
 
     String userClassFullName = conf.userLookup.userDomainClassName

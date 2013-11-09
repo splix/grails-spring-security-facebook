@@ -7,7 +7,7 @@ import org.springframework.security.core.Authentication
 import javax.servlet.http.Cookie
 import org.apache.log4j.Logger
 import java.util.regex.Matcher
-import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
+import grails.plugin.springsecurity.SpringSecurityUtils
 
 /**
  * 

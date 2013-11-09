@@ -3,7 +3,7 @@ package com.the6hours.grails.springsecurity.facebook
 import org.springframework.dao.OptimisticLockingFailureException
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.GrantedAuthorityImpl
-import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
+import grails.plugin.springsecurity.SpringSecurityUtils
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.context.ApplicationContextAware
 import org.springframework.context.ApplicationContext
@@ -13,7 +13,7 @@ import org.apache.log4j.Logger
 import org.springframework.security.core.userdetails.UserDetails
 import java.util.concurrent.TimeUnit
 
-import org.codehaus.groovy.grails.plugins.springsecurity.GormUserDetailsService
+import grails.plugin.springsecurity.userdetails.GormUserDetailsService
 
 /**
  * TODO

@@ -4,7 +4,7 @@ Basically it's just adding dependency into `BuildConfig.groovy`:
 
 {code}
     plugins {
-        compile "org.grails.plugins:spring-security-facebook:0.14.5"
+        compile "org.grails.plugins:spring-security-facebook:0.15.1"
     }
 {code}
 
