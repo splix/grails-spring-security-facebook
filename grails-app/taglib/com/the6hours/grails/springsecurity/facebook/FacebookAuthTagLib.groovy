@@ -2,7 +2,7 @@ package com.the6hours.grails.springsecurity.facebook
 
 import grails.plugin.springsecurity.SpringSecurityUtils
 import org.codehaus.groovy.grails.web.mapping.LinkGenerator
-import grails.plugins.springsecurity.SpringSecurityService
+import grails.plugin.springsecurity.SpringSecurityService
 
 /**
  * TODO
