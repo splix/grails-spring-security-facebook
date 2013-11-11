@@ -3,9 +3,17 @@ h3. Install plugin
 Basically it's just adding dependency into `BuildConfig.groovy`:
 
 {code}
-    plugins {
-        compile "org.grails.plugins:spring-security-facebook:0.14.5"
-    }
+plugins {
+    compile "org.grails.plugins:spring-security-facebook:0.15.1"
+}
+{code}
+
+Or, if you're using a new Spring Security Core 2.x you have to use following dependency instead:
+
+{code}
+plugins {
+    compile "org.grails.plugins:spring-security-facebook:0.15.1-CORE2"
+}
 {code}
 
 and calling (optionaly) configuration wizards by:
