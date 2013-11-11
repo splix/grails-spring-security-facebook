@@ -17,7 +17,7 @@ Examples:
 Authors
 -------
 
-[Igor Artamonov](http://igorartamonov.com) and [The 6 Hours](http://the6hours.com)
+[Igor Artamonov](http://igorartamonov.com), [The 6 Hours](http://the6hours.com)
 
 License
 -------
