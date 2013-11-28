@@ -16,6 +16,8 @@ Optional attributes for @client@ button (client-side authentication):
  * @skipInit@ - force to skip Facebook Javascript SDK initialization. By default this tag calls @<facebook:init />@, if it's not executed yet.
  * @lang@ - locale, for Facebook @all.js@ (like 'en_US', 'ru_RU', etc)
 
+You can get official FB button image at [https://developers.facebook.com/docs/facebook-login/checklist/|https://developers.facebook.com/docs/facebook-login/checklist/#brandedlogin]
+
 h2. Examples:
 
 Default:
