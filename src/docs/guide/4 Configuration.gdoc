@@ -8,9 +8,9 @@ Calling `grails s2-init-facebook` will make default configuration of plugin for 
 that you have configuration in your `Config.groovy` like:
 
 {code}
-grails.plugins.springsecurity.facebook.domain.classname='<your FacebookUser domain>'
-grails.plugins.springsecurity.facebook.secret = '<Facebook secret for your app>'
-grails.plugins.springsecurity.facebook.appId = '<Facebooks's app ID>'
+grails.plugin.springsecurity.facebook.domain.classname='<your FacebookUser domain>'
+grails.plugin.springsecurity.facebook.secret = '<Facebook secret for your app>'
+grails.plugin.springsecurity.facebook.appId = '<Facebooks's app ID>'
 {code}
 
 Or you can skip `grails s2-init-facebook` step, and make such configuration by yourself.

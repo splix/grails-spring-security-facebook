@@ -88,7 +88,7 @@ class SpringSecurityFacebookGrailsPlugin {
         if (_facebookDaoName == null) {
             _facebookDaoName = 'facebookAuthDao'
             String _appUserConnectionPropertyName = getConfigValue(conf, 'facebook.domain.appUserConnectionPropertyName', 'facebook.domain.connectionPropertyName')
-            List<String> _roles = getAsStringList(conf.facebook.autoCreate.roles, 'grails.plugins.springsecurity.facebook.autoCreate.roles')
+            List<String> _roles = getAsStringList(conf.facebook.autoCreate.roles, 'grails.plugin.springsecurity.facebook.autoCreate.roles')
             facebookAuthDao(DefaultFacebookAuthDao) {
                 domainClassName = conf.facebook.domain.classname
                 appUserConnectionPropertyName = _appUserConnectionPropertyName
@@ -128,7 +128,7 @@ class SpringSecurityFacebookGrailsPlugin {
         def typesRaw = conf.facebook.filter.types
         List<String> types = null
         if (!typesRaw) {
-            log.warn("Value for 'grails.plugins.springsecurity.facebook.filter.types' is empty")
+            log.warn("Value for 'grails.plugin.springsecurity.facebook.filter.types' is empty")
             typesRaw = conf.facebook.filter.type
         }
 
@@ -150,9 +150,9 @@ class SpringSecurityFacebookGrailsPlugin {
         if (!types || types.empty) {
             log.error("Facebook Authentication filter is not configured. Should be used one of: $validTypes. So '$defaultType' will be used by default.")
             log.error("To configure Facebook Authentication filters you should add to Config.groovy:")
-            log.error("grails.plugins.springsecurity.facebook.filter.types='transparent'")
+            log.error("grails.plugin.springsecurity.facebook.filter.types='transparent'")
             log.error("or")
-            log.error("grails.plugins.springsecurity.facebook.filter.types='redirect,transparent,cookieDirect'")
+            log.error("grails.plugin.springsecurity.facebook.filter.types='redirect,transparent,cookieDirect'")
 
             types = [defaultType]
         }

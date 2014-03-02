@@ -2,7 +2,7 @@ h4. Button configuration
 
 {table}
 *Name* | *Default Value*
-grails.plugins.springsecurity.facebook.taglib.button.text | 'Login with Facebook'
+grails.plugin.springsecurity.facebook.taglib.button.text | 'Login with Facebook'
 {table}
 
 h4. Button for Server Side authentication (default)
@@ -11,7 +11,7 @@ Standard @<img ... />@ will be used for button, with following extra configurati
 
 {table}
 *Name* | *Default Value*
-grails.plugins.springsecurity.facebook.taglib.button.img | an url for image distributed with plugin
+grails.plugin.springsecurity.facebook.taglib.button.img | an url for image distributed with plugin
 {table}
 
  * @img@ - url of a default image to use for button
@@ -22,7 +22,7 @@ At this case a HTML button, provided by Facebook JS SDK, will be user.
 
 {table}
 *Name* | *Default Value*
-grails.plugins.springsecurity.facebook.taglib.language | 'en_US'
+grails.plugin.springsecurity.facebook.taglib.language | 'en_US'
 {table}
 
  * @language@ - language for Facebook Javascript SDK. You could also pass this option as a @lang@ attribute for @:connect@ or @:init@ tags

@@ -372,19 +372,19 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object, Object>, Initial
             Class<?> UserDomainClass = grailsApplication.getDomainClass(userDomainClassName)?.clazz
             if (UserDomainClass == null || !UserDetails.isAssignableFrom(UserDomainClass)) {
                 if (!conf.userLookup.authorityJoinClassName) {
-                    log.error("Don't have authority join class configuration. Please configure 'grails.plugins.springsecurity.userLookup.authorityJoinClassName' value")
+                    log.error("Don't have authority join class configuration. Please configure 'grails.plugin.springsecurity.userLookup.authorityJoinClassName' value")
                 } else if (!grailsApplication.getDomainClass(conf.userLookup.authorityJoinClassName)) {
-                    log.error("Can't find authority join class (${conf.userLookup.authorityJoinClassName}). Please configure 'grails.plugins.springsecurity.userLookup.authorityJoinClassName' value, or create your own 'List<GrantedAuthority> facebookAuthService.getRoles(user)'")
+                    log.error("Can't find authority join class (${conf.userLookup.authorityJoinClassName}). Please configure 'grails.plugin.springsecurity.userLookup.authorityJoinClassName' value, or create your own 'List<GrantedAuthority> facebookAuthService.getRoles(user)'")
                 }
             }
         }
         if (!serviceMethods.contains('findUser')) {
             if (!domainClassName) {
-                log.error("Don't have facebook user class configuration. Please configure 'grails.plugins.springsecurity.facebook.domain.classname' value")
+                log.error("Don't have facebook user class configuration. Please configure 'grails.plugin.springsecurity.facebook.domain.classname' value")
             } else {
                 Class<?> User = grailsApplication.getDomainClass(domainClassName)?.clazz
                 if (!User) {
-                    log.error("Can't find facebook user class ($domainClassName). Please configure 'grails.plugins.springsecurity.facebook.domain.classname' value, or create your own 'Object facebookAuthService.findUser(long)'")
+                    log.error("Can't find facebook user class ($domainClassName). Please configure 'grails.plugin.springsecurity.facebook.domain.classname' value, or create your own 'Object facebookAuthService.findUser(long)'")
                 }
             }
         }
