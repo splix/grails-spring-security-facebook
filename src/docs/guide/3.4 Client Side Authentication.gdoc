@@ -21,7 +21,7 @@ on client side. Like:
 If you're using second way (@cookieDirect@ filter), you could configure URL that will be used for authentication at @Config.groovy@:
 
 {code}
-grails.plugins.springsecurity.facebook.filter.processUrl = '/j_spring_security_facebook_check' //it's default value
+grails.plugin.springsecurity.facebook.filter.processUrl = '/j_spring_security_facebook_check' //it's default value
 {code}
 
 And after authorization redirect user to /j_spring_security_facebook_check, like:
