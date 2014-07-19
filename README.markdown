@@ -6,8 +6,8 @@ Grails plugin for Facebook Authentication, extension to [Grails Spring Security 
 Requirements
 ------------
 
- * grails 2.0+
- * spring-security-core plugin 1.2+
+ * grails 2.4
+ * spring-security-core plugin 2.0
 
 Examples:
 
