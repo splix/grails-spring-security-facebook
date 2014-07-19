@@ -1,12 +1,12 @@
 {table}
 *Name* | *Default Value*
-grails.plugins.springsecurity.facebook.secret | must be specified
-grails.plugins.springsecurity.facebook.appId | must be specified
+grails.plugin.springsecurity.facebook.secret | must be specified
+grails.plugin.springsecurity.facebook.appId | must be specified
 {table}
 
 {table}
 *Name* | *Default Value*
-grails.plugins.springsecurity.facebook.permissions | ['email']
+grails.plugin.springsecurity.facebook.permissions | ['email']
 {table}
 
 For a list of all possible permissions see [https://developers.facebook.com/docs/reference/login/#permissions|https://developers.facebook.com/docs/reference/login/#permissions]

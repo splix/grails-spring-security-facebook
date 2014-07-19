@@ -62,7 +62,7 @@ private void fillConfig() {
         configFile.withWriterAppend {
             it.writeLine "\n"
             config.entrySet().each { Map.Entry conf ->
-                it.writeLine "grails.plugins.springsecurity.facebook.$conf.key='$conf.value'"
+                it.writeLine "grails.plugin.springsecurity.facebook.$conf.key='$conf.value'"
             }
         }
     }

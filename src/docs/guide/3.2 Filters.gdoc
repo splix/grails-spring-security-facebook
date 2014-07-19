@@ -52,7 +52,7 @@ See [filter docs|guide:3.5 Json Authentication]
 
 h1. Filter configuration
 
-You can use config parameter @grails.plugins.springsecurity.facebook.filter.type@ to configure which filters
+You can use config parameter @grails.plugin.springsecurity.facebook.filter.type@ to configure which filters
 you want to use in your application.
 
 {note}
@@ -62,12 +62,12 @@ extra configuration, that used only by this plugin.
 
 By default it uses only one 'redirect' filter:
 {code}
-grails.plugins.springsecurity.facebook.filter.type='redirect'
+grails.plugin.springsecurity.facebook.filter.type='redirect'
 {code}
 
 You can use more that one filter at same time:
 {code}
-grails.plugins.springsecurity.facebook.filter.type='transparent,cookieDirect'
+grails.plugin.springsecurity.facebook.filter.type='transparent,cookieDirect'
 {code}
 
 Value types:

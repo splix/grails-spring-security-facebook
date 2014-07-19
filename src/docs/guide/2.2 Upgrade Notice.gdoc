@@ -5,7 +5,7 @@ Client Side authentication (based on Facebook JS SDK) that was default implement
 
 If you want to continue using Client Side authentication, you should add following configuration into @Config.groovy@:
 {code}
-grails.plugins.springsecurity.facebook.filter.type='transparent,cookieDirect'
+grails.plugin.springsecurity.facebook.filter.type='transparent,cookieDirect'
 {code}
 
 See [Filters guide|guide:3.2 Filters] for details.
