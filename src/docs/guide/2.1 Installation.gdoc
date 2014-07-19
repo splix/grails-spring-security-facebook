@@ -12,7 +12,7 @@ Or, if you're using a new Spring Security Core 2.x, you have to use following de
 
 {code}
 plugins {
-    compile "org.grails.plugins:spring-security-facebook:0.15.2-CORE2"
+    compile "org.grails.plugins:spring-security-facebook:0.15.3-CORE2"
 }
 {code}
 

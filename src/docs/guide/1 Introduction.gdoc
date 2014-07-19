@@ -5,12 +5,12 @@ h1. Introduction
 Sources: [https://github.com/splix/grails-spring-security-facebook|https://github.com/splix/grails-spring-security-facebook]
 
 h2. Requirements:
- * grails 2.0+
- * spring-security-core plugin 1.2.7.2
+ * grails 2.4
+ * spring-security-core plugin 1.2.7.2 (or 2.0-RC4)
 
 h2. Examples:
 
-  * [https://github.com/splix/grails-facebook-authentication-example|https://github.com/splix/grails-facebook-authentication-example] - Example app (based on Grails 2.1.1)
+  * [https://github.com/splix/grails-facebook-authentication-example|https://github.com/splix/grails-facebook-authentication-example] - Example app (based on Grails 2.4.2)
 
 h2. Support
 
