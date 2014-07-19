@@ -31,7 +31,7 @@ class SpringSecurityFacebookGrailsPlugin {
 
     String version = '0.15.2-CORE2'
     String grailsVersion = '2.0.0 > *'
-    Map dependsOn = ['springSecurityCore': '2.0-RC2> *']
+    Map dependsOn = ['springSecurityCore': '2.0-RC4> *']
 
     def license = 'APACHE'
 

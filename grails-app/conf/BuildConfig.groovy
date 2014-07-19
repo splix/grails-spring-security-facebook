@@ -2,7 +2,7 @@ grails.project.class.dir = 'target/classes'
 grails.project.test.class.dir = 'target/test-classes'
 grails.project.test.reports.dir	= 'target/test-reports'
 
-String springSecurityVer = "3.1.4.RELEASE"
+String springSecurityVer = "3.2.3.RELEASE"
 
 grails.release.scm.enabled=false
 grails.project.repos.default = "grailsCentral"
@@ -52,9 +52,9 @@ grails.project.dependency.resolution = {
     }
 
     plugins {
-        provided ':webxml:1.4.1'
+//        provided ':webxml:1.4.1'
 
-        compile ':spring-security-core:2.0-RC2'
+        compile ':spring-security-core:2.0-RC4'
 
         build ':release:2.2.1', ':rest-client-builder:1.0.3', {
             export = false
