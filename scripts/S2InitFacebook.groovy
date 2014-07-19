@@ -70,7 +70,7 @@ private void fillConfig() {
 
 private void configure() {
 
-	def SpringSecurityUtils = classLoader.loadClass('grails.plugin.springsecurity.SpringSecurityUtils')
+	def SpringSecurityUtils = classLoader.loadClass('org.codehaus.groovy.grails.plugin.springsecurity.SpringSecurityUtils')
 	def conf = SpringSecurityUtils.securityConfig
 
     String userClassFullName = conf.userLookup.userDomainClassName
@@ -135,7 +135,7 @@ generateDao = {
     generateFile "$templateDir/FacebookAuthDaoImpl.groovy.template",
                  "$basedir/src/groovy/${templateAttributes.daoClassName}.groovy"
     ant.echo message: ""
-    ant.echo message: "I'v added `$appDir/src/groovy/${templateAttributes.daoClassName}.groovy` file"
+    ant.echo message: "I've added `$appDir/src/groovy/${templateAttributes.daoClassName}.groovy` file"
     ant.echo message: "You need to implement all methods there, to start using Facebook Auth"
     ant.echo message: ""
 
