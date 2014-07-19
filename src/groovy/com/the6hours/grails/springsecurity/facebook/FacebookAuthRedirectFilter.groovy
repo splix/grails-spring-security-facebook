@@ -2,6 +2,8 @@ package com.the6hours.grails.springsecurity.facebook
 
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter
 import org.springframework.security.core.Authentication
+
+import javax.servlet.ServletException
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 import org.springframework.security.core.AuthenticationException
@@ -28,6 +30,17 @@ class FacebookAuthRedirectFilter extends AbstractAuthenticationProcessingFilter 
     }
 
     @Override
+    void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+        String uri = getCurrentUrl(request)
+        if (uri.equals(redirectFromUrl)) {
+            response.sendRedirect(facebookAuthUtils.prepareRedirectUrl(getAbsoluteRedirectUrl(), facebookAuthUtils.requiredPermissions))
+            return
+        }
+
+        super.doFilter(request, response, chain)
+    }
+
+    @Override
     Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) {
         String code = request.getParameter('code')
         if (code) {
@@ -44,6 +57,11 @@ class FacebookAuthRedirectFilter extends AbstractAuthenticationProcessingFilter 
 
     @Override
     protected boolean requiresAuthentication(HttpServletRequest request, HttpServletResponse response) {
+        String uri = getCurrentUrl(request)
+        return uri.equals(filterProcessesUrl)
+    }
+
+    String getCurrentUrl(HttpServletRequest request) {
         String uri = request.getRequestURI();
         int pathParamIndex = uri.indexOf(';');
 
@@ -53,13 +71,7 @@ class FacebookAuthRedirectFilter extends AbstractAuthenticationProcessingFilter 
         }
 
         uri = uri.substring(request.contextPath.length())
-
-        if (uri.equals(redirectFromUrl)) {
-            response.sendRedirect(facebookAuthUtils.prepareRedirectUrl(getAbsoluteRedirectUrl(), facebookAuthUtils.requiredPermissions))
-            return false
-        }
-
-        return uri.equals(filterProcessesUrl)
+        return uri
     }
 
     String getAbsoluteRedirectUrl() {
