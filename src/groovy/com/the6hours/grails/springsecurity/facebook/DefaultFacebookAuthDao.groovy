@@ -1,5 +1,6 @@
 package com.the6hours.grails.springsecurity.facebook
 
+import org.codehaus.groovy.grails.plugins.springsecurity.GormUserDetailsService
 import org.springframework.dao.OptimisticLockingFailureException
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.GrantedAuthorityImpl
@@ -369,12 +370,16 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object, Object>, Initial
 
         def conf = SpringSecurityUtils.securityConfig
         if (!serviceMethods.contains('getRoles')) {
-            Class<?> UserDomainClass = grailsApplication.getDomainClass(userDomainClassName)?.clazz
-            if (UserDomainClass == null || !UserDetails.isAssignableFrom(UserDomainClass)) {
-                if (!conf.userLookup.authorityJoinClassName) {
-                    log.error("Don't have authority join class configuration. Please configure 'grails.plugins.springsecurity.userLookup.authorityJoinClassName' value")
-                } else if (!grailsApplication.getDomainClass(conf.userLookup.authorityJoinClassName)) {
-                    log.error("Can't find authority join class (${conf.userLookup.authorityJoinClassName}). Please configure 'grails.plugins.springsecurity.userLookup.authorityJoinClassName' value, or create your own 'List<GrantedAuthority> facebookAuthService.getRoles(user)'")
+            if (!userDomainClassName) {
+                log.error("User domain class name is not configured")
+            } else {
+                Class<?> UserDomainClass = grailsApplication.getDomainClass(userDomainClassName)?.clazz
+                if (UserDomainClass == null || !UserDetails.isAssignableFrom(UserDomainClass)) {
+                    if (!conf.userLookup.authorityJoinClassName) {
+                        log.error("Don't have authority join class configuration. Please configure 'grails.plugins.springsecurity.userLookup.authorityJoinClassName' value")
+                    } else if (!grailsApplication.getDomainClass(conf.userLookup.authorityJoinClassName)) {
+                        log.error("Can't find authority join class (${conf.userLookup.authorityJoinClassName}). Please configure 'grails.plugins.springsecurity.userLookup.authorityJoinClassName' value, or create your own 'List<GrantedAuthority> facebookAuthService.getRoles(user)'")
+                    }
                 }
             }
         }
@@ -400,11 +405,15 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object, Object>, Initial
             log.warn("No UserDetailsService bean from spring-security-core")
         }
 
-        FacebookUserDomainClazz = grailsApplication.getDomainClass(domainClassName)?.clazz
+        if (domainClassName && FacebookUserDomainClazz == null) {
+            FacebookUserDomainClazz = grailsApplication.getDomainClass(domainClassName)?.clazz
+        }
         if (!FacebookUserDomainClazz) {
             log.error("Can't find domain: $domainClassName")
         }
-        AppUserDomainClazz = grailsApplication.getDomainClass(userDomainClassName)?.clazz
+        if (userDomainClassName && AppUserDomainClazz == null) {
+            AppUserDomainClazz = grailsApplication.getDomainClass(userDomainClassName)?.clazz
+        }
         if (!AppUserDomainClazz) {
             log.error("Can't find domain: $userDomainClassName")
         }
