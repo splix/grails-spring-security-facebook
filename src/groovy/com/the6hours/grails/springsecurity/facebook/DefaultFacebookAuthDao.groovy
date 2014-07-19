@@ -3,7 +3,6 @@ package com.the6hours.grails.springsecurity.facebook
 import org.codehaus.groovy.grails.plugins.springsecurity.GormUserDetailsService
 import org.springframework.dao.OptimisticLockingFailureException
 import org.springframework.security.core.GrantedAuthority
-import org.springframework.security.core.authority.GrantedAuthorityImpl
 import grails.plugin.springsecurity.SpringSecurityUtils
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.context.ApplicationContextAware
@@ -11,6 +10,7 @@ import org.springframework.context.ApplicationContext
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.codehaus.groovy.grails.plugins.support.aware.GrailsApplicationAware
 import org.apache.log4j.Logger
+import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
 import java.util.concurrent.TimeUnit
 
@@ -231,9 +231,9 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object, Object>, Initial
         }
         return roles.collect {
             if (it instanceof String) {
-                return new GrantedAuthorityImpl(it.toString())
+                return new SimpleGrantedAuthority(it.toString())
             } else {
-                new GrantedAuthorityImpl(it.getProperty(conf.authority.nameField))
+                new SimpleGrantedAuthority(it.getProperty(conf.authority.nameField))
             }
         }
     }

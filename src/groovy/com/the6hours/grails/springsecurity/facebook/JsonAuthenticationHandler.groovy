@@ -2,7 +2,6 @@ package com.the6hours.grails.springsecurity.facebook
 
 import grails.converters.JSON
 import org.apache.log4j.Logger
-import org.codehaus.groovy.grails.plugins.support.aware.GrailsApplicationAware
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.context.ApplicationContext
 import org.springframework.context.ApplicationContextAware
