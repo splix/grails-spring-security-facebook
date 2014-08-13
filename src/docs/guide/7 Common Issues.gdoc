@@ -34,3 +34,9 @@ environments {
     }
 }
 {code}
+
+h2. Logout doesn't work for Transparent filter
+
+"transparent" filter always authorize request that contains FB cookie. If you need to log out current user when using
+this type of filter, you need to log out user on client side, call @FB.logout()@ (will logout user from Facebook
+as well) and reload the page.

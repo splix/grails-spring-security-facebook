@@ -7,24 +7,23 @@ String springSecurityVer = "3.2.3.RELEASE"
 grails.release.scm.enabled=false
 grails.project.repos.default = "grailsCentral"
 
+grails.project.dependency.resolver = "maven"
 grails.project.dependency.resolution = {
 
-	inherits('global') {
-		//excludes 'commons-codec' // Grails ships with 1.3, need 1.4
-	}
+    inherits('global') {
+        //excludes 'commons-codec' // Grails ships with 1.3, need 1.4
+    }
 
-	log 'warn'
+    log 'warn'
 
-	repositories {
-		grailsPlugins()
-		grailsHome()
-		grailsCentral()
+    repositories {
+        grailsPlugins()
+        grailsHome()
+        grailsCentral()
         mavenCentral()
+    }
 
-		ebr() // SpringSource  http://www.springsource.com/repository
-	}
-
-	dependencies {
+    dependencies {
         runtime('org.springframework.security:spring-security-core:'+springSecurityVer) {
             excludes 'com.springsource.javax.servlet',
                      'com.springsource.org.aopalliance',
