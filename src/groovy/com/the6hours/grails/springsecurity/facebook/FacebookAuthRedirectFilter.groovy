@@ -37,9 +37,7 @@ class FacebookAuthRedirectFilter extends AbstractAuthenticationProcessingFilter 
                     uid: -1,
                     redirectUri: getAbsoluteRedirectUrl()
             )
-            final Authentication result = authenticationManager.authenticate(token)
-            token.authenticated = true
-            return result
+            return authenticationManager.authenticate(token)
         }
         throw new InvalidRequestException("Request is empty")
     }

@@ -121,6 +121,7 @@ public class FacebookAuthProvider implements AuthenticationProvider, Initializin
 
             token.details = null
             token.principal = principal
+            token.authenticated = true
             if (UserDetails.isAssignableFrom(principal.class)) {
                 token.authorities = ((UserDetails)principal).getAuthorities()
             } else {
