@@ -4,7 +4,7 @@ Basically it's just adding dependency into `BuildConfig.groovy`:
 
 {code}
 plugins {
-    compile "org.grails.plugins:spring-security-facebook:0.15.2"
+    compile "org.grails.plugins:spring-security-facebook:0.15.4"
 }
 {code}
 
@@ -12,11 +12,11 @@ Or, if you're using a new Spring Security Core 2.x, you have to use following de
 
 {code}
 plugins {
-    compile "org.grails.plugins:spring-security-facebook:0.15.3-CORE2"
+    compile "org.grails.plugins:spring-security-facebook:0.15.4-CORE2"
 }
 {code}
 
-and calling (optionaly) configuration wizards by:
+and calling (optional) configuration wizards by:
 {code}
 grails s2-quickstart //configure Spring Security Core
 grails s2-init-facebook //configure Spring Security Facebook
