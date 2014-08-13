@@ -29,7 +29,7 @@ import com.the6hours.grails.springsecurity.facebook.FacebookAuthRedirectFilter
 
 class SpringSecurityFacebookGrailsPlugin {
 
-    String version = '0.15.3-CORE2'
+    String version = '0.15.4-CORE2'
     String grailsVersion = '2.4.0 > *'
     Map dependsOn = ['springSecurityCore': '2.0-RC4> *']
 
