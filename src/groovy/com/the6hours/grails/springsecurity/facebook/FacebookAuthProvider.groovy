@@ -10,6 +10,7 @@ import org.apache.log4j.Logger
 import org.springframework.context.ApplicationContext
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.context.ApplicationContextAware
+import org.springframework.security.core.userdetails.UserDetailsChecker
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 
 public class FacebookAuthProvider implements AuthenticationProvider, InitializingBean, ApplicationContextAware {
@@ -20,6 +21,8 @@ public class FacebookAuthProvider implements AuthenticationProvider, Initializin
     FacebookAuthUtils facebookAuthUtils
     def facebookAuthService
     ApplicationContext applicationContext
+
+    UserDetailsChecker postAuthenticationChecks
 
     boolean createNew = true
 
@@ -116,12 +119,15 @@ public class FacebookAuthProvider implements AuthenticationProvider, Initializin
 
             Object appUser = facebookAuthDao.getAppUser(user)
             Object principal = facebookAuthDao.getPrincipal(appUser)
+            if (principal instanceof UserDetails && postAuthenticationChecks != null) {
+                postAuthenticationChecks.check(principal)
+            }
 
             token.details = null
             token.principal = principal
             token.authenticated = true
-            if (UserDetails.isAssignableFrom(principal.class)) {
-                token.authorities = ((UserDetails)principal).getAuthorities()
+            if (principal instanceof UserDetails) {
+                token.authorities = principal.getAuthorities()
             } else {
                 token.authorities = facebookAuthDao.getRoles(appUser)
             }

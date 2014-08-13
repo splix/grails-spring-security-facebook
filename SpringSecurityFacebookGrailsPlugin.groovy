@@ -117,6 +117,7 @@ class SpringSecurityFacebookGrailsPlugin {
         facebookAuthProvider(FacebookAuthProvider) {
             facebookAuthDao = ref(_facebookDaoName)
             facebookAuthUtils = ref('facebookAuthUtils')
+            postAuthenticationChecks = ref('postAuthenticationChecks')
             createNew = _createNew
         }
 
