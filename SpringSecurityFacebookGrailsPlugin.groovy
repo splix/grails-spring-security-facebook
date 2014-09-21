@@ -108,6 +108,7 @@ class SpringSecurityFacebookGrailsPlugin {
             apiKey = conf.facebook.apiKey
             secret = conf.facebook.secret
             applicationId = conf.facebook.appId
+            apiVersion = conf.facebook.apiVersion ?: '' //Used unversioned Facebook API by default (for backwards compatibility)
             filterTypes = _filterTypes
             requiredPermissions = _requiredPermissions
         }
