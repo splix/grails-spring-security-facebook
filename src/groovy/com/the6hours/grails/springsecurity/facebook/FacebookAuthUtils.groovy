@@ -31,6 +31,8 @@ class FacebookAuthUtils {
     String secret
     String applicationId
 
+    String apiVersion
+
     List<String> filterTypes = []
     List<String> requiredPermissions = []
 
@@ -93,7 +95,7 @@ class FacebookAuthUtils {
     }
 
     long loadUserUid(String accessToken) {
-        String loadUrl = "https://graph.facebook.com/me?access_token=${URLEncoder.encode(accessToken, 'UTF-8')}"
+        String loadUrl = getVersionedUrl("https://graph.facebook.com/me?access_token=${URLEncoder.encode(accessToken, 'UTF-8')}")
         try {
             URL url = new URL(loadUrl)
             def json = JSON.parse(url.readLines().first())
@@ -113,7 +115,7 @@ class FacebookAuthUtils {
                 grant_type: 'fb_exchange_token',
                 fb_exchange_token: existingAccessToken
         ]
-        String authUrl = "https://graph.facebook.com/oauth/access_token?" + encodeParams(params)
+        String authUrl = getVersionedUrl("https://graph.facebook.com/oauth/access_token?" + encodeParams(params))
         return requestAccessToken(authUrl)
     }
 
@@ -127,7 +129,7 @@ class FacebookAuthUtils {
                 client_secret: secret,
                 code: code
         ]
-        String authUrl = "https://graph.facebook.com/oauth/access_token?" + encodeParams(params)
+        String authUrl = getVersionedUrl("https://graph.facebook.com/oauth/access_token?" + encodeParams(params))
         return requestAccessToken(authUrl)
     }
 
@@ -208,7 +210,7 @@ class FacebookAuthUtils {
                 state: [seq++, RND.nextInt(1000000)].collect {Integer.toHexString(it)}.join('-')
         ]
         log.debug("Redirect to ${data.redirect_uri}")
-        String url = "https://www.facebook.com/dialog/oauth?" + encodeParams(data)
+        String url = getVersionedUrl("https://www.facebook.com/dialog/oauth?" + encodeParams(data))
         return url
     }
 
@@ -219,5 +221,9 @@ class FacebookAuthUtils {
                     URLEncoder.encode(it.value ? it.value.toString() : '', 'UTF-8'),
             ].join('=')
         }.join('&')
+    }
+
+    private String getVersionedUrl(String url) {
+        apiVersion ? url.replace('facebook.com/',"facebook.com/${apiVersion}/") : url
     }
 }
