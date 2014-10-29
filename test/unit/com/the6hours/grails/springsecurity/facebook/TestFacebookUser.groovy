@@ -9,17 +9,17 @@ class TestFacebookUser {
 
     static _calls = []
 
-    long uid
+    Long uid
     String accessToken
     Date accessTokenExpires
 
     TestAppUser user
 
-    static def withTransaction(Closure c) {
-        return c.call()
+    static withTransaction(Closure c) {
+        c.call()
     }
 
-    def save(def args) {
+    def save(args) {
         _calls << ['save', args]
     }
 }

@@ -2,7 +2,11 @@ package com.the6hours.grails.springsecurity.facebook
 
 import org.springframework.security.core.GrantedAuthority
 
-public interface FacebookAuthDao<F, A> {
+/**
+ * @param <F> The Facebook user domain class
+ * @param <A> The application user domain class
+ */
+interface FacebookAuthDao<F, A> {
 
     /**
      * Tries to load app user for Facebook user
@@ -48,25 +52,25 @@ public interface FacebookAuthDao<F, A> {
     Collection<GrantedAuthority> getRoles(F user)
 
     /**
-    *
-    * @param user target user
-    * @return false when user have invalid token, or don't have token
-    */
+     *
+     * @param user target user
+     * @return false when user have invalid token, or don't have token
+     */
     Boolean hasValidToken(F user)
 
     /**
-    * Setup a new Facebook Access Token if needed. Could be called with existing token, so
-    * implementation should check this case.
-    *
-    * @param user target user
-    * @param token valid access token
-    */
+     * Setup a new Facebook Access Token if needed. Could be called with existing token, so
+     * implementation should check this case.
+     *
+     * @param user target user
+     * @param token valid access token
+     */
     void updateToken(F user, FacebookAuthToken token)
 
     /**
-    *
-    * @param user target user
-    * @return current access_token, or null if not exists
-    */
+     *
+     * @param user target user
+     * @return current access_token, or null if not exists
+     */
     String getAccessToken(F user)
 }

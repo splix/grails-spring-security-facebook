@@ -1,6 +1,6 @@
 security {
 
-	facebook {
+    facebook {
 
         appId = "Invalid"
         secret = 'Invalid'

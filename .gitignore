@@ -6,4 +6,4 @@
 *.zip
 target
 *.log
-/target
+/web-app/WEB-INF

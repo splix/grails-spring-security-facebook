@@ -1,7 +1,7 @@
 import grails.util.GrailsNameUtils
 import groovy.text.SimpleTemplateEngine
 
-includeTargets << grailsScript("Init")
+includeTargets << grailsScript("_GrailsInit")
 includeTargets << grailsScript('_GrailsBootstrap')
 
 overwriteAll = false
@@ -16,26 +16,23 @@ pluginConfig = [:]
 beans = []
 
 target(s2InitFacebook: 'Initializes Twitter artifacts for the Spring Security Facebook plugin') {
-	depends(checkVersion, configureProxy, packageApp, classpath)
+    depends(checkVersion, configureProxy, packageApp, classpath)
 
-    def configFile = new File("$springSecurityFacebookPluginDir/grails-app/conf/DefaultFacebookSecurityConfig.groovy")
-	if (configFile.exists()) {
+    def configFile = new File(springSecurityFacebookPluginDir, "grails-app/conf/DefaultFacebookSecurityConfig.groovy")
+    if (configFile.exists()) {
         def conf = new ConfigSlurper().parse(configFile.text)
-        println "Creating app based on configuration:"
-        //pluginConfig.each { name, config ->
-		//    println "$name = ${config.flatten()}"
-        //}
 
         pluginConfig = conf.security.facebook
-        //pluginConfig.each { name, config ->
-		//    println "$name = $config"
-        //}
-	} else {
+        if (conf.verbose) {
+            println "Creating app based on configuration:"
+            pluginConfig.each { name, config -> println "$name = ${config.flatten()}" }
+        }
+    } else {
         ant.echo message: "ERROR $configFile.path not found"
     }
 
-	configure()
-	copyData()
+    configure()
+    copyData()
     fillConfig()
     if (!beans.empty) {
         addBeans(beans)
@@ -43,40 +40,42 @@ target(s2InitFacebook: 'Initializes Twitter artifacts for the Spring Security Fa
 }
 
 private void fillConfig() {
-    Map config = [:]
+    def config = new ConfigObject()
 
-    config['domain.classname'] = pluginConfig.domain.classname
+    config.domain.classname = pluginConfig.domain.classname
 
     String code
 
     code = "facebook.appId"
     ant.input(message: "Enter your Facebook App ID", addproperty: code)
-    config['appId'] = ant.antProject.properties[code]
+    config.appId = ant.antProject.properties[code]
 
     code = "facebook.secret"
     ant.input(message: "Enter your Facebook App Secret", addproperty: code)
-    config['secret'] = ant.antProject.properties[code]
+    config.secret = ant.antProject.properties[code]
 
     def configFile = new File(appDir, 'conf/Config.groovy')
-    if (configFile.exists()) {
-        configFile.withWriterAppend {
-            it.writeLine "\n"
-            config.entrySet().each { Map.Entry conf ->
-                it.writeLine "grails.plugin.springsecurity.facebook.$conf.key='$conf.value'"
-            }
+    if (!configFile.exists()) {
+        return
+    }
+
+    configFile.withWriterAppend {
+        it.writeLine "\n"
+        config.flatten().each { key, value ->
+            it.writeLine "grails.plugin.springsecurity.facebook.$key='$value'"
         }
     }
 }
 
 private void configure() {
 
-	def SpringSecurityUtils = classLoader.loadClass('org.codehaus.groovy.grails.plugin.springsecurity.SpringSecurityUtils')
-	def conf = SpringSecurityUtils.securityConfig
+    def SpringSecurityUtils = classLoader.loadClass('grails.plugin.springsecurity.SpringSecurityUtils')
+    def conf = SpringSecurityUtils.securityConfig
 
     String userClassFullName = conf.userLookup.userDomainClassName
     def userDomain = splitClassName(userClassFullName)
 
-	templateAttributes = [
+    templateAttributes = [
             packageDeclaration: '',
             userClassFullName: userClassFullName,
             userPackage: userDomain[0],
@@ -91,13 +90,14 @@ private void configure() {
 private void copyData() {
 
     ant.input(message: "Do you already have FacebookUser domain? 'N' - if not, it will be created (Y/N):",
-            addproperty: 'create.facebookdomain',
-            defaultvalue: 'N')
+              addproperty: 'create.facebookdomain',
+              defaultvalue: 'N')
 
-    if (ant.antProject.properties['create.facebookdomain'].toLowerCase() == 'n') {
-        ant.input(message: "Enter name of FacebookUser domain class that will be created for you",
-                addproperty: 'facebookdomain',
-                defaultvalue: 'FacebookUser')
+    String createDomain = ant.antProject.properties['create.facebookdomain'].toLowerCase()
+    if (createDomain == 'n') {
+        ant.input(message: "Enter the name of the FacebookUser domain class to create",
+                  addproperty: 'facebookdomain',
+                  defaultvalue: 'FacebookUser')
 
         templateAttributes['domainClassFullName'] = ant.antProject.properties['facebookdomain']
         def dbUserDomain = splitClassName(templateAttributes['domainClassFullName'])
@@ -115,10 +115,10 @@ private void copyData() {
         generateFile "$templateDir/FacebookUser.groovy.template",
                      "$basedir/grails-app/domain/${domainDir}${templateAttributes.domainClassName}.groovy"
         pluginConfig.domain.classname = templateAttributes['domainClassFullName']
-    } else if (ant.antProject.properties['create.facebookdomain'].toLowerCase() == 'y') {
+    } else if (createDomain == 'y') {
         ant.input(message: "Existing domain name:",
-                addproperty: 'create.facebookdomainname',
-                defaultvalue: pluginConfig.domain.classname)
+                  addproperty: 'create.facebookdomainname',
+                  defaultvalue: pluginConfig.domain.classname)
 
         templateAttributes['domainClassFullName'] = ant.antProject.properties['create.facebookdomainname']
         def dbUserDomain = splitClassName(templateAttributes['domainClassFullName'])
@@ -143,107 +143,100 @@ generateDao = {
 }
 
 packageToDir = { String packageName ->
-	String dir = ''
-	if (packageName) {
-		dir = packageName.replaceAll('\\.', '/') + '/'
-	}
-
-	return dir
+    packageName ? packageName.replaceAll('\\.', '/') + '/' : ''
 }
 
 okToWrite = { String dest ->
 
-	def file = new File(dest)
-	if (overwriteAll || !file.exists()) {
-		return true
-	}
+    def file = new File(dest)
+    if (overwriteAll || !file.exists()) {
+        return true
+    }
 
-	String propertyName = "file.overwrite.$file.name"
-	ant.input(addProperty: propertyName, message: "$dest exists, ok to overwrite?",
-	          validargs: 'y,n,a', defaultvalue: 'y')
+    String propertyName = "file.overwrite.$file.name"
+    ant.input(addProperty: propertyName, message: "$dest exists, ok to overwrite?",
+              validargs: 'y,n,a', defaultvalue: 'y')
 
-	if (ant.antProject.properties."$propertyName" == 'n') {
-		return false
-	}
+    if (ant.antProject.properties."$propertyName" == 'n') {
+        return false
+    }
 
-	if (ant.antProject.properties."$propertyName" == 'a') {
-		overwriteAll = true
-	}
+    if (ant.antProject.properties."$propertyName" == 'a') {
+        overwriteAll = true
+    }
 
-	true
+    true
 }
 
 generateFile = { String templatePath, String outputPath ->
-	if (!okToWrite(outputPath)) {
-		return
-	}
+    if (!okToWrite(outputPath)) {
+        return
+    }
 
-	File templateFile = new File(templatePath)
-	if (!templateFile.exists()) {
-		ant.echo message: "\nERROR: $templatePath doesn't exist"
-		return
-	}
+    File templateFile = new File(templatePath)
+    if (!templateFile.exists()) {
+        ant.echo message: "\nERROR: $templatePath doesn't exist"
+        return
+    }
 
-	File outFile = new File(outputPath)
+    File outFile = new File(outputPath)
 
-	// in case it's in a package, create dirs
-	ant.mkdir dir: outFile.parentFile
+    // in case it's in a package, create dirs
+    ant.mkdir dir: outFile.parentFile
 
-	outFile.withWriter { writer ->
-		templateEngine.createTemplate(templateFile.text).make(templateAttributes).writeTo(writer)
-	}
+    outFile.withWriter { writer ->
+        templateEngine.createTemplate(templateFile.text).make(templateAttributes).writeTo(writer)
+    }
 
-	ant.echo message: "generated $outFile.absolutePath"
+    ant.echo message: "generated $outFile.absolutePath"
 }
 
 splitClassName = { String fullName ->
 
-	int index = fullName.lastIndexOf('.')
-	String packageName = ''
-	String className = ''
-	if (index > -1) {
-		packageName = fullName[0..index-1]
-		className = fullName[index+1..-1]
-	}
-	else {
-		packageName = ''
-		className = fullName
-	}
+    int index = fullName.lastIndexOf('.')
+    String packageName = ''
+    String className = ''
+    if (index > -1) {
+        packageName = fullName[0..index-1]
+        className = fullName[index+1..-1]
+    }
+    else {
+        packageName = ''
+        className = fullName
+    }
 
-	[packageName, className]
+    [packageName, className]
 }
 
 checkValue = { String value, String attributeName ->
-	if (value == null || value.length() == 0 || value == '{}') {
-		ant.echo message: "\nERROR: Cannot generate; $attributeName set as $value"
-		System.exit 1
-	}
+    if (!value || value == '{}') {
+        ant.echo message: "\nERROR: Cannot generate; $attributeName set as $value"
+        System.exit 1
+    }
 }
 
 copyFile = { String from, String to ->
-	if (!okToWrite(to)) {
-		return
-	}
+    if (!okToWrite(to)) {
+        return
+    }
 
-	ant.copy file: from, tofile: to, overwrite: true
+    ant.copy file: from, tofile: to, overwrite: true
 }
 
 private String generateBeanStr(String name, String className, Map params) {
-    String bean = "    $name($className) {\n"
-    params.entrySet().each { Map.Entry it ->
-        bean +=   "         $it.key = $it.value\n"
-    }
-    bean +=       "    }\n"
-    return bean
+    StringBuilder bean = new StringBuilder("\t$name($className) {\n")
+    params.each { key, value -> bean.append"\t\t$key = $value\n" }
+    bean.append "\t}\n"
+    bean
 }
 
 private void cantAddBeans(List<String> beans) {
-    ant.echo message: "ERROR: Can't add new beans into your spring context."
-    ant.echo message: "ERROR: Please add following lines into your spring config (in most cases it's `spring/resourses.groovy`):\n\n${beans.collect { it + '\n'}}\n"
+    ant.echo message: "ERROR: Can't add new beans into your Spring context."
+    ant.echo message: "ERROR: Please add following lines into your Spring config (in most cases it's `spring/resources.groovy`):\n\n${beans.collect { it + '\n'}}\n"
 }
 
 private void addBeans(List<String> beans) {
-    def current = new File("$appDir/conf/spring/resources.groovy")
+    def current = new File(appDir, "conf/spring/resources.groovy")
     if (current.exists()) {
         String content = current.text.trim()
         if (current.renameTo("$appDir/conf/spring/resources.groovy.bak")) {
@@ -253,7 +246,7 @@ private void addBeans(List<String> beans) {
             return
         }
         if (content.endsWith('}')) {
-            current = new File("$appDir/conf/spring/resources.groovy")
+            current = new File(appDir, "conf/spring/resources.groovy")
             if (current.createNewFile()) {
                 current.append(content.substring(0, content.length() - 2))
                 current.append('\n')
@@ -277,6 +270,5 @@ private void addBeans(List<String> beans) {
     }
     current.append('}')
 }
-
 
 setDefaultTarget 's2InitFacebook'

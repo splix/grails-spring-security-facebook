@@ -2,9 +2,9 @@ ${packageDeclaration}
 
 import com.the6hours.grails.springsecurity.facebook.FacebookAuthDao
 import com.the6hours.grails.springsecurity.facebook.FacebookAuthToken
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.security.core.GrantedAuthority
-import org.apache.log4j.Logger
-import org.springframework.security.core.authority.GrantedAuthorityImpl
 import ${domainClassFullName}
 
 /**
@@ -13,7 +13,7 @@ import ${domainClassFullName}
  */
 class ${daoClassName} implements FacebookAuthDao<${domainClassName}>  {
 
-    private static def log = Logger.getLogger(this)
+    private static final Logger logger = LoggerFactory.getLogger(this)
 
     /**
      * Tries to load app user for Facebook user
@@ -23,7 +23,7 @@ class ${daoClassName} implements FacebookAuthDao<${domainClassName}>  {
      */
     ${domainClassName} findUser(long uid) {
         //must be fine for most cases
-        return ${domainClassName}.findByUid(uid)
+        ${domainClassName}.findByUid uid
     }
 
     /**
@@ -37,12 +37,12 @@ class ${daoClassName} implements FacebookAuthDao<${domainClassName}>  {
             accessToken: token.accessToken,
             uid: token.uid
         )
-        //TODO set relations with your own domains (user,roles)
-        //TODO fill with extra data from Facebook API
+        // TODO set relations with your own domains (user,roles)
+        // TODO fill with extra data from Facebook API
         ${domainClassName}.withTransaction {
             user.save()
         }
-        return user
+        user
     }
 
     /**
@@ -51,7 +51,7 @@ class ${daoClassName} implements FacebookAuthDao<${domainClassName}>  {
      * @param user updates used details
      */
     void update(${domainClassName} user) {
-        //TODO change regarding your domains structure
+        // TODO change regarding your domains structure
         ${domainClassName}.withTransaction {
             user.save()
         }
@@ -67,9 +67,9 @@ class ${daoClassName} implements FacebookAuthDao<${domainClassName}>  {
      * @param user current user
      * @return user to put into Security Context
      */
-    Object getPrincipal(${domainClassName} user) {
-        //TODO change regarding your domains structure
-        return user;
+    def getPrincipal(${domainClassName} user) {
+        // TODO change regarding your domains structure
+        user
     }
 
     /**
@@ -79,12 +79,7 @@ class ${daoClassName} implements FacebookAuthDao<${domainClassName}>  {
      * @return roles for user
      */
     Collection<GrantedAuthority> getRoles(${domainClassName} user) {
-        //TODO change regarding your domains structure
-        Collection<GrantedAuthority> roles = []
-        ${domainClassName}.withTransaction {
-            roles = user.roles
-        }
-        return roles
+        // TODO change regarding your domains structure
+        user.roles
     }
-
 }
