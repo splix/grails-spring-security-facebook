@@ -2,8 +2,6 @@ grails.project.class.dir = 'target/classes'
 grails.project.test.class.dir = 'target/test-classes'
 grails.project.test.reports.dir	= 'target/test-reports'
 
-String springSecurityVer = "3.2.3.RELEASE"
-
 grails.release.scm.enabled=false
 grails.project.repos.default = "grailsCentral"
 
@@ -21,33 +19,6 @@ grails.project.dependency.resolution = {
         grailsHome()
         grailsCentral()
         mavenCentral()
-    }
-
-    dependencies {
-        runtime('org.springframework.security:spring-security-core:'+springSecurityVer) {
-            excludes 'com.springsource.javax.servlet',
-                     'com.springsource.org.aopalliance',
-                     'com.springsource.org.apache.commons.logging',
-                     'com.springsource.org.apache.xmlcommons',
-                     'org.springframework.aop',
-                     'org.springframework.beans',
-                     'org.springframework.context',
-                     'org.springframework.core',
-                     'org.springframework.web'
-
-        }
-        runtime('org.springframework.security:spring-security-web:'+springSecurityVer) {
-            excludes 'com.springsource.javax.servlet',
-                     'com.springsource.org.aopalliance',
-                     'com.springsource.org.apache.commons.logging',
-                     'com.springsource.org.apache.xmlcommons',
-                     'org.springframework.aop',
-                     'org.springframework.beans',
-                     'org.springframework.context',
-                     'org.springframework.core',
-                     'org.springframework.web'
-        }
-
     }
 
     plugins {
