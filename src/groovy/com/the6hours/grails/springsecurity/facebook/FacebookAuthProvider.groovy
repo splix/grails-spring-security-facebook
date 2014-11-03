@@ -72,9 +72,7 @@ class FacebookAuthProvider implements AuthenticationProvider, InitializingBean, 
                 user = facebookAuthDao.create(token)
                 justCreated = true
             } else {
-                log.error "User $token.uid doesn't exist, and creation of a new user is disabled."
-                log.debug "To enable auto creation of users set `grails.plugin.springsecurity.facebook.autoCreate.enabled` to true"
-                throw new UsernameNotFoundException("Facebook user with uid $token.uid doesn't exist")
+                handleUserNotFoundNoAutocreate(token)
             }
         }
 
@@ -141,6 +139,12 @@ class FacebookAuthProvider implements AuthenticationProvider, InitializingBean, 
             token.authenticated = false
         }
         token
+    }
+
+    protected void handleUserNotFoundNoAutocreate(FacebookAuthToken token) throws UsernameNotFoundException {
+        log.error "User $token.uid doesn't exist, and creation of a new user is disabled."
+        log.debug "To enable auto creation of users set `grails.plugin.springsecurity.facebook.autoCreate.enabled` to true"
+        throw new UsernameNotFoundException("Facebook user with uid $token.uid doesn't exist")
     }
 
     boolean supports(Class<? extends Object> authentication) {
