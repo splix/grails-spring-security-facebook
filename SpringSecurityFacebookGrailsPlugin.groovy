@@ -33,7 +33,7 @@ class SpringSecurityFacebookGrailsPlugin {
 
     String version = '0.15.4-CORE2'
     String grailsVersion = '2.4.0 > *'
-
+	 def loadAfter = ['springSecurityCore']
     def license = 'APACHE'
 
     def developers = [
