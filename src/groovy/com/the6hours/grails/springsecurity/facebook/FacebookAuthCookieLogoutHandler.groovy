@@ -61,7 +61,7 @@ class FacebookAuthCookieLogoutHandler implements LogoutHandler {
             logger.debug("Can't find base domain for Facebook cookie. Use '$baseDomain'")
         }
 
-        cookies.each { cookie ->
+        cookies.each { Cookie cookie ->
             cookie.maxAge = 0
             cookie.path = '/'
             if (baseDomain) {

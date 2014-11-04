@@ -18,7 +18,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
 
 /**
- * TODO
+ * Default Facebook Authentication Dao
+ * Covers most cases, and custom logic could be added with custom FacebookAuthService
  *
  * @since 28.10.11
  * @author Igor Artamonov (http://igorartamonov.com)

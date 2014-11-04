@@ -17,7 +17,7 @@ interface FacebookAuthDao<F, A> {
 
     /**
      * Called when logged in facebook user doesn't exists in current database
-     * @param token information about current authnetication
+     * @param token information about current authentication
      * @return just created user
      */
     F create(FacebookAuthToken token)
@@ -49,7 +49,7 @@ interface FacebookAuthDao<F, A> {
      * @param user current user
      * @return roles for user
      */
-    Collection<GrantedAuthority> getRoles(F user)
+    Collection<GrantedAuthority> getRoles(A user)
 
     /**
      *

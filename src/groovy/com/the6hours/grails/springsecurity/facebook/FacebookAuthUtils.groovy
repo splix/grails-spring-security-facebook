@@ -209,14 +209,16 @@ class FacebookAuthUtils {
                 client_id: applicationId,
                 redirect_uri:  authPath,
                 scope: scope.join(','),
-                state: [seq++, RND.nextInt(1000000)].collect {Integer.toHexString(it)}.join('-')
+                state: [seq++, RND.nextInt(1000000)].collect {Integer it -> Integer.toHexString(it)}.join('-')
         ]
         log.debug("Redirect to ${data.redirect_uri}")
         getVersionedUrl("https://www.facebook.com/dialog/oauth?" + encodeParams(data))
     }
 
     private String encodeParams(Map params) {
-        params.entrySet().each { encode((String)it.key) + '=' + encode(it.value?.toString() ?: '') }.join('&')
+        params.collect { String key, Object value ->
+            encode(key) + '=' + encode(value?.toString() ?: '')
+        }.join('&')
     }
 
     private String getVersionedUrl(String url) {

@@ -24,6 +24,6 @@ class FacebookAuthToken extends AbstractAuthenticationToken {
     def getCredentials() { uid }
 
     String toString() {
-        "Principal: $principal, uid: $uid, roles: ${authorities.collect { it.authority}}"
+        "Principal: $principal, uid: $uid, roles: ${authorities.collect { GrantedAuthority it -> it.authority }}"
     }
 }

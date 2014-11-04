@@ -87,7 +87,7 @@ class FacebookAuthProvider implements AuthenticationProvider, InitializingBean, 
             if (!facebookAuthDao.hasValidToken(user)) {
                 log.debug("User $user has invalid access token")
                 String currentAccessToken = facebookAuthDao.getAccessToken(user)
-                FacebookAccessToken freshToken
+                FacebookAccessToken freshToken = null
                 if (currentAccessToken) {
                     try {
                         log.debug("Refresh access token for $user")

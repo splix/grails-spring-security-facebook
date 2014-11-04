@@ -3,6 +3,7 @@ package com.the6hours.grails.springsecurity.facebook
 import grails.converters.JSON
 import groovy.transform.CompileStatic
 import groovy.transform.TypeCheckingMode
+import org.springframework.security.core.GrantedAuthority
 
 import javax.servlet.ServletException
 import javax.servlet.ServletOutputStream
@@ -37,7 +38,7 @@ class JsonAuthenticationHandler implements AuthenticationSuccessHandler, Authent
     def facebookAuthService
 
     void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception)
-	 		throws IOException, ServletException {
+            throws IOException, ServletException {
 
         response.status = HttpServletResponse.SC_UNAUTHORIZED
         Map data = [authenticated: false, message: exception?.message]
@@ -66,7 +67,7 @@ class JsonAuthenticationHandler implements AuthenticationSuccessHandler, Authent
         throws IOException, ServletException {
 
         FacebookAuthToken token = (FacebookAuthToken)authentication
-        Map data = [authenticated: true, uid: token.uid, roles: token.authorities?.collect { it.authority }]
+        Map data = [authenticated: true, uid: token.uid, roles: token.authorities?.collect { GrantedAuthority it -> it.authority }]
         if (token.principal instanceof UserDetails) {
             data.username = ((UserDetails)token.principal).username
             data.enabled = ((UserDetails)token.principal).enabled
