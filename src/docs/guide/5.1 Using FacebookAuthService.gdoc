@@ -99,7 +99,7 @@ Where:
 
   * user - your domain for Facebook User
 
-h3. <FacebookUser> get<FacebookUser>(<Person> person)
+h3. <FacebookUser> getFacebookUser(<Person> person)
 
 Must return instance of your domain object for facebook user for specified person (if it's not a same object)
 
@@ -108,9 +108,9 @@ Where:
   * person - your domain for <Person>
 
 
-h3. Collection<GrantedAuthority> getRoles(<FacebookUser> user)
+h3. Collection<GrantedAuthority> getRoles(<Person> user)
 
-Must return roles list for specified facebook user
+Must return roles list for specified user
 
 Where:
 

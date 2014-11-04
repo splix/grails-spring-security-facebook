@@ -8,4 +8,8 @@ If you want to continue using Client Side authentication, you should add followi
 grails.plugin.springsecurity.facebook.filter.type='transparent,cookieDirect'
 {code}
 
+h3. Upgrading from version 0.15.x
+
+Version 0.16 requires a Spring Security Core 2.0, you need to upgrade to it first.
+
 See [Filters guide|guide:3.2 Filters] for details.
