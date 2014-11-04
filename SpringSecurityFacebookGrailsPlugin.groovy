@@ -33,7 +33,7 @@ class SpringSecurityFacebookGrailsPlugin {
 
     String version = '0.15.4-CORE2'
     String grailsVersion = '2.4.0 > *'
-	 def loadAfter = ['springSecurityCore']
+    def loadAfter = ['springSecurityCore']
     def license = 'APACHE'
 
     def developers = [
@@ -284,7 +284,7 @@ class SpringSecurityFacebookGrailsPlugin {
     private List<String> getAsStringList(conf, String paramHumanName) {
         if (conf == null) {
             log.error("Invalid $paramHumanName filters configuration: '$conf'")
-            return
+            return null
         }
         if (conf instanceof Collection) {
             return conf*.toString()
@@ -293,5 +293,6 @@ class SpringSecurityFacebookGrailsPlugin {
             return conf.toString().split(',').collect { it.trim() }
         }
         log.error("Invalid $paramHumanName filters configuration, invalid value type: '${conf.getClass()}'. Value should be defined as a Collection or String (comma separated)")
+        return null
     }
 }
