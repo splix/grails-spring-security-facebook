@@ -1,38 +1,39 @@
 /* Copyright 2006-2010 the original author or authors.
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-*      http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-import com.the6hours.grails.springsecurity.facebook.DomainsRelation
-import com.the6hours.grails.springsecurity.facebook.FacebookAuthProvider
-import com.the6hours.grails.springsecurity.facebook.FacebookAuthJsonFilter
-import com.the6hours.grails.springsecurity.facebook.FacebookAuthCookieTransparentFilter
-import com.the6hours.grails.springsecurity.facebook.FacebookAuthUtils
-import com.the6hours.grails.springsecurity.facebook.JsonAuthenticationHandler
+import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.util.Environment
 import grails.util.Metadata
-import grails.plugin.springsecurity.SpringSecurityUtils
-import com.the6hours.grails.springsecurity.facebook.FacebookAuthCookieLogoutHandler
+
+import org.slf4j.LoggerFactory
+
 import com.the6hours.grails.springsecurity.facebook.DefaultFacebookAuthDao
 import com.the6hours.grails.springsecurity.facebook.FacebookAuthCookieDirectFilter
+import com.the6hours.grails.springsecurity.facebook.FacebookAuthCookieLogoutHandler
+import com.the6hours.grails.springsecurity.facebook.FacebookAuthCookieTransparentFilter
+import com.the6hours.grails.springsecurity.facebook.FacebookAuthJsonFilter
+import com.the6hours.grails.springsecurity.facebook.FacebookAuthProvider
 import com.the6hours.grails.springsecurity.facebook.FacebookAuthRedirectFilter
+import com.the6hours.grails.springsecurity.facebook.FacebookAuthUtils
+import com.the6hours.grails.springsecurity.facebook.JsonAuthenticationHandler
 
 class SpringSecurityFacebookGrailsPlugin {
 
     String version = '0.15.4-CORE2'
     String grailsVersion = '2.4.0 > *'
-    Map dependsOn = ['springSecurityCore': '2.0-RC4> *']
-
+	 def loadAfter = ['springSecurityCore']
     def license = 'APACHE'
 
     def developers = [
@@ -60,9 +61,8 @@ class SpringSecurityFacebookGrailsPlugin {
             if (Metadata.getCurrent().getApplicationName() == 'spring-security-facebook') {
                 println "Test mode. Skipping initial plugin initialization"
                 return
-            } else {
-                log.debug("Run in test mode")
             }
+            log.debug("Run in test mode")
         }
 
         def conf = SpringSecurityUtils.securityConfig
@@ -72,11 +72,11 @@ class SpringSecurityFacebookGrailsPlugin {
             return
         }
 
-        if (!this.hasProperty('log')) {
+        if (!hasProperty('log')) {
             println 'WARN: No such property: log for class: SpringSecurityFacebookGrailsPlugin'
             println 'WARN: Running from a unit test?'
             println 'WARN: Introducing a log property for plugin'
-            this.metaClass.log = org.apache.commons.logging.LogFactory.getLog(SpringSecurityFacebookGrailsPlugin)
+            this.metaClass.log = LoggerFactory.getLogger(SpringSecurityFacebookGrailsPlugin)
         }
 
         println 'Configuring Spring Security Facebook ...'
@@ -84,7 +84,11 @@ class SpringSecurityFacebookGrailsPlugin {
         // have to get again after overlaying DefaultFacebookecurityConfig
         conf = SpringSecurityUtils.securityConfig
 
-        _facebookDaoName = conf?.facebook?.bean?.dao ?: null
+        def copy = conf.facebook.clone()
+        ['appId', 'secret', 'apiKey'].each { if (copy[it] != 'Invalid') copy[it] = '********' }
+        log.debug "Facebook security config: $copy"
+
+        _facebookDaoName = conf.facebook.bean.dao ?: null
         if (_facebookDaoName == null) {
             _facebookDaoName = 'facebookAuthDao'
             String _appUserConnectionPropertyName = getConfigValue(conf, 'facebook.domain.appUserConnectionPropertyName', 'facebook.domain.connectionPropertyName')
@@ -97,12 +101,13 @@ class SpringSecurityFacebookGrailsPlugin {
                 coreUserDetailsService = ref('userDetailsService')
                 defaultRoleNames = _roles
             }
+            log.debug "Using default Facebook Auth DAO bean (DefaultFacebookAuthDao) with app user connection property name '$_appUserConnectionPropertyName' and default roles ${_roles}"
         } else {
             log.info("Using provided Facebook Auth DAO bean: $_facebookDaoName")
         }
 
         List<String> _filterTypes = parseFilterTypes(conf)
-        List<String> _requiredPermissions = getAsStringList(conf.facebook.permissions, 'Required Permissions', 'facebook.permissions')
+        List<String> _requiredPermissions = getAsStringList(conf.facebook.permissions, 'Required Permissions')
 
         facebookAuthUtils(FacebookAuthUtils) {
             apiKey = conf.facebook.apiKey
@@ -112,6 +117,7 @@ class SpringSecurityFacebookGrailsPlugin {
             filterTypes = _filterTypes
             requiredPermissions = _requiredPermissions
         }
+        log.debug "facebookAuthUtils filter types $_filterTypes and requiredPermissions $_requiredPermissions"
 
         SpringSecurityUtils.registerProvider 'facebookAuthProvider'
         boolean _createNew = getConfigValue(conf, 'facebook.autoCreate.enabled') ? conf.facebook.autoCreate.enabled as Boolean : false
@@ -121,17 +127,17 @@ class SpringSecurityFacebookGrailsPlugin {
             postAuthenticationChecks = ref('postAuthenticationChecks')
             createNew = _createNew
         }
+        log.debug "registered facebookAuthProvider as an AuthenticationProvider; createNew: $_createNew"
 
         addFilters(conf, delegate, _filterTypes)
         println '... finished configuring Spring Security Facebook'
     }
 
-    private List<String> parseFilterTypes(def conf) {
+    private List<String> parseFilterTypes(conf) {
         def typesRaw = conf.facebook.filter.types
-        List<String> types = null
+        List<String> types
         if (!typesRaw) {
             log.warn("Value for 'grails.plugin.springsecurity.facebook.filter.types' is empty")
-            typesRaw = conf.facebook.filter.type
         }
 
         String defaultType = 'transparent'
@@ -141,15 +147,15 @@ class SpringSecurityFacebookGrailsPlugin {
             log.error("Invalid Facebook Authentication filters configuration: '$typesRaw'. Should be used on of: $validTypes. Current value will be ignored, and type '$defaultType' will be used instead.")
             types = [defaultType]
         } else if (typesRaw instanceof Collection) {
-            types = typesRaw.collect { it.toString() }.findAll { it in validTypes }
-        } else if (typesRaw instanceof String) {
-            types = typesRaw.split(',').collect { it.trim() }.findAll { it in validTypes }
+            types = typesRaw*.toString().findAll { it in validTypes }
+        } else if (typesRaw instanceof CharSequence) {
+            types = typesRaw.toString().split(',').collect { it.trim() }.findAll { it in validTypes }
         } else {
             log.error("Invalid Facebook Authentication filters configuration, invalid value type: '${typesRaw.getClass()}'. Filter typer should be defined as a Collection or String (comma separated, if you need few filters). Type '$defaultType' will be used instead.")
             types = [defaultType]
         }
 
-        if (!types || types.empty) {
+        if (!types) {
             log.error("Facebook Authentication filter is not configured. Should be used one of: $validTypes. So '$defaultType' will be used by default.")
             log.error("To configure Facebook Authentication filters you should add to Config.groovy:")
             log.error("grails.plugin.springsecurity.facebook.filter.types='transparent'")
@@ -161,16 +167,20 @@ class SpringSecurityFacebookGrailsPlugin {
         return types
     }
 
-    private void addFilters(def conf, def delegate, def types) {
+    private void addFilters(conf, delegate, types) {
         int basePosition = conf.facebook.filter.position
+
+        log.debug "SpringSecurityUtils.orderedFilters before registering this plugin's: $SpringSecurityUtils.orderedFilters"
 
         addFilter.delegate = delegate
         types.eachWithIndex { name, idx ->
             addFilter(conf, name, basePosition + 1 + idx)
         }
+
+        log.debug "SpringSecurityUtils.orderedFilters after registering this plugin's: $SpringSecurityUtils.orderedFilters"
     }
 
-    private addFilter = { def conf, String name, int position ->
+    private addFilter = { conf, String name, int position ->
         if (name == 'transparent') {
             SpringSecurityUtils.registerFilter 'facebookAuthCookieTransparentFilter', position
             facebookAuthCookieTransparentFilter(FacebookAuthCookieTransparentFilter) {
@@ -179,16 +189,19 @@ class SpringSecurityFacebookGrailsPlugin {
                 logoutUrl = conf.logout.filterProcessesUrl
                 forceLoginParameter = conf.facebook.filter.forceLoginParameter
             }
+            log.debug "registerFilter 'facebookAuthCookieTransparentFilter' at position $position; logoutUrl '$conf.logout.filterProcessesUrl', forceLoginParameter '$conf.facebook.filter.forceLoginParameter'"
             facebookAuthCookieLogout(FacebookAuthCookieLogoutHandler) {
                 facebookAuthUtils = ref('facebookAuthUtils')
                 facebookAuthDao = ref(_facebookDaoName)
             }
             SpringSecurityUtils.registerLogoutHandler('facebookAuthCookieLogout')
+            log.debug "registerLogoutHandler 'facebookAuthCookieLogout'"
         } else if (name == 'cookieDirect') {
             String _successHandler = getConfigValue(conf, 'facebook.filter.cookieDirect.successHandler')
             String _failureHandler = getConfigValue(conf, 'facebook.filter.cookieDirect.failureHandler')
             String url = getConfigValue(conf, 'facebook.filter.cookieDirect.processUrl', 'facebook.filter.processUrl')
             SpringSecurityUtils.registerFilter 'facebookAuthCookieDirectFilter', position
+            log.debug "registerFilter 'facebookAuthCookieDirectFilter' at position $position; logoutUrl '$conf.logout.filterProcessesUrl', forceLoginParameter '$conf.facebook.filter.forceLoginParameter'"
             facebookAuthCookieDirectFilter(FacebookAuthCookieDirectFilter, url) {
                 authenticationManager = ref('authenticationManager')
                 rememberMeServices = ref('rememberMeServices')
@@ -219,6 +232,7 @@ class SpringSecurityFacebookGrailsPlugin {
                     authenticationFailureHandler = ref(failureHandler)
                 }
             }
+            log.debug "registerFilter 'facebookAuthRedirectFilter' at position $position; _redirectFromUrl '$_redirectFromUrl', processUrl '$_url'"
         } else if (name == 'json') {
             SpringSecurityUtils.registerFilter 'facebookAuthJsonFilter', position
             String _url = conf.facebook.filter.json.processUrl
@@ -226,10 +240,13 @@ class SpringSecurityFacebookGrailsPlugin {
             facebookJsonAuthenticationHandler(JsonAuthenticationHandler) {
                 useJsonp = _jsonp
             }
-            List<String> _methods = getAsStringList(conf.facebook.filter.json.methods, '**.facebook.filter.json.type')
-            _methods = _methods ? _methods*.toUpperCase() : ['POST']
+            List<String> _methods
             if (_jsonp) {
                 _methods = ['GET']
+            }
+            else {
+                _methods = getAsStringList(conf.facebook.filter.json.methods, '**.facebook.filter.json.type')
+                _methods = _methods ? _methods*.toUpperCase() : ['POST']
             }
             facebookAuthJsonFilter(FacebookAuthJsonFilter, _url) {
                 methods = _methods
@@ -238,50 +255,43 @@ class SpringSecurityFacebookGrailsPlugin {
                 authenticationSuccessHandler = ref('facebookJsonAuthenticationHandler')
                 authenticationFailureHandler = ref('facebookJsonAuthenticationHandler')
             }
+            log.debug "registerFilter 'facebookAuthJsonFilter' at position $position; useJsonp '$_jsonp', processUrl '$_url', methods: $_methods"
         } else {
             log.error("Invalid filter type: $name")
         }
     }
 
-    def doWithApplicationContext = { ctx ->
-    }
-
     def onConfigChange = { event ->
         println("Config change")
         SpringSecurityUtils.resetSecurityConfig()
-
     }
 
-    private Object getConfigValue(def conf, String... values) {
-        conf = conf.flatten()
+    private getConfigValue(conf, String... values) {
+        def flatConf = conf.flatten()
         String key = values.find {
-            if (!conf.containsKey(it)) {
+            if (!flatConf.containsKey(it)) {
                 return false
             }
-            def val = conf.get(it)
-            if (val == null || val.toString() == '{}') {
+            def val = flatConf.get(it)
+            if (val == null || (val instanceof ConfigObject && val.isEmpty())) {
                 return false
             }
             return true
         }
-        if (key) {
-            return conf.get(key)
-        }
-        return null
+        key ? flatConf[key] : null
     }
 
-    private List<String> getAsStringList(def conf, String paramHumanName, String paramName = '???') {
-        def raw = conf
-
-        if (raw == null) {
-            log.error("Invalid $paramHumanName filters configuration: '$raw'")
-        } else if (raw instanceof Collection) {
-            return raw.collect { it.toString() }
-        } else if (raw instanceof String) {
-            return raw.split(',').collect { it.trim() }
-        } else {
-            log.error("Invalid $paramHumanName filters configuration, invalid value type: '${raw.getClass()}'. Value should be defined as a Collection or String (comma separated)")
+    private List<String> getAsStringList(conf, String paramHumanName) {
+        if (conf == null) {
+            log.error("Invalid $paramHumanName filters configuration: '$conf'")
+            return
         }
-        return null
+        if (conf instanceof Collection) {
+            return conf*.toString()
+        }
+        if (conf instanceof CharSequence) {
+            return conf.toString().split(',').collect { it.trim() }
+        }
+        log.error("Invalid $paramHumanName filters configuration, invalid value type: '${conf.getClass()}'. Value should be defined as a Collection or String (comma separated)")
     }
 }

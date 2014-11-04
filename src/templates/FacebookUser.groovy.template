@@ -4,13 +4,13 @@ import ${userClassFullName}
 
 class ${domainClassName} {
 
-	long uid
-  String accessToken
-  Date accessTokenExpires
+    Long uid
+    String accessToken
+    Date accessTokenExpires
 
-	static belongsTo = [user: ${userClassName}]
+    static belongsTo = [user: ${userClassName}]
 
-	static constraints = {
-		uid unique: true
-	}
+    static constraints = {
+        uid unique: true
+    }
 }

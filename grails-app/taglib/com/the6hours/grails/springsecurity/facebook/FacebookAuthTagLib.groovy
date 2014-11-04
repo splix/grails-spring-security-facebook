@@ -1,8 +1,6 @@
 package com.the6hours.grails.springsecurity.facebook
 
 import grails.plugin.springsecurity.SpringSecurityUtils
-import org.codehaus.groovy.grails.web.mapping.LinkGenerator
-import grails.plugin.springsecurity.SpringSecurityService
 
 /**
  * TODO
@@ -12,11 +10,9 @@ import grails.plugin.springsecurity.SpringSecurityService
  */
 class FacebookAuthTagLib {
 
-	static namespace = 'facebookAuth'
+    static namespace = 'facebookAuth'
 
     static final String MARKER = 'com.the6hours.grails.springsecurity.facebook.FacebookAuthTagLib#init'
-
-	//SpringSecurityService springSecurityService
 
     FacebookAuthUtils facebookAuthUtils
 
@@ -30,10 +26,7 @@ class FacebookAuthTagLib {
      *
      */
     Closure init = { attrs, body ->
-        Boolean init = request.getAttribute(MARKER)
-        if (init == null) {
-            init = false
-        }
+        Boolean init = request.getAttribute(MARKER) ?: false
 
         def conf = SpringSecurityUtils.securityConfig.facebook
         if (conf.taglib?.initfb == false) {
@@ -43,9 +36,9 @@ class FacebookAuthTagLib {
 
         if (!init || attrs.force == 'true') {
             String lang = conf.taglib.language
-            if (attrs.lang?.length > 0) {
+            if (attrs.lang) {
                 lang = attrs.lang
-            } else if (attrs.language?.length > 0) {
+            } else if (attrs.language) {
                 lang = attrs.language
             }
             def appId = conf.appId
@@ -90,28 +83,27 @@ class FacebookAuthTagLib {
      * @attr img - url to image for connect button (for server-side authentication only)
      */
     Closure connect = { attrs, body ->
-    	def writer = getOut()
+        def writer = getOut()
         if (attrs.type) {
             if (attrs.type == 'server') {
                 writer << serverSideConnect(attrs, body)
                 return
-            } else if (attrs.type == 'client') {
+            }
+            if (attrs.type == 'client') {
                 writer << clientSideConnect(attrs, body)
                 return
-            } else {
-                log.error("Invalid connect type: ${attrs.type}")
             }
+            log.error("Invalid connect type: ${attrs.type}")
         }
 
         if (facebookAuthUtils.filterTypes.contains('redirect')) {
             log.debug("Do default server-side authentication redirect")
             writer << serverSideConnect(attrs, body)
             return
-        } else {
-            log.debug("Do default client-side authentication")
-            writer << clientSideConnect(attrs, body)
-            return
         }
+
+        log.debug("Do default client-side authentication")
+        writer << clientSideConnect(attrs, body)
     }
 
     Closure serverSideConnect = { attrs, body ->
@@ -120,7 +112,7 @@ class FacebookAuthTagLib {
         def conf = SpringSecurityUtils.securityConfig.facebook
         String target = conf.filter.redirect.redirectFromUrl
         String bodyValue = body()
-        if (bodyValue == null || bodyValue.trim().length() == 0) {
+        if (!bodyValue || !bodyValue.trim()) {
             String imgUrl
             if (attrs.img) {
                 imgUrl = attrs.img
@@ -158,13 +150,7 @@ class FacebookAuthTagLib {
         }
         if (rawPermissions) {
             if (rawPermissions instanceof Collection) {
-                permissions = rawPermissions.findAll {
-                    it != null
-                }.collect {
-                    it.toString().trim()
-                }.findAll {
-                    it.length() > 0
-                }
+                permissions = rawPermissions.findAll { it }.collect { it.toString().trim() }.findAll { it }
             } else {
                 permissions = rawPermissions.toString().split(',').collect { it.trim() }
             }
@@ -183,20 +169,17 @@ class FacebookAuthTagLib {
         StringBuilder buf = new StringBuilder()
         buf.append('<img src="').append(src).append('" ')
         Map used = [:]
-        attrs.entrySet().each { Map.Entry it ->
-            String attr = it.key
+        attrs.each { String attr, value ->
             if (attr.startsWith('img-')) {
                 attr = attr.substring('img-'.length())
-                used[attr] = it.value?.toString()
+                used[attr] = value?.toString()
             }
         }
         if (!used.alt) {
             used.alt = conf.taglib.button.text
         }
-        used.entrySet().each { Map.Entry it ->
-            buf.append(it.key).append('="').append(it.value).append('" ')
-        }
+        used.each { key, value -> buf.append(key).append('="').append(value).append('" ') }
         buf.append("/>")
-        return buf.toString()
+        buf
     }
 }

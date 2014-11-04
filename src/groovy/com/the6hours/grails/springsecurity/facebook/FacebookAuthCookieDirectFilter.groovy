@@ -1,16 +1,20 @@
 package com.the6hours.grails.springsecurity.facebook
 
-import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter
-import org.springframework.security.core.Authentication
+import groovy.transform.CompileStatic
+
+import javax.servlet.http.Cookie
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
-import javax.servlet.http.Cookie
+
+import org.springframework.security.core.Authentication
+import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter
 
 /**
- * 
+ *
  * @author Igor Artamonov (http://igorartamonov.com)
  * @since 05.07.12
  */
+@CompileStatic
 class FacebookAuthCookieDirectFilter extends AbstractAuthenticationProcessingFilter {
 
     FacebookAuthUtils facebookAuthUtils
@@ -22,10 +26,9 @@ class FacebookAuthCookieDirectFilter extends AbstractAuthenticationProcessingFil
     @Override
     Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) {
         Cookie cookie = facebookAuthUtils.getAuthCookie(request)
-        if (!cookie || cookie.value == null) {
+        if (!cookie || !cookie.value) {
             throw new InvalidCookieException("No cookie")
         }
-        FacebookAuthToken token = facebookAuthUtils.build(cookie.value)
-        return authenticationManager.authenticate(token)
+        authenticationManager.authenticate facebookAuthUtils.build(cookie.value)
     }
 }

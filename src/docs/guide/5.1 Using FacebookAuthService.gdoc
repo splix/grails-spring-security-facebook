@@ -45,7 +45,7 @@ Where:
   * user - your domain for Facebook User
   * token - com.the6hours.grails.springsecurity.facebook.FacebookAuthToken
 
-h3. <FacebookUser> findUser(Long uid)
+h3. <FacebookUser> findUser(long uid)
 
 Called when facebook user is authenticated (on every request), must return existing instance
 for specified facebook uid, if exits. If doesn't - return null

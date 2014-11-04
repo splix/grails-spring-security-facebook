@@ -1,33 +1,37 @@
 package com.the6hours.grails.springsecurity.facebook
 
+import groovy.transform.CompileStatic
+
 import org.apache.commons.lang.StringUtils
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.InitializingBean
+import org.springframework.context.ApplicationContext
+import org.springframework.context.ApplicationContextAware
+import org.springframework.security.authentication.AuthenticationProvider
 import org.springframework.security.authentication.CredentialsExpiredException
 import org.springframework.security.core.Authentication
-import org.springframework.security.authentication.AuthenticationProvider
+import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
-
-import org.apache.log4j.Logger
-import org.springframework.context.ApplicationContext
-import org.springframework.beans.factory.InitializingBean
-import org.springframework.context.ApplicationContextAware
 import org.springframework.security.core.userdetails.UserDetailsChecker
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 
-public class FacebookAuthProvider implements AuthenticationProvider, InitializingBean, ApplicationContextAware {
+@CompileStatic
+class FacebookAuthProvider implements AuthenticationProvider, InitializingBean, ApplicationContextAware {
 
-    private static def log = Logger.getLogger(this)
+    private static final Logger log = LoggerFactory.getLogger(this)
 
+    ApplicationContext applicationContext
     FacebookAuthDao facebookAuthDao
     FacebookAuthUtils facebookAuthUtils
-    def facebookAuthService
-    ApplicationContext applicationContext
-
     UserDetailsChecker postAuthenticationChecks
+
+    def facebookAuthService
 
     boolean createNew = true
 
-    public Authentication authenticate(Authentication authentication) {
-        FacebookAuthToken token = authentication
+    Authentication authenticate(Authentication authentication) {
+        FacebookAuthToken token = (FacebookAuthToken)authentication
 
         if (token.uid <= 0) {
             if (StringUtils.isEmpty(token.code) && token.accessToken == null) {
@@ -54,7 +58,7 @@ public class FacebookAuthProvider implements AuthenticationProvider, Initializin
         def user = facebookAuthDao.findUser(token.uid as Long)
         boolean justCreated = false
 
-        if (user == null) {
+        if (!user) {
             //log.debug "New person $token.uid"
             if (createNew) {
                 log.info "Create new facebook user with uid $token.uid"
@@ -68,12 +72,11 @@ public class FacebookAuthProvider implements AuthenticationProvider, Initializin
                 user = facebookAuthDao.create(token)
                 justCreated = true
             } else {
-                log.error "User $token.uid doesn't exist, and creation of a new user is disabled."
-                log.debug "To enabled auto creation of users set `grails.plugin.springsecurity.facebook.autoCreate.enabled` to true"
-                throw new UsernameNotFoundException("Facebook user with uid $token.uid doesn't exist")
+                handleUserNotFoundNoAutocreate(token)
             }
         }
-        if (user != null) {
+
+        if (user) {
             if (justCreated) {
                 log.debug("User is just created")
             }
@@ -84,7 +87,7 @@ public class FacebookAuthProvider implements AuthenticationProvider, Initializin
             if (!facebookAuthDao.hasValidToken(user)) {
                 log.debug("User $user has invalid access token")
                 String currentAccessToken = facebookAuthDao.getAccessToken(user)
-                FacebookAccessToken freshToken = null
+                FacebookAccessToken freshToken
                 if (currentAccessToken) {
                     try {
                         log.debug("Refresh access token for $user")
@@ -117,9 +120,9 @@ public class FacebookAuthProvider implements AuthenticationProvider, Initializin
                 }
             }
 
-            Object appUser = facebookAuthDao.getAppUser(user)
-            Object principal = facebookAuthDao.getPrincipal(appUser)
-            if (principal instanceof UserDetails && postAuthenticationChecks != null) {
+            def appUser = facebookAuthDao.getAppUser(user)
+            def principal = facebookAuthDao.getPrincipal(appUser)
+            if (principal instanceof UserDetails && postAuthenticationChecks) {
                 postAuthenticationChecks.check(principal)
             }
 
@@ -127,7 +130,7 @@ public class FacebookAuthProvider implements AuthenticationProvider, Initializin
             token.principal = principal
             token.authenticated = true
             if (principal instanceof UserDetails) {
-                token.authorities = principal.getAuthorities()
+                token.authorities = (Collection<GrantedAuthority>)((UserDetails)principal).authorities
             } else {
                 token.authorities = facebookAuthDao.getRoles(appUser)
             }
@@ -135,19 +138,27 @@ public class FacebookAuthProvider implements AuthenticationProvider, Initializin
         } else {
             token.authenticated = false
         }
-        return token
+        token
     }
 
-    public boolean supports(Class<? extends Object> authentication) {
-        return FacebookAuthToken.isAssignableFrom(authentication);
+    protected void handleUserNotFoundNoAutocreate(FacebookAuthToken token) throws UsernameNotFoundException {
+        log.error "User $token.uid doesn't exist, and creation of a new user is disabled."
+        log.debug "To enable auto creation of users set `grails.plugin.springsecurity.facebook.autoCreate.enabled` to true"
+        throw new UsernameNotFoundException("Facebook user with uid $token.uid doesn't exist")
+    }
+
+    boolean supports(Class<? extends Object> authentication) {
+        FacebookAuthToken.isAssignableFrom authentication
     }
 
     void afterPropertiesSet() {
-        if (!facebookAuthService) {
-            if (applicationContext.containsBean('facebookAuthService')) {
-                log.debug("Use provided facebookAuthService")
-                facebookAuthService = applicationContext.getBean('facebookAuthService')
-            }
+        if (facebookAuthService) {
+            return
+        }
+
+        if (applicationContext.containsBean('facebookAuthService')) {
+            log.debug("Use provided facebookAuthService")
+            facebookAuthService = applicationContext.getBean('facebookAuthService')
         }
     }
 }

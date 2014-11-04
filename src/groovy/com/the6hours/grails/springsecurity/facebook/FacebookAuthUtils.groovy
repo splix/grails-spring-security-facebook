@@ -1,18 +1,21 @@
 package com.the6hours.grails.springsecurity.facebook
 
-import org.apache.log4j.Logger
-import org.codehaus.groovy.grails.web.json.JSONElement
+import grails.converters.JSON
+import groovy.transform.CompileStatic
 
+import java.util.concurrent.TimeUnit
+
+import javax.crypto.Mac
+import javax.crypto.spec.SecretKeySpec
 import javax.servlet.http.Cookie
 import javax.servlet.http.HttpServletRequest
-import javax.crypto.spec.SecretKeySpec
-import javax.crypto.Mac
+
 import org.apache.commons.codec.binary.Base64
-import org.springframework.security.authentication.BadCredentialsException
-import grails.converters.JSON
-import java.util.concurrent.TimeUnit
 import org.codehaus.groovy.grails.web.json.JSONException
-import org.codehaus.groovy.grails.web.mapping.LinkGenerator
+import org.codehaus.groovy.grails.web.json.JSONObject
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
+import org.springframework.security.authentication.BadCredentialsException
 
 /**
  * TODO
@@ -20,9 +23,10 @@ import org.codehaus.groovy.grails.web.mapping.LinkGenerator
  * @since 14.10.11
  * @author Igor Artamonov (http://igorartamonov.com)
  */
+@CompileStatic
 class FacebookAuthUtils {
 
-    private static def log = Logger.getLogger(this)
+    private static Logger log = LoggerFactory.getLogger(this)
 
     private static Random RND = new Random()
     private int seq = 0
@@ -40,7 +44,8 @@ class FacebookAuthUtils {
         if (!signedRequest) {
             return null
         }
-        JSONElement json = extractSignedJson(signedRequest)
+
+        JSONObject json = extractSignedJson(signedRequest)
 
         String code = json.code?.toString()
 
@@ -52,21 +57,21 @@ class FacebookAuthUtils {
         return token
     }
 
-    JSONElement extractSignedJson(String signedRequest) {
+    JSONObject extractSignedJson(String signedRequest) {
         String[] signedRequestParts = signedRequest.split('\\.')
         if (signedRequestParts.length != 2) {
             throw new BadCredentialsException("Invalid Signed Request")
         }
 
-        String jsonData = new String(Base64.decodeBase64(signedRequestParts[1].getBytes()), 'UTF-8')
+        String jsonData = new String(Base64.decodeBase64(signedRequestParts[1].bytes), 'UTF-8')
         jsonData = jsonData.trim()
-        def json
+        JSONObject json
         try {
             if (!jsonData.endsWith('}')) {
                 log.info("Seems that Facebook cookie contains corrupted value. SignedRequest: ${signedRequestParts[1]}")
-                jsonData = jsonData + '}'
+                jsonData += '}'
             }
-            json = JSON.parse(jsonData)
+            json = (JSONObject)JSON.parse(jsonData)
         } catch (JSONException e) {
             log.error("Cannot parse Facebook cookie. If you're sure that it should be valid cookie, please send '${signedRequestParts[1]}' to plugin author (igor@artamonov.ru)", e)
             throw new BadCredentialsException("Invalid cookie format")
@@ -80,25 +85,24 @@ class FacebookAuthUtils {
 
         if (!verifySign(signedRequestParts[0], signedRequestParts[1])) {
             throw new BadCredentialsException("Invalid signature")
-        } else {
-            //log.debug "Signature is ok"
         }
-        return json
+        //log.debug "Signature is ok"
+        json
     }
 
-    public Cookie getAuthCookie(HttpServletRequest request) {
+    Cookie getAuthCookie(HttpServletRequest request) {
         String cookieName = "fbsr_" + applicationId
-        return request.cookies.find { Cookie it ->
+        request.cookies.find { Cookie it ->
             //FacebookAuthUtils.log.debug("Cookie $it.name, expected $cookieName")
-            return it.name == cookieName
+            it.name == cookieName
         }
     }
 
     long loadUserUid(String accessToken) {
-        String loadUrl = getVersionedUrl("https://graph.facebook.com/me?access_token=${URLEncoder.encode(accessToken, 'UTF-8')}")
+        String loadUrl = getVersionedUrl("https://graph.facebook.com/me?access_token=${encode(accessToken)}")
         try {
             URL url = new URL(loadUrl)
-            def json = JSON.parse(url.readLines().first())
+            JSONObject json = (JSONObject)JSON.parse(url.readLines().first())
             return json.id as Long
         } catch (IOException e) {
             log.error("Can't read data from Facebook", e)
@@ -115,8 +119,7 @@ class FacebookAuthUtils {
                 grant_type: 'fb_exchange_token',
                 fb_exchange_token: existingAccessToken
         ]
-        String authUrl = getVersionedUrl("https://graph.facebook.com/oauth/access_token?" + encodeParams(params))
-        return requestAccessToken(authUrl)
+        requestAccessToken getVersionedUrl("https://graph.facebook.com/oauth/access_token?" + encodeParams(params))
     }
 
     FacebookAccessToken getAccessToken(String code, String redirectUri = '') {
@@ -129,8 +132,7 @@ class FacebookAuthUtils {
                 client_secret: secret,
                 code: code
         ]
-        String authUrl = getVersionedUrl("https://graph.facebook.com/oauth/access_token?" + encodeParams(params))
-        return requestAccessToken(authUrl)
+        requestAccessToken getVersionedUrl("https://graph.facebook.com/oauth/access_token?" + encodeParams(params))
     }
 
     FacebookAccessToken requestAccessToken(String authUrl) {
@@ -139,10 +141,10 @@ class FacebookAuthUtils {
             String response = url.readLines().first()
             //println "AccessToken response: $response"
             Map data = [:]
-            response.split('&').each {
-                String[] kv = it.split('=')
+            response.split('&').each { String part ->
+                String[] kv = part.split('=')
                 if (kv.length != 2) {
-                    log.warn("Invalid response part: $it")
+                    log.warn("Invalid response part: $part")
                 } else {
                     data[kv[0]] = kv[1]
                 }
@@ -155,7 +157,7 @@ class FacebookAuthUtils {
             }
             if (data.expires) {
                 if (data.expires =~ /^\d+$/) {
-                    token.expireAt = new Date(System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(Long.parseLong(data.expires)))
+                    token.expireAt = new Date(System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(data.expires as Long))
                 } else {
                     log.warn("Invalid 'expires' value: $data.expires")
                 }
@@ -171,17 +173,17 @@ class FacebookAuthUtils {
     }
 
     boolean verifySign(String sign, String payload) {
-        if (sign == null) {
+        if (!sign) {
             log.error("Empty signature")
             return false
         }
-        if (payload == null) {
+        if (!payload) {
             log.error("Empty payload")
             return false
         }
         String signer = 'HMACSHA256'
         //log.debug("Secret $secret")
-        SecretKeySpec sks = new SecretKeySpec(secret.getBytes(), signer)
+        SecretKeySpec sks = new SecretKeySpec(secret.bytes, signer)
         //log.debug("Payload1: `$payload`")
         payload = payload.replaceAll("-", "+").replaceAll("_", "/").trim()
         //log.debug("Payload2: `$payload`")
@@ -193,9 +195,9 @@ class FacebookAuthUtils {
             byte[] their = Base64.decodeBase64(sign.getBytes('UTF-8'))
             //log.info("My: ${new String(Base64.encodeBase64(my, false))}, their: ${new String(Base64.encodeBase64(their))} / $sign")
             return Arrays.equals(my, their)
-        } catch (Exception e) {
-            log.error("Can't validate signature", e);
-            return false;
+        } catch (e) {
+            log.error("Can't validate signature", e)
+            false
         }
     }
 
@@ -210,20 +212,18 @@ class FacebookAuthUtils {
                 state: [seq++, RND.nextInt(1000000)].collect {Integer.toHexString(it)}.join('-')
         ]
         log.debug("Redirect to ${data.redirect_uri}")
-        String url = getVersionedUrl("https://www.facebook.com/dialog/oauth?" + encodeParams(data))
-        return url
+        getVersionedUrl("https://www.facebook.com/dialog/oauth?" + encodeParams(data))
     }
 
     private String encodeParams(Map params) {
-        return params.entrySet().each { Map.Entry<String, Object> it ->
-            [
-                    URLEncoder.encode(it.key, 'UTF-8'),
-                    URLEncoder.encode(it.value ? it.value.toString() : '', 'UTF-8'),
-            ].join('=')
-        }.join('&')
+        params.entrySet().each { encode((String)it.key) + '=' + encode(it.value?.toString() ?: '') }.join('&')
     }
 
     private String getVersionedUrl(String url) {
         apiVersion ? url.replace('facebook.com/',"facebook.com/${apiVersion}/") : url
+    }
+
+    protected String encode(String s) {
+        URLEncoder.encode s, 'UTF-8'
     }
 }

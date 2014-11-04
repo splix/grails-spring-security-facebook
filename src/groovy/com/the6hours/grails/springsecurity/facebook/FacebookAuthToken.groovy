@@ -1,30 +1,29 @@
 package com.the6hours.grails.springsecurity.facebook
 
-import org.springframework.security.core.GrantedAuthority
-import org.springframework.security.core.Authentication
-import org.springframework.security.authentication.AbstractAuthenticationToken
+import groovy.transform.CompileStatic
 
-public class FacebookAuthToken extends AbstractAuthenticationToken implements Authentication, Serializable {
-	
-	long uid
+import org.springframework.security.authentication.AbstractAuthenticationToken
+import org.springframework.security.core.GrantedAuthority
+
+@CompileStatic
+class FacebookAuthToken extends AbstractAuthenticationToken {
+
+    Long uid
     FacebookAccessToken accessToken
     String code
     String redirectUri
 
-    Object principal
-	
-	Collection<GrantedAuthority> authorities
-	
-	def FacebookAuthToken() {
-		super([] as Collection<GrantedAuthority>);
-	}	
+    def principal
 
-	public Object getCredentials() {
-		return uid;
-	}
+    Collection<GrantedAuthority> authorities
 
-    String toString() {
-        return "Principal: $principal, uid: $uid, roles: ${authorities.collect { it.authority}}"
+    FacebookAuthToken() {
+        super([] as Collection<GrantedAuthority>)
     }
 
+    def getCredentials() { uid }
+
+    String toString() {
+        "Principal: $principal, uid: $uid, roles: ${authorities.collect { it.authority}}"
+    }
 }
