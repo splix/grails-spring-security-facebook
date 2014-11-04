@@ -165,10 +165,10 @@ class DefaultFacebookAuthDaoSpec extends Specification {
         TestRole._calls.size() == 1
         TestRole._calls[0][0] == 'create'
         TestAppUser._calls == [
-                ['save', [flush: true, failOnError: true]]
+                ['save', [failOnError: true]]
         ]
         TestFacebookUser._calls == [
-                ['save', [flush: true, failOnError: true]]
+                ['save', [failOnError: true]]
         ]
         act instanceof TestFacebookUser
         when:
