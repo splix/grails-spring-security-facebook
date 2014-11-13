@@ -92,7 +92,7 @@ class FacebookAuthUtils {
 
     Cookie getAuthCookie(HttpServletRequest request) {
         String cookieName = "fbsr_" + applicationId
-        request.cookies.find { Cookie it ->
+        request.cookies?.find { Cookie it ->
             //FacebookAuthUtils.log.debug("Cookie $it.name, expected $cookieName")
             it.name == cookieName
         }

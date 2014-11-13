@@ -3,6 +3,9 @@ package com.the6hours.grails.springsecurity.facebook
 import org.springframework.security.authentication.BadCredentialsException
 import spock.lang.Specification
 
+import javax.servlet.http.Cookie
+import javax.servlet.http.HttpServletRequest
+
 /**
  *
  * Since 25.04.13
@@ -78,5 +81,32 @@ class FacebookAuthUtilsSpec extends Specification {
         [foo: 5151]                 | 'foo=5151'
         [foo: 1, bar: 'baz']        | 'foo=1&bar=baz'
         [foo: 'привет', bar: '100/7%3']  | 'foo=%D0%BF%D1%80%D0%B8%D0%B2%D0%B5%D1%82&bar=100%2F7%253'
+    }
+
+    def "Return null if no cookies"() {
+        setup:
+        def request = Mock(HttpServletRequest)
+        when:
+        def act = facebookAuthUtils.getAuthCookie(request)
+        then:
+        1 * request.getCookies() >> null
+        act == null
+    }
+
+    def "Get cookie if exists"() {
+        setup:
+        def request = Mock(HttpServletRequest)
+        facebookAuthUtils.applicationId = '123456'
+        def cookies = [
+                new Cookie('foo', 'bar'),
+                new Cookie('fbsr_8888888', 'incorrect cookie'),
+                new Cookie('fbsr_123456', 'correct cookie'),
+        ]
+        when:
+        def act = facebookAuthUtils.getAuthCookie(request)
+        then:
+        _ * request.getCookies() >> cookies
+        act != null
+        act.value == 'correct cookie'
     }
 }
