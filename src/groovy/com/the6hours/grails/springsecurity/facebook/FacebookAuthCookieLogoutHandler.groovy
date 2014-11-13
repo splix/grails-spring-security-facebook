@@ -29,24 +29,28 @@ class FacebookAuthCookieLogoutHandler implements LogoutHandler {
     boolean cleanupToken = true
 
     void logout(HttpServletRequest request, HttpServletResponse response, Authentication auth) {
+        String baseDomain = null
+        String expectedCookieName = ['fbsr', facebookAuthUtils.applicationId].join('_')
 
-        String baseDomain
+        Collection<Cookie> cookies = request.cookies?.findAll { Cookie c ->
+            c.name == expectedCookieName
+        }
 
-        Collection<Cookie> cookies = request.cookies.findAll { Cookie c ->
-            //FacebookAuthUtils.log.debug("Cookier $it.name, expected $cookieName")
-            c.name ==~ /fb\w*_$facebookAuthUtils.applicationId/
+        if (!cookies) {
+            logger.debug("No FB cookies")
+            return
         }
 
         baseDomain = cookies.find { Cookie c ->
-            c.name == "fbm_\$facebookAuthUtils.applicationId" && c.value ==~ /base_domain=.+/
+            c.name == expectedCookieName && c.value ==~ /base_domain=.+/
         }?.value?.split('=')?.last()
 
         if (!baseDomain) {
             //Facebook uses invalid cookie format, so sometimes we need to parse it manually
             String rawCookie = request.getHeader('Cookie')
-            logger.info("raw cookie: $rawCookie")
+            logger.debug("raw cookie: $rawCookie")
             if (rawCookie) {
-                Matcher m = rawCookie =~ /fbm_$facebookAuthUtils.applicationId=base_domain=(.+?);/
+                Matcher m = rawCookie =~ /$expectedCookieName=base_domain=(.+?);/
                 if (m.find()) {
                     baseDomain = m.group(1)
                 }
@@ -55,10 +59,12 @@ class FacebookAuthCookieLogoutHandler implements LogoutHandler {
 
         if (!baseDomain) {
             ConfigObject conf = (ConfigObject)SpringSecurityUtils.securityConfig.facebook
-            if (conf.host?.toString()) {
+            if (conf.containsKey('host')) {
                 baseDomain = conf.host
+            } else {
+                logger.warn("Can't find base domain for Facebook cookie. Please configure app host name as grails.plugin.springsecurity.facebook.host")
+                return
             }
-            logger.debug("Can't find base domain for Facebook cookie. Use '$baseDomain'")
         }
 
         cookies.each { Cookie cookie ->
