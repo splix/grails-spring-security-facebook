@@ -134,10 +134,14 @@ class SpringSecurityFacebookGrailsPlugin {
     }
 
     private List<String> parseFilterTypes(conf) {
-        def typesRaw = conf.facebook.filter.types
         List<String> types
+
+        def typesRaw = conf.facebook.filter.types
         if (!typesRaw) {
-            log.warn("Value for 'grails.plugin.springsecurity.facebook.filter.types' is empty")
+            typesRaw = conf.facebook.filter.type
+            if (!typesRaw) {
+                log.warn("Config options 'grails.plugin.springsecurity.facebook.filter.types' or 'grails.plugin.springsecurity.facebook.filter.type' are empty")
+            }
         }
 
         String defaultType = 'transparent'
