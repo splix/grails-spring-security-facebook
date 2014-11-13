@@ -167,7 +167,8 @@ class FacebookAuthUtils {
             //log.debug("Got AccessToken: $token")
             return token
         } catch (IOException e) {
-            log.error("Can't read data from Facebook", e)
+            //TODO process error response
+            log.warn("Can't read data from Facebook", e)
             return null
         }
     }
