@@ -215,9 +215,9 @@ class FacebookAuthUtils {
         getVersionedUrl("https://www.facebook.com/dialog/oauth?" + encodeParams(data))
     }
 
-    private String encodeParams(Map params) {
-        params.collect { String key, Object value ->
-            encode(key) + '=' + encode(value?.toString() ?: '')
+    String encodeParams(Map params) {
+        params.collect { Object key, Object value ->
+            encode(key) + '=' + encode(value ?: '')
         }.join('&')
     }
 
@@ -225,7 +225,7 @@ class FacebookAuthUtils {
         apiVersion ? url.replace('facebook.com/',"facebook.com/${apiVersion}/") : url
     }
 
-    protected String encode(String s) {
-        URLEncoder.encode s, 'UTF-8'
+    protected String encode(Object s) {
+        URLEncoder.encode s.toString(), 'UTF-8'
     }
 }

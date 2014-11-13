@@ -68,4 +68,15 @@ class FacebookAuthUtilsSpec extends Specification {
         'HtEfeVZxRwIk1L7cT5cp9dKL2BGo49+CNNkteAROooE'  | 'eyJhbGdvcml0aG0iOiJITUFDLVNIQTI1NiIsInVzZXJfaWQiOiIxIn0'
         'HtEfeVZxRwIk1L7cT5cp9dKL2BGo49-CNNkteAROooE'  | 'eyJhbGdvcml0aG0iOiJITUFDLVNIQTI1NiIsInVzZXJfaWQiOiIxIn0'
     }
+
+    def "Encode Params"() {
+        expect:
+        query == facebookAuthUtils.encodeParams(data)
+        where:
+        data                        |  query
+        [foo: 'bar']                | 'foo=bar'
+        [foo: 5151]                 | 'foo=5151'
+        [foo: 1, bar: 'baz']        | 'foo=1&bar=baz'
+        [foo: 'привет', bar: '100/7%3']  | 'foo=%D0%BF%D1%80%D0%B8%D0%B2%D0%B5%D1%82&bar=100%2F7%253'
+    }
 }
