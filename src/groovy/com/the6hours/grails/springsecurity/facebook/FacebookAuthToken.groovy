@@ -8,6 +8,8 @@ import org.springframework.security.core.GrantedAuthority
 @CompileStatic
 class FacebookAuthToken extends AbstractAuthenticationToken {
 
+    private static final long serialVersionUID = 7064510496527L;
+
     Long uid
     FacebookAccessToken accessToken
     String code
