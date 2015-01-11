@@ -86,7 +86,12 @@ class FacebookAuthRedirectFilter extends AbstractAuthenticationProcessingFilter 
                 uri = uri.substring(0, pathParamIndex)
             }
 
-            request.contextPath ? uri.endsWith(request.contextPath + filterProcessesUrl) : uri.endsWith(filterProcessesUrl)
+            if (request.contextPath) {
+                StringBuilder expectedPath = new StringBuilder()
+                expectedPath.append(request.contextPath).append(filterProcessesUrl)
+                return uri.endsWith(expectedPath.toString())
+            }
+            return uri.endsWith(filterProcessesUrl)
         }
     }
 }
