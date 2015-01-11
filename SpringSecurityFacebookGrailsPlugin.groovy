@@ -31,7 +31,7 @@ import com.the6hours.grails.springsecurity.facebook.JsonAuthenticationHandler
 
 class SpringSecurityFacebookGrailsPlugin {
 
-    String version = '0.16.2'
+    String version = '0.17'
     String grailsVersion = '2.4.0 > *'
     def loadAfter = ['springSecurityCore']
     def license = 'APACHE'
