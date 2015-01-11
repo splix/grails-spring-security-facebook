@@ -15,7 +15,7 @@ class FacebookAuthToken extends AbstractAuthenticationToken {
 
     def principal
 
-    Collection<GrantedAuthority> authorities
+    Collection<GrantedAuthority> authorities = [] as Collection<GrantedAuthority>
 
     FacebookAuthToken() {
         super([] as Collection<GrantedAuthority>)
