@@ -9,6 +9,7 @@ Optional attributes:
 Optional attributes for @server@ button (server-side authentication):
  * @img@ - url to image for connect button (for server-side authentication only)
  * @img-*@ - a attribute for <img> tag, like @img-id@ or @img-style@
+ * @startUrl@ - a local url that will prepare valid redirect to Facebook API, instead of default one provided by the plugin. At most cases you don't need to specify this, do it only if you know what you're doing and default implementation is not enough for your case.
 
 Optional attributes for @client@ button (client-side authentication):
  * @permission@ - list of [Facebook Permission|https://developers.facebook.com/docs/reference/login/] as a String or List
