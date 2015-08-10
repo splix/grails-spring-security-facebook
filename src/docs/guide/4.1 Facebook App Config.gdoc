@@ -2,7 +2,11 @@
 *Name* | *Default Value*
 grails.plugin.springsecurity.facebook.secret | must be specified
 grails.plugin.springsecurity.facebook.appId | must be specified
+grails.plugin.springsecurity.facebook.apiVersion | not set
 {table}
+
+* @apiVersion@ - Facebook API version (e.g., "v2.2"). If not set is used unversioned Facebook API by default.
+
 
 {table}
 *Name* | *Default Value*
