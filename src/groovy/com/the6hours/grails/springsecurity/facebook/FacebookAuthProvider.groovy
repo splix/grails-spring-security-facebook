@@ -16,7 +16,6 @@ import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsChecker
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 
-@CompileStatic
 class FacebookAuthProvider implements AuthenticationProvider, InitializingBean, ApplicationContextAware {
 
     private static final Logger log = LoggerFactory.getLogger(this)
@@ -69,6 +68,11 @@ class FacebookAuthProvider implements AuthenticationProvider, InitializingBean, 
                     log.error("Can't create user w/o access_token")
                     throw new CredentialsExpiredException("Can't receive access_token from Facebook")
                 }
+
+                if (facebookAuthService?.respondsTo('beforeCreate', FacebookAuthToken)) {
+                    facebookAuthService.beforeCreate(token)
+                }
+
                 user = facebookAuthDao.create(token)
                 justCreated = true
             } else {

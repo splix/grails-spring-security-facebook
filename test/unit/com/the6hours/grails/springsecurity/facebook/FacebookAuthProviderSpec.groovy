@@ -1,5 +1,7 @@
 package com.the6hours.grails.springsecurity.facebook
 
+import grails.util.Holders
+import org.springframework.security.core.AuthenticationException
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import spock.lang.Specification
 
@@ -86,6 +88,44 @@ class FacebookAuthProviderSpec extends Specification {
         then:
         1 * dao.findUser(1) >> null
         thrown(UsernameNotFoundException)
+    }
+
+    def "Call beforeCreate method when it exists"() {
+        setup:
+        FacebookAuthDao dao = Mock(FacebookAuthDao)
+        FacebookAuthUtils utils = Mock(FacebookAuthUtils)
+        FacebookAuthProvider provider = new FacebookAuthProvider(
+                facebookAuthDao: dao,
+                facebookAuthUtils: utils
+        )
+        FacebookAuthToken token = new FacebookAuthToken(
+                uid: 1
+        )
+
+        Boolean beforeCreateWasCalled = false
+        def facebookAuthService = new Object()
+        facebookAuthService.metaClass.beforeCreate = { FacebookAuthToken test ->
+            beforeCreateWasCalled = true
+            throw new InvalidRequestException("Test")
+        }
+        provider.facebookAuthService = facebookAuthService
+
+        TestFacebookUser user = new TestFacebookUser(
+                uid: 1
+        )
+        TestAppUser appUser = new TestAppUser()
+        FacebookAccessToken accessToken = new FacebookAccessToken(
+                accessToken: 'test',
+                expireAt: new Date()
+        )
+        when:
+        provider.authenticate(token)
+
+        then:
+        1 * dao.findUser(1) >> null
+        1 * utils.getAccessToken(_, _) >> accessToken //load token before creation
+        beforeCreateWasCalled
+        thrown(InvalidRequestException)
     }
 
 }

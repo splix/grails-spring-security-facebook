@@ -125,4 +125,10 @@ Where:
   * person - your domain for <Person>
   * token - com.the6hours.grails.springsecurity.facebook.FacebookAuthToken
 
-h2. How to use
+h3. void beforeCreate(FacebookAuthToken token)
+
+Called before user was created by plugin. You can implement logic that aborts login. If method throws <AuthenticationException> you can handle this exception in failure handler.
+
+Where:
+
+  * token - com.the6hours.grails.springsecurity.facebook.FacebookAuthToken
