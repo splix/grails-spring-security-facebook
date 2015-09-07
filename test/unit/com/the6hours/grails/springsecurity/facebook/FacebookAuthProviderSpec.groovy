@@ -1,7 +1,5 @@
 package com.the6hours.grails.springsecurity.facebook
 
-import grails.util.Holders
-import org.springframework.security.core.AuthenticationException
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import spock.lang.Specification
 
