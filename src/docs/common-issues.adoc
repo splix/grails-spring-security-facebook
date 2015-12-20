@@ -1,0 +1,44 @@
+== Common Issues
+
+==== Enable logging
+
+If you have troubles with plugin, please enabled logging, so you can see what's happening:
+----
+log4j = {
+  debug 'com.the6hours', 'grails.app.taglib.com.the6hours'
+}
+----
+
+==== Client side authentication don't work on dev server
+
+Make sure that you're using a real domain name for your application. Not a @localhost@, because Facebook can't setup
+cookie for localhost, and avoid +.local+ domains as well.
+
+You can make a fake domain like +myapp.dev+, by putting into @/etc/hosts@ the following line:
+----
+127.0.0.1  myapp.dev
+----
+If you already have line starting with @127.0.0.1@, just add your @myapp.dev@ at the end of the line.
+
+See more details about hosts file, and location of the file for different operation systems see: http://en.wikipedia.org/wiki/Hosts_(file)
+
+After that, you should configure your Grails app to use this domain, by adding following line into @Config.groovy@:
+----
+grails.serverURL = "http://myapp.dev:8080/${appName}"
+----
+
+Of course, you need to use this domain only for development, so put this configuration into @development@
+environment config:
+----
+environments {
+    development {
+      grails.serverURL = "http://myapp.dev:8080/${appName}"
+    }
+}
+----
+
+==== Logout doesn't work for Transparent filter
+
+"transparent" filter always authorize request that contains FB cookie. If you need to log out current user when using
+this type of filter, you need to log out user on client side, call @FB.logout()@ (will logout user from Facebook
+as well) and reload the page.

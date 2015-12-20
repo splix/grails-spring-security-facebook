@@ -1,0 +1,67 @@
+=== Example app
+
+You can take a look at [Example Application|https://github.com/splix/grails-facebook-authentication-example], it's very
+basic app, that have only one page, with 'Facebook Connect' button. Just clone it, put your FB App credentials, and play with it.
+
+==== Add Facebook Authentication into your existing application
+
+===== Initial plugin config
+
+====== Domain Class
+
+Create domain class for your facebook user:
+----
+class FacebookUser {
+  Long uid
+  String accessToken
+  Date accessTokenExpires
+
+  static belongsTo = [user: User] //connected to main Spring Security domain
+
+  static constraints = {
+    uid unique: true
+  }
+}
+----
+
+At `Config.groovy` setup full name (including package name, if used) of just created Facebook user domain, like:
+
+----
+grails.plugin.springsecurity.facebook.domain.classname='FacebookUser'
+----
+
+====== Add FB App credentials
+
+You should create a Facebook App and copy App ID and Secret:
+
+!create_app.png!
+
+into @Config.groovy@:
+----
+grails.plugin.springsecurity.facebook.appId=12345678900000
+grails.plugin.springsecurity.facebook.secret=76c2279743c99da3715e3d00f29a1234
+----
+
+PS it's just example, you should use your own `appId` and `secret`.
+
+====== Add Facebook Connect button
+
+There is special taglib (@<facebookAuth:@) that can be used at your view (any GSP page) to add Facebook Connect button.
+
+Following code displays connect button for not authorized user, or show a welcome message to logged in user:
+----
+<sec:ifNotGranted roles="ROLE_USER">
+  <facebookAuth:connect />
+</sec:ifNotGranted>
+<sec:ifAllGranted roles="ROLE_USER">
+  Welcome <sec:username/>! (<g:link uri="/j_spring_security_logout">Logout</g:link>)
+</sec:ifAllGranted>
+----
+
+===== Run
+
+That's it! Run your application, and test that everything is working.
+
+----
+grails run-app
+----

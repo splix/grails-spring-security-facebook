@@ -13,7 +13,7 @@ h2. Attributes:
  * @lang@ - locale, for Facebook @all.js@ (like 'en_US', 'ru_RU', etc)
 
 h2. Example:
-{code}
+----
 <facebookAuth:init>
     <!--
       Put any JS code here, will be executed after FB initialization (optional)
@@ -23,4 +23,4 @@ h2. Example:
         window.location.reload();
     });
 </facebookAuth:init>
-{code}
+----

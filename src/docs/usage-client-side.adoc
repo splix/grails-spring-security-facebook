@@ -1,0 +1,49 @@
+=== Client Side Authentication
+
+Based on https://developers.facebook.com/docs/javascript[Facebook Javascript SDK] authorization. Useful
+when you need to use FB Javascript SDK on client side.
+
+And there are two ways:
+
+ * try authenticate user on each request, to any page - it's `transparent` filter
+ * authenticate only when user redirected to specified page, like a standard username/password authentication - it's `cookieDirect` filter
+
+==== Transparent filter
+
+If you're using first way (`transparent` filter), your user will be automatically authenticated whenever he has
+Facebook cookie. Btw, don't forget that you should *reload* current page after you have successfully authenticated user
+on client side. Like:
+
+----
+<facebookAuth:init>
+   FB.Event.subscribe('auth.login', function() {
+      window.location.reload();
+   });
+</facebookAuth:init>
+----
+
+To logout user, simply call `FB.logout()` (using Javascript) on client side.
+
+==== CookieDirect filter
+
+If you're using second way (`cookieDirect` filter), you could configure URL that will be used for authentication at `Config.groovy`:
+
+----
+grails.plugin.springsecurity.facebook.filter.processUrl = '/j_spring_security_facebook_check' //it's default value
+----
+
+And after authorization redirect user to `/j_spring_security_facebook_check`, like:
+
+----
+<facebookAuth:init>
+   FB.Event.subscribe('auth.login', function() {
+      window.location.href = '/j_spring_security_facebook_check'
+   });
+</facebookAuth:init>
+
+<g:javascript>
+   $('#fbloginbutton').click(function() {
+       FB.login();
+   });
+</g:javascript>
+----

@@ -1,0 +1,23 @@
+= Spring Security Facebook Plugin - Reference Documentation
+Igor Artamonov
+
+:doctype: book
+:encoding: utf-8
+:lang: en
+:toc: left
+:toclevels: 2
+:numbered:
+
+include::introduction.adoc[]
+
+include::installation.adoc[]
+
+include::usage.adoc[]
+
+include::configuration.adoc[]
+
+include::customization.adoc[]
+
+include::how-to.adoc[]
+
+include::common-issues.adoc[]

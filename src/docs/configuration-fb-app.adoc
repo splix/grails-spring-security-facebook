@@ -1,0 +1,14 @@
+=== Configure Facebook App
+
+|======
+| *Name* | *Default Value*
+| grails.plugin.springsecurity.facebook.secret | must be specified
+| grails.plugin.springsecurity.facebook.appId | must be specified
+|======
+
+|======
+| *Name* | *Default Value*
+| grails.plugin.springsecurity.facebook.permissions | ['email']
+|======
+
+For a list of all possible permissions see https://developers.facebook.com/docs/reference/login/#permissions

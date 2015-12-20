@@ -1,0 +1,35 @@
+== Configuration
+
+=== Basic Configuration
+
+{note}
+Make sure that you have installed and configured spring-security-core plugin before this step.
+{note}
+
+Calling `grails s2-init-facebook` will make default configuration of plugin for you, make sure
+that you have configuration in your `Config.groovy` like:
+
+----
+grails.plugin.springsecurity.facebook.domain.classname='<your FacebookUser domain>'
+grails.plugin.springsecurity.facebook.secret = '<Facebook secret for your app>'
+grails.plugin.springsecurity.facebook.appId = '<Facebooks's app ID>'
+----
+
+Or you can skip `grails s2-init-facebook` step, and make such configuration by yourself.
+
+When you have valid configuration you can put Facebook Connect button in you GSP:
+----
+<facebookAuth:connect permissions="email,user_about_me"/>
+----
+
+You don't need to add anything else.
+
+include::configuration-fb-app.adoc[]
+
+include::configuration-domains.adoc[]
+
+include::configuration-login-btn.adoc[]
+
+include::configuration-plugin.adoc[]
+
+include::configuration-types.adoc[]

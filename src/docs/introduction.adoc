@@ -1,0 +1,16 @@
+== Introduction
+
+Sources: https://github.com/splix/grails-spring-security-facebook
+
+==== Requirements
+ * grails 3.0
+ * spring-security-core plugin 3.0.0
+
+==== Examples
+
+ * https://github.com/splix/grails-facebook-authentication-example - Example app
+
+==== Support
+
+ * if you found a bug - please submit it into https://github.com/splix/grails-spring-security-facebook/issues
+ * other questions please ask at StackOverflow - http://stackoverflow.com/questions/tagged/grails

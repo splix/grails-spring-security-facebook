@@ -22,17 +22,17 @@ You can get official FB button image at [https://developers.facebook.com/docs/fa
 h2. Examples:
 
 Default:
-{code}
+----
 <facebookAuth:connect />
-{code}
+----
 
 Use your image for connect button:
-{code}
+----
 <facebookAuth:connect img="${resource(dir: 'images', file: 'facebook-connect.png')}" img-alt="Login to my site!"/>
-{code}
+----
 
 Ask for email:
-{code}
+----
 <facebookAuth:connect permission="email"/>
-{code}
+----
 

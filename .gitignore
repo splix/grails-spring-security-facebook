@@ -7,3 +7,6 @@
 target
 *.log
 /web-app/WEB-INF
+.gradle/
+build/
+gradle/

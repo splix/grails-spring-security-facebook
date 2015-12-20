@@ -1,0 +1,18 @@
+=== Configure Plugin
+
+|======
+| *Name* | *Default Value*
+| grails.plugin.springsecurity.facebook.autoCreate.enabled | true
+| grails.plugin.springsecurity.facebook.autoCreate.roles | ['ROLE_USER', 'ROLE_FACEBOOK']
+|======
+
+ * autoCreate.enabled - enable/disabled automatic creation of Application User for a new Facebook user (when FB user first time authenticates)
+ * autoCreate.roles - list of roles to set to a newly created user (if enabled)
+
+|======
+| *Name* | *Default Value*
+| grails.plugin.springsecurity.facebook.host | ''
+|======
+
+Set a hostname of current app, could be used when user logged out, but FB didn't clear all cookies for domain. Note: it's
+host name, not url. Like `example.com`
