@@ -27,4 +27,4 @@ At this case a HTML button, provided by Facebook JS SDK, will be user.
 | grails.plugin.springsecurity.facebook.taglib.language | 'en_US'
 |======
 
- * @language@ - language for Facebook Javascript SDK. You could also pass this option as a `lang` attribute for `:connect` or `:init` tags
+ * `language` - language for Facebook Javascript SDK. You could also pass this option as a `lang` attribute for `:connect` or `:init` tags

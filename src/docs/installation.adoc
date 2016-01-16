@@ -4,34 +4,20 @@ Basically it's just adding dependency into `BuildConfig.groovy`:
 
 ----
 plugins {
-    compile ":spring-security-facebook:0.15.4"
+    compile ":spring-security-facebook:0.18"
 }
 ----
 
-Or, if you're using a new Spring Security Core 2.x, you have to use following dependency instead:
+Follow Configuration and Basic Usage sections for next steps.
 
-----
-plugins {
-    compile ":spring-security-facebook:0.15.4-CORE2"
-}
-----
-
-and calling (optional) configuration wizards by:
-----
-grails s2-quickstart //configure Spring Security Core
-grails s2-init-facebook //configure Spring Security Facebook
-----
-
-Or you can edit +Config.groovy+ instead, see [Configuration|guide:4 Configuration] section.
-
-Follow [Basic Usage|guide:3.1 Basic Usage] guide for next steps.
+=== Upgrade Notes
 
 ==== Upgrading from version 0.9
 
 Since version 0.10 plugin have started to use Server Side authentication by default, instead of
 Client Side authentication (based on Facebook JS SDK) that was default implementation for version 0.9 and earlier.
 
-If you want to continue using Client Side authentication, you should add following configuration into +Config.groovy+:
+If you want to continue using Client Side authentication, you should add following configuration into `Config.groovy`:
 
 ----
 grails.plugin.springsecurity.facebook.filter.type='transparent,cookieDirect'
@@ -39,6 +25,8 @@ grails.plugin.springsecurity.facebook.filter.type='transparent,cookieDirect'
 
 ==== Upgrading from version 0.15.x
 
-Version 0.16 requires a Spring Security Core 2.0, you need to upgrade to it first.
+Version 0.16 requires a Spring Security Core 2.0, you need to upgrade to this version of core plugin.
 
-See [Filters guide|guide:3.2 Filters] for details.
+==== Upgrade from version 0.17.x
+
+Version 0.18 is based on Grails 3.0 and Spring Security Core 3.0

@@ -3,7 +3,7 @@
 ==== How it works
 
 Plugin is based on Spring Security and uses web filters for authorization, for more details see
-[Spring Security docs|http://static.springsource.org/spring-security/site/docs/3.0.x/reference/security-filter-chain.html]
+http://static.springsource.org/spring-security/site/docs/3.0.x/reference/security-filter-chain.html[Spring Security docs]
 
 ===== Available filters
 
@@ -16,7 +16,7 @@ There are 4 types of filter:
 
 ===== Server-Side authentication (FacebookAuthRedirectFilter)
 
-It's a standard [Login for Server-side Apps|https://developers.facebook.com/docs/howtos/login/server-side-login/].
+It's a standard https://developers.facebook.com/docs/howtos/login/server-side-login/[Login for Server-side Apps].
 After clicking on 'connect button' user gets redirected to special Facebook page, for authentication, and then
 redirected back to your app.
 
@@ -24,7 +24,7 @@ redirected back to your app.
 
 ===== Transparent cookie based authorization (FacebookAuthCookieTransparentFilter)
 
-Based on [Facebook Javascript SDK|https://developers.facebook.com/docs/reference/javascript/] authorization. On
+Based on https://developers.facebook.com/docs/reference/javascript/[Facebook Javascript SDK] authorization. On
 client side it makes Facebook authorization and put Facebook Cookie (it's made by Facebook Javascript,
 you don't need anything special)
 
@@ -33,13 +33,14 @@ After successful authorization on client side, the browser should reload current
 This filter will *process each request*, and if it sees valid Facebook cookie, it makes authorization for
 current user. If it's a new user, it creates a new one for application, with provided Facebook credentials.
 
-{note}
+[NOTE]
+====
 It's per-request authorization. That means that this filter will try to authorize user on each page request.
-{note}
+====
 
 ===== Manual cookie based authentication (FacebookAuthCookieDirectFilter)
 
-Based on [Facebook Javascript SDK|https://developers.facebook.com/docs/reference/javascript/] authorization. On
+Based on https://developers.facebook.com/docs/reference/javascript/[Facebook Javascript SDK] authorization. On
 client side it makes Facebook authorization and put Facebook Cookie (it's made by Facebook Javascript,
 you don't need anything special)
 
@@ -58,10 +59,10 @@ See [filter docs|guide:3.5 Json Authentication]
 You can use config parameter `grails.plugin.springsecurity.facebook.filter.type` to configure which filters
 you want to use in your application.
 
-{note}
+----
 It's not a Spring Security configuration, not a configuration for Spring filters. Just a
 extra configuration, that used only by this plugin.
-{note}
+----
 
 By default it uses only one 'redirect' filter:
 ----

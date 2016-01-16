@@ -6,8 +6,8 @@
 | grails.plugin.springsecurity.facebook.autoCreate.roles | ['ROLE_USER', 'ROLE_FACEBOOK']
 |======
 
- * autoCreate.enabled - enable/disabled automatic creation of Application User for a new Facebook user (when FB user first time authenticates)
- * autoCreate.roles - list of roles to set to a newly created user (if enabled)
+ * `autoCreate.enabled` - enable/disabled automatic creation of Application User for a new Facebook user (when FB user first time authenticates)
+ * `autoCreate.roles` - list of roles to set to a newly created user (if enabled)
 
 |======
 | *Name* | *Default Value*

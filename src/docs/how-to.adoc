@@ -1,5 +1,7 @@
 == How To
 
+=== How To
+
 ==== How to get user full name and/or email?
 
 Main goal of the plugin is to make authorization. All other usage of Facebook API should be done by

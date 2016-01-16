@@ -2,23 +2,24 @@
 
 It's the `FacebookAuthRedirectFilter`, enabled by default.
 
-It's preferred and a standard [Login for Server-side Apps|https://developers.facebook.com/docs/howtos/login/server-side-login/].
+It's preferred and a standard https://developers.facebook.com/docs/howtos/login/server-side-login/[Login for Server-side Apps].
 After clicking on 'connect button' user gets redirected to special Facebook page, for authentication, and then
 redirected back to your app.
 
-{note}
+[NOTE]
+====
 User going to see Facebook Authentication screen only at the first time. Next time user will be redirected
 back from Facebook to your application immediately.
-{note}
+====
 
-h4. How to process failed login
+==== How to process failed login
 
 When user declines Facebook Authentication (click Cancel, for example), you'll '401 Authentication Failed' by default.
 It's default configuration of Spring Security failure handler, but for most cases it's not what you really want.
 
 To handle this situation you have to create your own Failure Handler, a bean implementing
-@org.springframework.security.web.authentication.AuthenticationFailureHandler@. If you just need to
-show a page (a GSP view), you can use standard @SimpleUrlAuthenticationFailureHandler@, that could redirect
+`org.springframework.security.web.authentication.AuthenticationFailureHandler`. If you just need to
+show a page (a GSP view), you can use standard `SimpleUrlAuthenticationFailureHandler`, that could redirect
 failed authentication to specified URL.
 
 For example you can create bean at `resources.groovy`:

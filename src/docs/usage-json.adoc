@@ -4,11 +4,12 @@ Filter 'FacebookAuthJsonFilter' accepts Facebook Access Token or Signed Request 
  with JSON to authorization requests. It's useful if you an external client for your Grails application, it
  could be Android or iOS application, or Desktop application, or just AJAX client.
 
-{note}
+[NOTE]
+====
 JSON filter just returns an object with user details, nothing else. For authentication of other requests,
 you still have to use different filter. If you have a RESTful client, take a look at
 http://grails.org/plugin/spring-security-oauth2-provider[spring-security-oauth2-provider plugin]
-{note}
+====
 
 How it works:
 
@@ -48,12 +49,7 @@ For unsuccessful:
 
 The plugin going to call `Map onJsonSuccess(Map input, FacebookAuthToken token)`
 or `Map onJsonFailure(Map input, AuthenticationException exception)` methods
-of [FacebookAuthService|guide:5.1 Using FacebookAuthService] (if exists).
+of FacebookAuthService (if exists).
 
 There you can update `input` data with any other values, introduce new fields/keys, or even return your
 own structure. This structure will be transformed to JSON and sent to client.
-
-==== Configuration
-
-See [authentication configuration page|guide:4.5 Authentication Types]
-

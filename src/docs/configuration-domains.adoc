@@ -6,12 +6,13 @@
 | grails.plugin.springsecurity.facebook.domain.appUserConnectionPropertyName | 'user' |
 |======
 
- * @domain.classname@ - name of your domain class, used to store Facebook User details (uid, access_token, etc). Could be same as configured for Spring Security Core, or a own domain, just for Facebook User details.
+ * `domain.classname` - name of your domain class, used to store Facebook User details (uid, access_token, etc).
+ Could be same as configured for Spring Security Core, or a own domain, just for Facebook User details.
 
 If you're using own domain for Facebook user (a joined to main User) you should
-specify @domain.appUserConnectionPropertyName@: it's how your domain class is related
+specify `domain.appUserConnectionPropertyName`: it's how your domain class is related
 to main (used by Spring Security Core) user domain. It's the name
-of the property, usually defined as @static belongsTo = [user: User]@ in your Facebook User domain class.
+of the property, usually defined as `static belongsTo = [user: User]` in your Facebook User domain class.
 
 ==== User creation/initialization
 

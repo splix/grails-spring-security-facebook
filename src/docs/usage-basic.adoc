@@ -1,6 +1,6 @@
 === Example app
 
-You can take a look at [Example Application|https://github.com/splix/grails-facebook-authentication-example], it's very
+You can take a look at https://github.com/splix/grails-facebook-authentication-example[Example Application], it's very
 basic app, that have only one page, with 'Facebook Connect' button. Just clone it, put your FB App credentials, and play with it.
 
 ==== Add Facebook Authentication into your existing application
@@ -36,7 +36,7 @@ You should create a Facebook App and copy App ID and Secret:
 
 !create_app.png!
 
-into @Config.groovy@:
+into `Config.groovy`:
 ----
 grails.plugin.springsecurity.facebook.appId=12345678900000
 grails.plugin.springsecurity.facebook.secret=76c2279743c99da3715e3d00f29a1234
@@ -46,7 +46,7 @@ PS it's just example, you should use your own `appId` and `secret`.
 
 ====== Add Facebook Connect button
 
-There is special taglib (@<facebookAuth:@) that can be used at your view (any GSP page) to add Facebook Connect button.
+There is special taglib (`<facebookAuth:`) that can be used at your view (any GSP page) to add Facebook Connect button.
 
 Following code displays connect button for not authorized user, or show a welcome message to logged in user:
 ----
