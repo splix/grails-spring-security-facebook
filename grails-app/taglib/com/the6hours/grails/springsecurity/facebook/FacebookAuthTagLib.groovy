@@ -116,10 +116,12 @@ class FacebookAuthTagLib {
             String imgUrl
             if (attrs.img) {
                 imgUrl = attrs.img
-            } else if (conf.taglib.button.img) {
-                imgUrl = resource(file: conf.taglib.button.img)
             } else {
-                imgUrl = resource(file: conf.taglib.button.defaultImg, plugin: 'spring-security-facebook')
+                imgUrl = resource(
+                        dir: 'images',
+                        file: 'connect.png',
+                        plugin: 'spring-security-facebook'
+                )
             }
             bodyValue = img(attrs, imgUrl)
         }
