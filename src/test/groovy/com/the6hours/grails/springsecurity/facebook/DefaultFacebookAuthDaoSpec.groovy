@@ -1,8 +1,12 @@
 package com.the6hours.grails.springsecurity.facebook
 
-import org.codehaus.groovy.grails.commons.DefaultGrailsApplication
-import org.codehaus.groovy.grails.commons.GrailsApplication
+import grails.core.DefaultGrailsApplication
+import grails.core.DefaultGrailsClass
+import grails.core.GrailsApplication
+import grails.core.GrailsClass
+import grails.util.Holders
 import grails.plugin.springsecurity.SpringSecurityUtils
+import org.grails.core.DefaultGrailsDomainClass
 import spock.lang.Specification
 
 import java.sql.Timestamp
@@ -19,33 +23,22 @@ class DefaultFacebookAuthDaoSpec extends Specification {
     }
 
     DefaultFacebookAuthDao dao
-    def grails
+    GrailsApplication grails = Mock(GrailsApplication)
     Map securityConfig = [:]
 
     def setup() {
-        grails = new DefaultGrailsApplication()
-        grails.metaClass.getDomainClass = {String name ->
-            if (TestFacebookUser.canonicalName == name) {
-                return new GrailsDomainMock(TestFacebookUser)
-            }
-            if (TestAppUser.canonicalName == name) {
-                return new GrailsDomainMock(TestAppUser)
-            }
-            if (TestAuthority.canonicalName == name) {
-                return new GrailsDomainMock(TestAuthority)
-            }
-            if (TestRole.canonicalName == name) {
-                return new GrailsDomainMock(TestRole)
-            }
-            println "Uknown domain: $name"
-            return null
+        with (grails) {
+            _ * getArtefact('Domain', TestFacebookUser.canonicalName) >> new DefaultGrailsClass(TestFacebookUser)
+            _ * getArtefact('Domain', TestAppUser.canonicalName) >> new DefaultGrailsClass(TestAppUser)
+            _ * getArtefact('Domain', TestAuthority.canonicalName) >> new DefaultGrailsClass(TestAuthority)
+            _ * getArtefact('Domain', TestRole.canonicalName) >> new DefaultGrailsClass(TestRole)
         }
         dao = new DefaultFacebookAuthDao(
                 FacebookUserDomainClazz: TestFacebookUser,
                 domainClassName: TestFacebookUser.canonicalName,
                 AppUserDomainClazz: TestAppUser,
                 appUserConnectionPropertyName: 'user',
-                grailsApplication: grails as GrailsApplication
+                grailsApplication: grails
         )
         TestAuthority._calls = []
         TestRole._calls = []

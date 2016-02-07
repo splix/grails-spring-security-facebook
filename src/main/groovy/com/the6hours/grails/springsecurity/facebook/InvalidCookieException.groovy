@@ -16,7 +16,4 @@ class InvalidCookieException extends AuthenticationException {
         super(msg)
     }
 
-    InvalidCookieException(String msg, Object extraInformation) {
-        super(msg, extraInformation)
-    }
 }

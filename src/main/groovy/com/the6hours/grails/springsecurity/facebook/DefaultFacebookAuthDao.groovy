@@ -1,12 +1,12 @@
 package com.the6hours.grails.springsecurity.facebook
 
+import grails.core.GrailsApplication
+import grails.core.support.GrailsApplicationAware
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.userdetails.GormUserDetailsService
 
 import java.util.concurrent.TimeUnit
 
-import org.codehaus.groovy.grails.commons.GrailsApplication
-import org.codehaus.groovy.grails.plugins.support.aware.GrailsApplicationAware
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.InitializingBean
@@ -115,7 +115,7 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object, Object>, Initial
 
         def securityConf = SpringSecurityUtils.securityConfig
 
-        def user = grailsApplication.getDomainClass(FacebookUserDomainClazz.canonicalName).newInstance()
+        def user = grailsApplication.getArtefact('Domain', FacebookUserDomainClazz.canonicalName).newInstance()
         user.setProperty('uid', token.uid)
         if (user.hasProperty('accessToken')) {
             user.setProperty('accessToken', token.accessToken?.accessToken)
@@ -129,7 +129,7 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object, Object>, Initial
             if (facebookAuthService?.respondsTo('createAppUser', FacebookUserDomainClazz, FacebookAuthToken)) {
                 appUser = facebookAuthService.createAppUser(user, token)
             } else {
-                appUser = grailsApplication.getDomainClass(AppUserDomainClazz.canonicalName).newInstance()
+                appUser = grailsApplication.getArtefact('Domain', AppUserDomainClazz.canonicalName).newInstance()
                 if (facebookAuthService?.respondsTo('prepopulateAppUser', AppUserDomainClazz, FacebookAuthToken)) {
                     facebookAuthService.prepopulateAppUser(appUser, token)
                 } else {
@@ -165,8 +165,8 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object, Object>, Initial
         if (facebookAuthService?.respondsTo('createRoles', FacebookUserDomainClazz)) {
             facebookAuthService.createRoles(user)
         } else {
-            Class<?> PersonRole = grailsApplication.getDomainClass(securityConf.userLookup.authorityJoinClassName)?.clazz
-            Class<?> Authority = grailsApplication.getDomainClass(securityConf.authority.className)?.clazz
+            Class<?> PersonRole = grailsApplication.getArtefact('Domain', securityConf.userLookup.authorityJoinClassName)?.clazz
+            Class<?> Authority = grailsApplication.getArtefact('Domain', securityConf.authority.className)?.clazz
             String authorityNameField = securityConf.authority.nameField
             String findByField = authorityNameField[0].toUpperCase() + authorityNameField.substring(1)
             PersonRole.withTransaction { status ->
@@ -208,7 +208,7 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object, Object>, Initial
         }
 
         def conf = SpringSecurityUtils.securityConfig
-        Class<?> PersonRole = grailsApplication.getDomainClass(conf.userLookup.authorityJoinClassName)?.clazz
+        Class<?> PersonRole = grailsApplication.getArtefact('Domain', conf.userLookup.authorityJoinClassName)?.clazz
         if (!PersonRole) {
             log.error("Can't load roles for user $user. Reason: can't find ${conf.userLookup.authorityJoinClassName} class")
             return []
@@ -361,11 +361,11 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object, Object>, Initial
             if (!userDomainClassName) {
                 log.error("User domain class name is not configured")
             } else {
-                Class<?> UserDomainClass = grailsApplication.getDomainClass(userDomainClassName)?.clazz
+                Class<?> UserDomainClass = grailsApplication.getArtefact('Domain', userDomainClassName)?.clazz
                 if (!UserDomainClass || !UserDetails.isAssignableFrom(UserDomainClass)) {
                     if (!conf.userLookup.authorityJoinClassName) {
                         log.error("Don't have authority join class configuration. Please configure 'grails.plugin.springsecurity.userLookup.authorityJoinClassName' value")
-                    } else if (!grailsApplication.getDomainClass(conf.userLookup.authorityJoinClassName)) {
+                    } else if (!grailsApplication.getArtefact('Domain', conf.userLookup.authorityJoinClassName)) {
                         log.error("Can't find authority join class (${conf.userLookup.authorityJoinClassName}). Please configure 'grails.plugin.springsecurity.userLookup.authorityJoinClassName' value, or create your own 'List<GrantedAuthority> facebookAuthService.getRoles(user)'")
                     }
                 }
@@ -375,7 +375,7 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object, Object>, Initial
             if (!domainClassName) {
                 log.error("Don't have facebook user class configuration. Please configure 'grails.plugin.springsecurity.facebook.domain.classname' value")
             } else {
-                Class<?> User = grailsApplication.getDomainClass(domainClassName)?.clazz
+                Class<?> User = grailsApplication.getArtefact('Domain', domainClassName)?.clazz
                 if (!User) {
                     log.error("Can't find facebook user class ($domainClassName). Please configure 'grails.plugin.springsecurity.facebook.domain.classname' value, or create your own 'Object facebookAuthService.findUser(long)'")
                 }
@@ -394,13 +394,13 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object, Object>, Initial
         }
 
         if (domainClassName && !FacebookUserDomainClazz) {
-            FacebookUserDomainClazz = grailsApplication.getDomainClass(domainClassName)?.clazz
+            FacebookUserDomainClazz = grailsApplication.getArtefact('Domain', domainClassName)?.clazz
         }
         if (!FacebookUserDomainClazz) {
             log.error("Can't find domain: $domainClassName")
         }
         if (userDomainClassName && !AppUserDomainClazz) {
-            AppUserDomainClazz = grailsApplication.getDomainClass(userDomainClassName)?.clazz
+            AppUserDomainClazz = grailsApplication.getArtefact('Domain', userDomainClassName)?.clazz
         }
         if (!AppUserDomainClazz) {
             log.error("Can't find domain: $userDomainClassName")
