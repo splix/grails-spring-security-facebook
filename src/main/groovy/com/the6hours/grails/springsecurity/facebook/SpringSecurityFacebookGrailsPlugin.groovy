@@ -4,6 +4,7 @@ import grails.plugins.Plugin
 import grails.util.Environment
 import grails.util.Metadata
 import org.slf4j.LoggerFactory
+import grails.plugin.springsecurity.SpringSecurityUtils
 
 class SpringSecurityFacebookGrailsPlugin extends Plugin {
 
@@ -60,7 +61,7 @@ class SpringSecurityFacebookGrailsPlugin extends Plugin {
         ['appId', 'secret', 'apiKey'].each { if (copy[it] != 'Invalid') copy[it] = '********' }
         log.debug "Facebook security config: $copy"
 
-        _facebookDaoName = conf.facebook.bean.dao ?: null
+        def _facebookDaoName = conf.facebook.bean.dao ?: null
         if (_facebookDaoName == null) {
             _facebookDaoName = 'facebookAuthDao'
             String _appUserConnectionPropertyName = getConfigValue(conf, 'facebook.domain.appUserConnectionPropertyName', 'facebook.domain.connectionPropertyName')
