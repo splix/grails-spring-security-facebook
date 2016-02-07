@@ -56,9 +56,9 @@ dependencyManagement {
 }
 
 dependencies {
-    compile 'org.springframework.security:spring-security-core:3.2.9.RELEASE'
-    compile 'org.springframework.security:spring-security-web:3.2.9.RELEASE'
-    compile 'org.grails.plugins:spring-security-core:3.0.0.M2'
+    compile 'org.springframework.security:spring-security-core:4.0.3.RELEASE'
+    compile 'org.springframework.security:spring-security-web:4.0.3.RELEASE'
+    compile 'org.grails.plugins:spring-security-core:3.0.3'
 
 
     provided 'org.springframework.boot:spring-boot-starter-logging'
