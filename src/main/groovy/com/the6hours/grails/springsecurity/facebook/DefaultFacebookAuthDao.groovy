@@ -76,7 +76,6 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object, Object>, Initial
         }
 
         FacebookUserDomainClazz.withTransaction { status ->
-            facebookUser.merge()
             facebookUser.getProperty(appUserConnectionPropertyName)
         }
     }
@@ -169,6 +168,7 @@ class DefaultFacebookAuthDao implements FacebookAuthDao<Object, Object>, Initial
             Class<?> Authority = grailsApplication.getArtefact('Domain', securityConf.authority.className)?.clazz
             String authorityNameField = securityConf.authority.nameField
             String findByField = authorityNameField[0].toUpperCase() + authorityNameField.substring(1)
+            log.debug("Add roles: $defaultRoleNames")
             PersonRole.withTransaction { status ->
                 defaultRoleNames.each { String roleName ->
                     def auth = Authority."findBy${findByField}"(roleName)
