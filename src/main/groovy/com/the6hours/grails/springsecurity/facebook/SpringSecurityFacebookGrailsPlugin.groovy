@@ -92,7 +92,6 @@ class SpringSecurityFacebookGrailsPlugin extends Plugin {
         }
         log.debug "facebookAuthUtils filter types $_filterTypes and requiredPermissions $_requiredPermissions"
 
-        SpringSecurityUtils.registerProvider 'facebookAuthProvider'
         boolean _createNew = getConfigValue(conf, 'facebook.autoCreate.enabled') ? conf.facebook.autoCreate.enabled as Boolean : false
         facebookAuthProvider(FacebookAuthProvider) {
             facebookAuthDao = ref(_facebookDaoName)
@@ -105,6 +104,10 @@ class SpringSecurityFacebookGrailsPlugin extends Plugin {
         addFilters(conf, delegate, _filterTypes)
         println '... finished configuring Spring Security Facebook'
     }}
+
+    void doWithApplicationContext() {
+        SpringSecurityUtils.registerProvider 'facebookAuthProvider'
+    }
 
     private List<String> parseFilterTypes(conf) {
         List<String> types
