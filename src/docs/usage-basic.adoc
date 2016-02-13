@@ -24,10 +24,15 @@ class FacebookUser {
 }
 ----
 
-At `Config.groovy` setup full name (including package name, if used) of just created Facebook user domain, like:
+At `conf/application.yml` setup full name (including package name, if used) of just created Facebook user domain, like:
 
 ----
-grails.plugin.springsecurity.facebook.domain.classname='FacebookUser'
+grails:
+    plugin:
+        springsecurity:
+            facebook:
+                domain:
+                    classname: 'FacebookUser'
 ----
 
 ====== Add FB App credentials
@@ -36,10 +41,14 @@ You should create a Facebook App and copy App ID and Secret:
 
 !create_app.png!
 
-into `Config.groovy`:
+into `conf/application.yml`:
 ----
-grails.plugin.springsecurity.facebook.appId=12345678900000
-grails.plugin.springsecurity.facebook.secret=76c2279743c99da3715e3d00f29a1234
+grails:
+    plugin:
+        springsecurity:
+            facebook:
+                appId: 12345678900000
+                secret: 76c2279743c99da3715e3d00f29a1234
 ----
 
 PS it's just example, you should use your own `appId` and `secret`.

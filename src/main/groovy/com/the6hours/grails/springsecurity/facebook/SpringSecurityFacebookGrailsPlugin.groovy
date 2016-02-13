@@ -137,7 +137,7 @@ class SpringSecurityFacebookGrailsPlugin extends Plugin {
 
         if (!types) {
             log.error("Facebook Authentication filter is not configured. Should be used one of: $validTypes. So '$defaultType' will be used by default.")
-            log.error("To configure Facebook Authentication filters you should add to Config.groovy:")
+            log.error("To configure Facebook Authentication filters you should add to application.yml:")
             log.error("grails.plugin.springsecurity.facebook.filter.types='transparent'")
             log.error("or")
             log.error("grails.plugin.springsecurity.facebook.filter.types='redirect,transparent,cookieDirect'")

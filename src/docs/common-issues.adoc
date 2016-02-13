@@ -4,11 +4,9 @@
 
 ==== Enable logging
 
-If you have troubles with plugin, please enabled logging, so you can see what's happening:
+If you have troubles with plugin, please enabled logging, so you can see what's happening. Add to `logback.groovy` following:
 ----
-log4j = {
-  debug 'com.the6hours', 'grails.app.taglib.com.the6hours'
-}
+logger("com.the6hours", DEBUG, ["CONSOLE"])
 ----
 
 === Issues
@@ -26,19 +24,19 @@ If you already have line starting with `127.0.0.1`, just add your `myapp.dev` at
 
 See more details about hosts file, and location of the file for different operation systems see: http://en.wikipedia.org/wiki/Hosts_(file)
 
-After that, you should configure your Grails app to use this domain, by adding following line into `Config.groovy`:
+After that, you should configure your Grails app to use this domain, by adding following line into `conf/application.yml`:
 ----
-grails.serverURL = "http://myapp.dev:8080/${appName}"
+grails:
+    serverURL: "http://myapp.dev:8080/${appName}"
 ----
 
 Of course, you need to use this domain only for development, so put this configuration into `development`
 environment config:
 ----
-environments {
-    development {
-      grails.serverURL = "http://myapp.dev:8080/${appName}"
-    }
-}
+environments:
+    development:
+        grails:
+            serverURL: "http://myapp.dev:8080/${appName}"
 ----
 
 ==== Logout doesn't work for Transparent filter

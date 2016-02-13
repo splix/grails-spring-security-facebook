@@ -10,9 +10,14 @@ Make sure that you have installed and configured spring-security-core plugin bef
 Most default configuration will look like:
 
 ----
-grails.plugin.springsecurity.facebook.domain.classname='<your FacebookUser domain>'
-grails.plugin.springsecurity.facebook.secret = '<Facebook secret for your app>'
-grails.plugin.springsecurity.facebook.appId = '<Facebooks's app ID>'
+grails:
+    plugin:
+        springsecurity:
+            facebook:
+                domain:
+                    classname: '<your FacebookUser domain>'
+                secret: '<Facebook secret for your app>'
+                appId: '<Facebooks's app ID>'
 ----
 
 When you have valid configuration you can put Facebook Connect button in you GSP:

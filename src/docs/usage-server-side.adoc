@@ -37,10 +37,16 @@ beans = {
 }
 ----
 
-and setup this bean for 'redirect' filter at `Config.groovy`:
+and setup this bean for 'redirect' filter at `application.yml`:
 
 ----
-grails.plugin.springsecurity.facebook.filter.redirect.failureHandler='redirectFailureHandlerExample'
+grails:
+    plugin:
+        springsecurity:
+            facebook:
+                filter:
+                    redirect:
+                        failureHandler: redirectFailureHandlerExample
 ----
 
 Same way for configuring Success Handler.

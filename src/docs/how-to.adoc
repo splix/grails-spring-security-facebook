@@ -9,21 +9,19 @@ using additional library, http://www.springsource.org/spring-social[Spring Socia
 
 First of all: you need 'email' permission on connect `<facebookAuth:connect permissions="email"/>`
 
-Add Spring Social lib into your classpath, by adding following dependencies into your `BuildConfig.groovy`:
+Add Spring Social lib into your classpath, by adding following dependencies into your `build.gradle`:
 
 ----
-compile 'org.springframework.social:spring-social-core:1.0.1.RELEASE'
-compile 'org.springframework.social:spring-social-facebook:1.0.1.RELEASE'
+compile 'org.springframework.social:spring-social-facebook:2.0.3.RELEASE'
 ----
 
-and then you can use Facebook API. For example you can fetch user's email on user creation step:
+and then you can use Facebook API. For example you can fetch user email and full name on user creation step:
 
 ----
-Facebook facebook = new FacebookTemplate(token.accessToken.accessToken)
-FacebookProfile fbProfile = facebook.userOperations().userProfile
+def facebook = new FacebookTemplate(token.accessToken.accessToken)
+def fbProfile = facebook.userOperations().userProfile
 String email = fbProfile.email
-String firstName = fbProfile.firstName
-String lastName = fbProfile.lastName
+String name = fbProfile.name
 ----
 
-See documentations for Spring Social Facebook: http://static.springsource.org/spring-social-facebook/docs/1.0.1.RELEASE/reference/html/apis.html#facebook-getProfile
+See documentations for Spring Social Facebook: http://docs.spring.io/spring-social-facebook/docs/2.0.3.RELEASE/reference/htmlsingle/#retrieving-a-user-s-profile-data

@@ -26,10 +26,15 @@ To logout user, simply call `FB.logout()` (using Javascript) on client side.
 
 ==== CookieDirect filter
 
-If you're using second way (`cookieDirect` filter), you could configure URL that will be used for authentication at `Config.groovy`:
+If you're using second way (`cookieDirect` filter), you could configure URL that will be used for authentication at `application.yml`:
 
 ----
-grails.plugin.springsecurity.facebook.filter.processUrl = '/j_spring_security_facebook_check' //it's default value
+grails:
+    plugin:
+        springsecurity:
+            facebook:
+                filter:
+                    processUrl: '/j_spring_security_facebook_check' # it's default value
 ----
 
 And after authorization redirect user to `/j_spring_security_facebook_check`, like:

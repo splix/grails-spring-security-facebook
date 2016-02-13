@@ -6,7 +6,8 @@
 *.zip
 target
 *.log
-/web-app/WEB-INF
-.gradle/
-build/
-gradle/
+.gradle
+build
+.idea
+cobertura.ser
+kindlegen

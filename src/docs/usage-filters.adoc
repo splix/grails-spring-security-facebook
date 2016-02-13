@@ -66,12 +66,24 @@ extra configuration, that used only by this plugin.
 
 By default it uses only one 'redirect' filter:
 ----
-grails.plugin.springsecurity.facebook.filter.type='redirect'
+grails:
+    plugin:
+        springsecurity:
+            facebook:
+                filter:
+                    type: redirect
 ----
 
 You can use more that one filter at same time:
 ----
-grails.plugin.springsecurity.facebook.filter.type='transparent,cookieDirect'
+grails:
+    plugin:
+        springsecurity:
+            facebook:
+                filter:
+                    type:
+                        - transparent
+                        - cookieDirect
 ----
 
 Value types:
