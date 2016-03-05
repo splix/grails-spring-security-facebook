@@ -16,7 +16,7 @@ plugins {
 
 apply from: 'gradle/plugin.gradle'
 
-version "0.18-SNAPSHOT"
+version "0.18"
 group "org.grails.plugins"
 
 
