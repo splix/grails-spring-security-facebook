@@ -14,6 +14,18 @@ Examples:
   * Docs - http://splix.github.io/grails-spring-security-facebook/
   * Example App - https://github.com/splix/grails-facebook-authentication-example
 
+Installation
+------------
+
+If you have any troubles with getting it from main Grails Plugins repository, add following repository:
+```
+repositories {
+    maven {
+        url  "http://dl.bintray.com/splix/grails-plugins" 
+    }
+}
+```
+
 Authors
 -------
 
