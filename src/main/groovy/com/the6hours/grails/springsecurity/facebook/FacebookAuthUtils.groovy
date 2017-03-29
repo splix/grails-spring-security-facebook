@@ -138,7 +138,14 @@ class FacebookAuthUtils {
     FacebookAccessToken requestAccessToken(String authUrl) {
         try {
             URL url = new URL(authUrl)
-            String response = url.readLines().first()
+            def response = url.readLines().first()
+
+            // Facebook api response format has changed in v2.3 from Url to JSON
+            def slurper = new groovy.json.JsonSlurper()
+            Map data = [:]
+            data = (Map)slurper.parseText(response)
+
+            /*String response = url.readLines().first()
             //println "AccessToken response: $response"
             Map data = [:]
             response.split('&').each { String part ->
@@ -148,21 +155,21 @@ class FacebookAuthUtils {
                 } else {
                     data[kv[0]] = kv[1]
                 }
-            }
+            }*/
             FacebookAccessToken token = new FacebookAccessToken()
             if (data.access_token) {
                 token.accessToken = data.access_token
             } else {
                 log.error("No access_token in response: $response")
             }
-            if (data.expires) {
-                if (data.expires =~ /^\d+$/) {
-                    token.expireAt = new Date(System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(data.expires as Long))
+            if (data.expires_in) {
+                if (data.expires_in =~ /^\d+$/) {
+                    token.expireAt = new Date(System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(data.expires_in as Long))
                 } else {
-                    log.warn("Invalid 'expires' value: $data.expires")
+                    log.warn("Invalid 'expires' value: $data.expires_in")
                 }
             } else {
-              log.error("No expires in response: $response")
+                log.error("No expires in response: $response")
             }
             //log.debug("Got AccessToken: $token")
             return token
