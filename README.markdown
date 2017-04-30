@@ -21,6 +21,12 @@ Examples:
 Installation
 ------------
 
+```
+dependencies {
+    compile 'org.grails.plugins:spring-security-facebook:0.19.2'
+}
+```
+
 If you have any troubles with getting it from main Grails Plugins repository, add following repository:
 ```
 repositories {

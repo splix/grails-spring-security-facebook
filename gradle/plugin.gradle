@@ -16,7 +16,7 @@ apply plugin: 'spring-boot'
 apply plugin: 'org.grails.grails-plugin'
 apply plugin: 'org.asciidoctor.convert'
 
-apply from: 'https://raw.githubusercontent.com/grails/grails-profile-repository/master/profiles/plugin/templates/grailsCentralPublishing.gradle'
+apply from: 'gradle/grailsCentralPublishing.gradle'
 apply from: 'https://raw.githubusercontent.com/grails/grails-profile-repository/master/profiles/plugin/templates/bintrayPublishing.gradle'
 
 group = 'org.grails.plugins'
